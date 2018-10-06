@@ -73,20 +73,20 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="rate" class="col-md-3 control-label"><b style="color: red;">* </b> Rate : </label>
+                                            <label for="malayalam_name" class="col-md-3 control-label"><b style="color: red;">* </b> Malayalam Name : </label>
                                             <div class="col-md-9">
-                                                <input type="text" name="rate" class="form-control decimal_number_only" id="rate" placeholder="Unit Rate" value="{{ old('rate') }}" tabindex="5" maxlength="100">
+                                                <input type="text" name="malayalam_name" class="form-control" id="malayalam_name" placeholder="Malayalam Name" value="{{ old('malayalam_name') }}" tabindex="5" maxlength="100">
                                                 {{-- adding error_message p tag component --}}
-                                                @component('components.paragraph.error_message', ['fieldName' => 'rate'])
+                                                @component('components.paragraph.error_message', ['fieldName' => 'malayalam_name'])
                                                 @endcomponent
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="loading_charge_per_piece" class="col-md-3 control-label"><b style="color: red;">* </b> Loading Charge/Piece : </label>
+                                            <label for="product_code" class="col-md-3 control-label"><b style="color: red;">* </b>Product Code : </label>
                                             <div class="col-md-9">
-                                                <input type="text" name="loading_charge_per_piece" class="form-control" id="loading_charge_per_piece" placeholder="Loading Charge Per Piece" value="{{ old('loading_charge_per_piece') }}" tabindex="6" maxlength="4">
+                                                <input type="text" name="product_code" class="form-control" id="product_code" placeholder="Product Code" value="{{ old('product_code') }}" tabindex="6" maxlength="4">
                                                 {{-- adding error_message p tag component --}}
-                                                @component('components.paragraph.error_message', ['fieldName' => 'loading_charge_per_piece'])
+                                                @component('components.paragraph.error_message', ['fieldName' => 'product_code'])
                                                 @endcomponent
                                             </div>
                                         </div>

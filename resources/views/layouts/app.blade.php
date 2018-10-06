@@ -8,7 +8,7 @@
         @section('stylesheets')
         @show
     </head>
-    <body class="hold-transition fixed skin-red sidebar-mini">
+    <body class="hold-transition fixed skin-green-light sidebar-mini">
         <div class="wrapper">
 
             <!-- sections/header.main.blade -->

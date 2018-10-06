@@ -8,13 +8,21 @@ use App\Exceptions\AppCustomException;
 
 class UserRepository
 {
+    public $repositoryCode, $errorCode = 0;
+
+    public function __construct()
+    {
+        $this->repositoryCode = config('settings.repository_code.UserRepository');
+    }
+
     /**
      * Action for updating user profile
      */
-    public function updateProfile($inputArray=[])
+    public function updateProfile($inputArray=[], $user=[])
     {
+        $saveFlag = false;
+
         try {
-            $saveFlag       = false;
             $user->username = $inputArray['username'];
             $user->name     = $inputArray['name'];
             $user->email    = $inputArray['email'];
@@ -34,5 +42,15 @@ class UserRepository
             
             throw new AppCustomException("CustomError", $this->errorCode);
         }
+
+        if($saveFlag) {
+            return [
+                'flag'  => true,
+            ];
+        }
+        return [
+            'flag'      => false,
+            'errorCode' => $this->repositoryCode,
+        ];
     }
 }

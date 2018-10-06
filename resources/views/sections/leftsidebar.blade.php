@@ -26,7 +26,7 @@
                         <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                     </a>
                 </li>
-                @if($loggedUser->isSuperAdmin() || $loggedUser->isAdmin())
+                @if($loggedUser->isSuperAdmin())
                     <li class="treeview {{ (Request::is('branch/*') || Request::is('branch'))? 'active' : '' }}">
                         <a href="#">
                             <i class="fa fa-industry"></i>
@@ -48,6 +48,8 @@
                             </li>
                         </ul>
                     </li>
+                @endif
+                @if($loggedUser->isSuperAdmin() || $loggedUser->isAdmin())
                     <li class="treeview {{ (Request::is('product/*') || Request::is('product'))? 'active' : '' }}">
                         <a href="#">
                             <i class="fa fa-industry"></i>
@@ -103,27 +105,6 @@
                             </li>
                             <li class="{{ Request::is('purchase')? 'active' : '' }}">
                                 <a href="{{ route('purchase.index') }}">
-                                    <i class="fa fa-circle-o text-aqua"></i> List
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="treeview {{ ( Request::is('production/*') || Request::is('production') )? 'active' : '' }}">
-                        <a href="#">
-                            <i class="fa fa-gear"></i>
-                            <span>Production</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="{{ Request::is('production/create')? 'active' : '' }}">
-                                <a href="{{ route('production.create') }}">
-                                    <i class="fa fa-circle-o text-yellow"></i> Register
-                                </a>
-                            </li>
-                            <li class="{{ Request::is('production')? 'active' : '' }}">
-                                <a href="{{ route('production.index') }}">
                                     <i class="fa fa-circle-o text-aqua"></i> List
                                 </a>
                             </li>

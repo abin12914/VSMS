@@ -28,11 +28,11 @@
                                         <tr>
                                             <th style="width: 5%;">#</th>
                                             <th style="width: 20%;">Product Name</th>
-                                            <th style="width: 10%;">HSN Code</th>
-                                            <th style="width: 10%;">UOM Code</th>
+                                            <th style="width: 5%;">HSN Code</th>
+                                            <th style="width: 5%;">UOM Code</th>
                                             <th style="width: 20%;">Description</th>
-                                            <th style="width: 10%;">Rate</th>
-                                            <th style="width: 15%;">Loading Charge/Piece</th>
+                                            <th style="width: 20%;">Malayalam Name</th>
+                                            <th style="width: 15%;">Product Code</th>
                                             <th style="width: 10%;" class="no-print">Details</th>
                                         </tr>
                                     </thead>
@@ -45,8 +45,8 @@
                                                     <td>{{ $product->hsn_code }}</td>
                                                     <td>{{ $product->uom_code }}</td>
                                                     <td>{{ $product->description }}</td>
-                                                    <td>{{ $product->rate }}</td>
-                                                    <td>{{ $product->loading_charge_per_piece }}</td>
+                                                    <td>{{ $product->malayalam_name }}</td>
+                                                    <td>{{ $product->product_code }}</td>
                                                     <td class="no-print">
                                                         <a href="{{ route('product.edit', $product->id) }}">
                                                             <button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Edit</button>

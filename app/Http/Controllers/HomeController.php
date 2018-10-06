@@ -72,6 +72,9 @@ class HomeController extends Controller
      */
     public function profileUpdate(ProfileUpdateRequest $request, UserRepository $userRepo)
     {
+        $errorCode = 0;
+        $response  = [];
+
         $inputArray['username']         = $request->get('username');
         $inputArray['name']             = $request->get('name');
         $inputArray['email']            = $request->get('email');
@@ -79,14 +82,14 @@ class HomeController extends Controller
         $inputArray['currentPassword']  = $request->get('currentPassword');
 
         if(!Hash::check($inputArray['currentPassword'], Auth::User()->password)) {
-            return redirect()->back()->with("Message", "Authentication Failed! Invalid password.")->with("alert-class", "error");
+            return redirect()->back()->with("message", "Authentication Failed! Invalid password.")->with("alert-class", "error");
         }
 
         //wrappin db transactions
         DB::beginTransaction();
         try {
             $user = Auth::User();
-            $flag = $userRepo->updateProfile($inputArray, $user);
+            $response = $userRepo->updateProfile($inputArray, $user);
 
             DB::commit();
             $saveFlag = true;
@@ -101,9 +104,9 @@ class HomeController extends Controller
             }
         }
 
-        if($flag['flag']) {
+        if($saveFlag) {
             return redirect(route('dashboard'))->with("message", "Profile Successfully Updated!")->with("alert-class", "success");
         }
-        return redirect()->back()->with("message", "Profile Update failed! Error Code : ". $flag['error'])->with("alert-class", "error");
+        return redirect()->back()->with("message", "Profile Update failed! Error Code : ". $response['errorCode'])->with("alert-class", "error");
     }
 }
