@@ -18,7 +18,7 @@
         <section class="content">
             <!-- Info boxes -->
             <div class="row">
-                <div class="col-md-3 col-sm-6 col-xs-12">
+                {{-- <div class="col-md-3 col-sm-6 col-xs-12">
                     <a href="{{ route('purchase.index') }}" style="color: black;">
                         <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-truck"></i></span>
@@ -49,7 +49,7 @@
                 </div>
                 <!-- /.col -->
 
-                <!-- fix for small devices only -->
+                fix for small devices only
                 <div class="clearfix visible-sm-block"></div>
 
                 <div class="col-md-3 col-sm-6 col-xs-12">
@@ -80,7 +80,7 @@
                         </div>
                         <!-- /.info-box -->
                     </a>
-                </div>
+                </div> --}}
                 <!-- /.col -->
             </div>
             <!-- /.row -->
