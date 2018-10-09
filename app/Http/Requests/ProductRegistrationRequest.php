@@ -25,38 +25,34 @@ class ProductRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_name'              =>  [
-                                                'required',
-                                                'max:100',
-                                                Rule::unique('products', 'name')->ignore($this->product),
-                                            ],
-            'hsn_code'                  =>  [
-                                                'nullable',
-                                                'min:4',
-                                                'max:10',
-                                                'alpha_num',
-                                            ],
-            'uom_code'                  =>  [
-                                                'required',
-                                                'size:3',
-                                                'alpha',
-                                            ],
-            'description'               =>  [
-                                                'required',
-                                                'max:200',
-                                            ],
-            'rate'                      =>  [
-                                                'required',
-                                                'numeric',
-                                                'min:0.1',
-                                                'max:9999'
-                                            ],
-            'loading_charge_per_piece'  =>  [
-                                                'required',
-                                                'numeric',
-                                                'min:0.1',
-                                                'max:999',
-                                            ],
+            'product_name'  =>  [
+                                    'required',
+                                    'max:100',
+                                    Rule::unique('products', 'name')->ignore($this->product),
+                                ],
+            'uom_code'      =>  [
+                                    'required',
+                                    'max:15',
+                                    'alpha',
+                                ],
+            'description'   =>  [
+                                    'required',
+                                    'max:200',
+                                ],
+            'malayalam_name'=>  [
+                                    'nullable',
+                                    'string',
+                                    'min:2',
+                                    'max:100',
+                                    Rule::unique('products', 'malayalam_name')->ignore($this->product),
+                                ],
+            'product_code'  =>  [
+                                    'required',
+                                    'numeric',
+                                    'min:1',
+                                    'max:9999',
+                                    Rule::unique('products', 'product_code')->ignore($this->product),
+                                ],
         ];
     }
 }

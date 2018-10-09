@@ -24,7 +24,6 @@ return [
     'employeeWageTypes' => [
         1 => 'Per Month',
         2 => 'Per Day',
-        3 => 'Per Mould',
     ],
 
     'transactionRelations' => [

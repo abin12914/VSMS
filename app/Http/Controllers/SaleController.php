@@ -122,7 +122,7 @@ class SaleController extends Controller
         $loadingChargeAccountId         = config('constants.accountConstants.LoadingChargeAccount.id');
 
         $transactionDate        = Carbon::createFromFormat('d-m-Y', $request->get('sale_date'))->format('Y-m-d');
-        $branchId               = $request->get('branch_id');
+        $branchId               = $request->get('branch_id') ?: null ;
         $customerAccountId      = $request->get('customer_account_id');
         $products               = $request->get('product_id');
         $totalBill              = $request->get('total_bill');
@@ -150,10 +150,6 @@ class SaleController extends Controller
             $saleAccount = $accountRepo->getAccount($saleAccountId);
             //confirming transportation charge account existency.
             $transportationChargeAccount = $accountRepo->getAccount($transportationChargeAccountId);
-            //confirming loading charge account existency.
-            $transportationChargeAccount = $accountRepo->getAccount($loadingChargeAccountId);
-            //confirming employee existency
-            $employee = $employeeRepo->getEmployee($loadingEmployeeId);
 
             if($customerAccountId == -1) {
                 //checking for exist-ency of the account
@@ -251,7 +247,7 @@ class SaleController extends Controller
             }
 
             //save loading charge transaction to table
-            $loadingChargeTransactionResponse = $transactionRepo->saveTransaction([
+            /*$loadingChargeTransactionResponse = $transactionRepo->saveTransaction([
                 'debit_account_id'  => $loadingChargeAccountId, // debit the loadingCharge account
                 'credit_account_id' => $employee->account_id, // credit the employee account
                 'amount'            => $loadingCharge ,
@@ -278,7 +274,7 @@ class SaleController extends Controller
 
             if(!$transportationResponse['flag']) {
                 throw new AppCustomException("CustomError", $transportationResponse['errorCode']);
-            }
+            }*/
 
             DB::commit();
             $saveFlag = true;

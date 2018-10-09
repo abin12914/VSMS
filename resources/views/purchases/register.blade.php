@@ -18,8 +18,8 @@
         <!-- Main row -->
         <div class="row no-print">
             <div class="col-md-12">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+                {{-- <div class="col-md-2"></div> --}}
+                <div class="col-md-12">
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title" style="float: left;">Purchase Details</h3>
@@ -35,93 +35,152 @@
                                     <div class="col-md-10">
                                         <div class="form-group">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <label for="branch_id" class="control-label"><b style="color: red;">* </b> Branch : </label>
-                                                    {{-- adding branch select component --}}
-                                                    @component('components.selects.branches', ['selectedBranchId' => old('branch_id'), 'selectName' => 'branch_id', 'tabindex' => 1])
-                                                    @endcomponent
+                                                <div class="col-md-8">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="purchase_date" class="control-label"><b style="color: red;">* </b> Purchase Date : </label>
+                                                            <input type="text" class="form-control decimal_number_only datepicker_reg" name="purchase_date" id="purchase_date" placeholder="Purchase date" value="{{ old('purchase_date') }}" tabindex="2">
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'purchase_date'])
+                                                            @endcomponent
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="customer_account_id" class="control-label"><b style="color: red;">* </b> Purchase From : </label>
+                                                            {{-- adding account select component --}}
+                                                            @component('components.selects.accounts', ['selectedAccountId' => old('customer_account_id'), 'cashAccountFlag' => true, 'selectName' => 'customer_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
+                                                            @endcomponent
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_account_id'])
+                                                            @endcomponent
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="customer_name" class="control-label"><b style="color: red;">* </b> Supplier Name : </label>
+                                                            <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Supplier name" value="{{ old('customer_name') }}" tabindex="3">
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_name'])
+                                                            @endcomponent
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="customer_phone" class="control-label"><b style="color: red;">* </b> Supplier Phone : </label>
+                                                            <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Supplier phone" value="{{ old('customer_phone') }}" tabindex="3">
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_phone'])
+                                                            @endcomponent
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="description" class="control-label"><b style="color: red;">* </b> Notes : </label>
+                                                    @if(!empty( old('description')))
+                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;"></textarea>
+                                                    @else
+                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;">{{ old('description') }}</textarea>
+                                                    @endif
                                                     {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'branch_id'])
+                                                    @component('components.paragraph.error_message', ['fieldName' => 'description'])
                                                     @endcomponent
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <label for="purchase_date" class="control-label"><b style="color: red;">* </b> Purchase Date : </label>
-                                                    <input type="text" class="form-control decimal_number_only datepicker_reg" name="purchase_date" id="purchase_date" placeholder="Purchase date" value="{{ old('purchase_date') }}" tabindex="2">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'purchase_date'])
-                                                    @endcomponent
-                                                </div>
-                                            </div>
+                                            </div><br>
                                         </div>
+                                        <br><br>
                                         <div class="form-group">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <label for="supplier_account_id" class="control-label"><b style="color: red;">* </b> Supplier : </label>
-                                                    {{-- adding account select component --}}
-                                                    @component('components.selects.accounts', ['selectedAccountId' => old('supplier_account_id'), 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'tabindex' => 3])
-                                                    @endcomponent
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'supplier_account_id'])
-                                                    @endcomponent
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="material_id" class="control-label"><b style="color: red;">* </b> Material : </label>
-                                                    {{-- adding material select component --}}
-                                                    @component('components.selects.materials', ['selectedMaterialId' => old('material_id'), 'selectName' => 'material_id', 'tabindex' => 4])
-                                                    @endcomponent
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'material_id'])
-                                                    @endcomponent
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label for="purchase_quantity" class="control-label"><b style="color: red;">* </b> Quantity : </label>
-                                                    <input type="text" class="form-control decimal_number_only" name="purchase_quantity" id="purchase_quantity" placeholder="Quantity" value="{{ old('purchase_quantity') }}" tabindex="5">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'purchase_quantity'])
-                                                    @endcomponent
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="purchase_rate" class="control-label"><b style="color: red;">* </b> Unit Rate : </label>
-                                                    <input type="text" class="form-control decimal_number_only" name="purchase_rate" id="purchase_rate" placeholder="Purchase rate" value="{{ old('purchase_rate') }}" tabindex="6">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'purchase_rate'])
-                                                    @endcomponent
-                                                </div>
-                                                <input type="hidden" class="form-control decimal_number_only" name="purchase_bill" id="purchase_bill"  value="{{ old('purchase_bill') }}">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label for="purchase_discount" class="control-label"><b style="color: red;">* </b> Discount : </label>
-                                                    <input type="text" class="form-control decimal_number_only" name="purchase_discount" id="purchase_discount" placeholder="Purchase discount" value="{{ !empty(old('purchase_discount')) ? old('purchase_discount') : 0 }}" tabindex="7">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'purchase_discount'])
-                                                    @endcomponent
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="purchase_total_bill" class="control-label"><b style="color: red;">* </b> Total Bill : </label>
-                                                    <input type="text" class="form-control decimal_number_only" name="purchase_total_bill" id="purchase_total_bill" placeholder="Total purchase amount" value="{{ old('purchase_total_bill') }}" readonly tabindex="-1">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'purchase_total_bill'])
-                                                    @endcomponent
-                                                </div>
+                                                <table class="table table-bordered table-hover dataTable">
+                                                    <thead>
+                                                        <th style="width: 5%;">#</th>
+                                                        <th style="width: 35%;">Product</th>
+                                                        <th style="width: 20%;">Notes</th>
+                                                        <th style="width: 15%;">Quantity</th>
+                                                        <th style="width: 10%;">Rate</th>
+                                                        <th style="width: 15%;">Amount</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for($i = 0; $i < 50; $i++)
+                                                            <tr id="product__row_{{ $i }}" style="display : {{ (($i > 2) && empty(old('product_id.'. $i ))) ? 'none' : '' }}">
+                                                                <td>
+                                                                    @if(!empty($errors->first('product_id.'. $i)) || !empty($errors->first('purchase_quantity.'. $i)) || !empty($errors->first('purchase_rate.'. $i)) || !empty($errors->first('sub_bill.'. $i)))
+                                                                        {{ $i + 1 }} &nbsp;
+                                                                        <i class="fa fa-hand-o-right" style="color: red;" title="Invalid data in this row."></i>
+                                                                    @else
+                                                                        {{ $i + 1 }}
+                                                                    @endif
+                                                                </td>
+                                                                <td>
+                                                                    @component('components.selects.products_custom', ['selectedProductId' => old('product_id.'. $i), 'selectName' => 'product_id[]', 'selectId' => 'product_id_'.$i, 'customClassName' => 'products_combo', 'indexNo' => $i, 'tabindex' => (8 + $i), 'disabledOption' => (empty(old('product_id.'. ($i-1))) && $i > 0 ? true : false )])
+                                                                    @endcomponent
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control purchase_notes" name="purchase_notes[]" id="purchase_notes_{{ $i }}" placeholder="Notes" value="{{ old('purchase_notes.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control number_only purchase_quantity" name="purchase_quantity[]" id="purchase_quantity_{{ $i }}" placeholder="Quantity" value="{{ old('purchase_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control decimal_number_only purchase_rate" name="purchase_rate[]" id="purchase_rate_{{ $i }}" placeholder="Purchase rate" value="{{ old('purchase_rate.'. $i) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control decimal_number_only" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i) }}" readonly>
+                                                                </td>
+                                                            </tr>
+                                                        @endfor
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>Total</td>
+                                                            <td>
+                                                                @if(!empty($errors->first('total_amount')))
+                                                                    <i class="fa fa-hand-o-right" style="color: red;" title="Something went wrong. Please try again."></i>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control decimal_number_only" name="total_amount" id="total_amount" placeholder="Total Amount" value="{{ old('total_amount') }}" readonly>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>Discount</td>
+                                                            <td>
+                                                                @if(!empty($errors->first('discount')))
+                                                                    &nbsp;<i class="fa fa-hand-o-right" style="color: red;" title="{{ $errors->first('discount') }}"></i>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control decimal_number_only" name="discount" id="discount" placeholder="Discount" value="{{ !empty(old('discount')) ? old('discount') : 0 }}" maxlength="6" tabindex="13">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>Total Bill Amount</td>
+                                                            <td>
+                                                                @if(!empty($errors->first('total_bill')))
+                                                                    <i class="fa fa-hand-o-right" style="color: red;" title="Something went wrong. Please try again."></i>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control decimal_number_only" name="total_bill" id="total_bill" placeholder="Total Bill Amount" value="{{ old('total_bill') }}" readonly>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div><br>
                                 <div class="clearfix"> </div><br>
                                 <div class="row">
-                                    <div class="col-md-3"></div>
-                                    <div class="col-md-3">
-                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="9">Clear</button>
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-2">
+                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="15">Clear</button>
                                     </div>
-                                    <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="8">Submit</button>
+                                    <div class="col-md-2">
+                                        <button type="button" id="purchase_submit_button" class="btn btn-primary btn-block btn-flat" tabindex="14">Submit</button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>

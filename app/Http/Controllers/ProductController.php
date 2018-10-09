@@ -59,12 +59,11 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $response   = $this->productRepo->saveProduct([
-                'name'                      => $request->get('product_name'),
-                'hsn_code'                  => $request->get('hsn_code'),
-                'uom_code'                  => strtoupper($request->get('uom_code')),
-                'description'               => $request->get('description'),
-                'rate'                      => $request->get('rate'),
-                'loading_charge_per_piece'  => $request->get('loading_charge_per_piece'),
+                'name'              => $request->get('product_name'),
+                'uom_code'          => strtoupper($request->get('uom_code')),
+                'description'       => $request->get('description'),
+                'malayalam_name'    => $request->get('malayalam_name'),
+                'product_code'      => $request->get('product_code'),
             ]);
 
             if(!$response['flag']) {
@@ -136,12 +135,11 @@ class ProductController extends Controller
             $product = $this->productRepo->getProduct($id);
 
             $response = $this->productRepo->saveProduct([
-                'name'                      => $request->get('product_name'),
-                'hsn_code'                  => $request->get('hsn_code'),
-                'uom_code'                  => strtoupper($request->get('uom_code')),
-                'description'               => $request->get('description'),
-                'rate'                      => $request->get('rate'),
-                'loading_charge_per_piece'  => $request->get('loading_charge_per_piece'),
+                'name'              => $request->get('product_name'),
+                'uom_code'          => strtoupper($request->get('uom_code')),
+                'description'       => $request->get('description'),
+                'malayalam_name'    => $request->get('malayalam_name'),
+                'product_code'      => $request->get('product_code'),
             ], $product);
 
             if(!$response['flag']) {

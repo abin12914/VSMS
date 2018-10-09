@@ -53,7 +53,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label for="customer_name" class="control-label"><b style="color: red;">* </b> Customer Name : </label>
-                                                    <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Billing name" value="{{ old('customer_name') }}" tabindex="3">
+                                                    <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Customer name" value="{{ old('customer_name') }}" tabindex="3">
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'customer_name'])
                                                     @endcomponent
@@ -62,7 +62,7 @@
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <label for="customer_phone" class="control-label"><b style="color: red;">* </b> Customer Phone : </label>
-                                                    <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Billing phone" value="{{ old('customer_phone') }}" tabindex="3">
+                                                    <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Customer phone" value="{{ old('customer_phone') }}" tabindex="3">
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'customer_phone'])
                                                     @endcomponent
@@ -104,12 +104,12 @@
                                                         <th style="width: 35%;">Product</th>
                                                         <th style="width: 20%;">Notes</th>
                                                         <th style="width: 15%;">Quantity</th>
-                                                        <th style="width: 15%;">Rate</th>
-                                                        <th style="width: 10%;">Amount</th>
+                                                        <th style="width: 10%;">Rate</th>
+                                                        <th style="width: 15%;">Amount</th>
                                                     </thead>
                                                     <tbody>
-                                                        @for($i = 0; $i < 100; $i++)
-                                                            <tr id="product__row_{{ $i }}">
+                                                        @for($i = 0; $i < 50; $i++)
+                                                            <tr id="product__row_{{ $i }}" style="display : {{ (($i > 2) && empty(old('product_id.'. $i ))) ? 'none' : '' }}">
                                                                 <td>
                                                                     @if(!empty($errors->first('product_id.'. $i)) || !empty($errors->first('sale_quantity.'. $i)) || !empty($errors->first('sale_rate.'. $i)) || !empty($errors->first('sub_bill.'. $i)))
                                                                         {{ $i + 1 }} &nbsp;
@@ -126,7 +126,7 @@
                                                                     <input type="text" class="form-control sale_notes" name="sale_notes[]" id="sale_notes_{{ $i }}" placeholder="Notes" value="{{ old('sale_notes.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control number_only sale_quantity" name="sale_quantity[]" id="sale_quantity_{{ $i }}" placeholder="Quantity" value="{{ old('sale_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control decimal_number_only sale_quantity" name="sale_quantity[]" id="sale_quantity_{{ $i }}" placeholder="Quantity" value="{{ old('sale_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" class="form-control decimal_number_only sale_rate" name="sale_rate[]" id="sale_rate_{{ $i }}" placeholder="Sale rate" value="{{ old('sale_rate.'. $i) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
@@ -137,6 +137,7 @@
                                                             </tr>
                                                         @endfor
                                                         <tr>
+                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td>Total</td>
@@ -152,6 +153,7 @@
                                                         <tr>
                                                             <td></td>
                                                             <td></td>
+                                                            <td></td>
                                                             <td>Discount</td>
                                                             <td>
                                                                 @if(!empty($errors->first('discount')))
@@ -163,6 +165,7 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
+                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td>Total Bill Amount</td>
@@ -183,11 +186,11 @@
                                 </div><br>
                                 <div class="clearfix"> </div><br>
                                 <div class="row">
-                                    <div class="col-md-3"></div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-2">
                                         <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="15">Clear</button>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <button type="button" id="sale_submit_button" class="btn btn-primary btn-block btn-flat" tabindex="14">Submit</button>
                                     </div>
                                     <!-- /.col -->

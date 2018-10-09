@@ -43,16 +43,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="hsn_code" class="col-md-3 control-label"><b style="color: red;">* </b> HSN Code : </label>
-                                            <div class="col-md-9">
-                                                <input type="text" name="hsn_code" class="form-control" id="hsn_code" placeholder="HSN Code" value="{{ !empty(old('hsn_code')) ? old('hsn_code') : $product->hsn_code }}" tabindex="2" maxlength="10">
-                                                {{-- adding error_message p tag component --}}
-                                                @component('components.paragraph.error_message', ['fieldName' => 'hsn_code'])
-                                                @endcomponent
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="uom_code" class="col-md-3 control-label"><b style="color: red;">* </b> UOM Code : </label>
+                                            <label for="uom_code" class="col-md-3 control-label"><b style="color: red;">* </b> Unit : </label>
                                             <div class="col-md-9">
                                                 <input type="text" name="uom_code" class="form-control" id="uom_code" placeholder="Unique Quantity Code" value="{{ !empty(old('uom_code')) ? old('uom_code') : $product->uom_code }}" tabindex="3" maxlength="3">
                                                 {{-- adding error_message p tag component --}}

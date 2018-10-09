@@ -148,7 +148,7 @@
                                         </div>
                                         {{-- <div class="col-md-1"></div> --}}
                                         <div class="col-md-3">
-                                            <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="10">Submit</button>
+                                            <button type="button" class="btn btn-primary btn-block btn-flat update_button" tabindex="10">Submit</button>
                                         </div>
                                         <!-- /.col -->
                                     </div><br>

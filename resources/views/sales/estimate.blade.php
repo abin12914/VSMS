@@ -23,13 +23,13 @@
                                 <table class="table border-top-only-table" style="margin-bottom: 0px;">
                                     <tbody>
                                         <tr>
-                                            <h3  class="text-center">Estimate</h3>
+                                            <h3  class="text-center">XXX Vegitable Store</h3>
                                         </tr>
                                         <tr>
                                             <td style="width: 50%; vertical-align: top;">
                                                 <br><br>
                                                 <b>Name &emsp;: &emsp;</b>{{ $sale->customer_name }}<br>
-                                                <b>Address : &emsp;</b>{{ $sale->customer_address }}<br>
+                                                <b>Address : &emsp;</b>{{ $sale->customer_name }}<br>
                                                 <b>Phone&emsp;: </b>&emsp;{{ $sale->customer_phone }}
                                                 <br>
                                             </td>
@@ -57,7 +57,7 @@
                                                                 <b>Destination</b>
                                                             </td>
                                                             <td style="width: 60%;">
-                                                                {{ $sale->transportation->consignee_address }}
+                                                                xxx
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -65,7 +65,7 @@
                                                                 <b>Transportation Charge</b>
                                                             </td>
                                                             <td style="width: 60%;">
-                                                                {{ $sale->transportation->consignment_charge }}
+                                                                500
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -127,11 +127,25 @@
                                             <th></th>
                                             <td>{{ $sale->total_amount }}</td>
                                         </tr>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Old Balance</th>
+                                            <th></th>
+                                            <td>(+)100</td>
+                                        </tr>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Outstanding Balance</th>
+                                            <th></th>
+                                            <td>{{ $sale->total_amount + 100 }}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <td>
                                 <table class="table table-bordered" style="margin-bottom: 0px;">
                                     <tr>
@@ -151,7 +165,7 @@
                                     </tr>
                                 </table>
                             </td>
-                        </tr>
+                        </tr> --}}
                     </tbody>
                 </table>
             </div>

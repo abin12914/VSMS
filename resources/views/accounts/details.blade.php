@@ -24,12 +24,12 @@
                     <div class="box box-widget widget-user-2">
                         @if(!empty($account))
                             <!-- Add the bg color to the header using any of the bg-* classes -->
-                            <div class="widget-user-header bg-yellow">
+                            <div class="widget-user-header bg-{{ $account->status == 1 ? 'yellow' : 'gray' }}">
                                 <div class="widget-user-image">
-                                    <img class="img-circle" src="{{ $account->image or "/images/accounts/default_account.png" }}" alt="User Avatar">
+                                    <img class="img-circle" src="{{ $account->image ?: "/images/accounts/default_account.png" }}" alt="User Avatar">
                                 </div>
                                 <!-- /.widget-user-image -->
-                                <h3 class="widget-user-username">{{ $account->account_name }}</h3>
+                                <h3 class="widget-user-username">{{ $account->account_name }} {{ $account->status != 1 ? '(Suspended Account)' : '' }}</h3>
                                 <h5 class="widget-user-desc">
                                     {{ (!empty($relationTypes) && !empty($relationTypes[$account->relation])) ? $relationTypes[$account->relation] : "Error" }}
                                 </h5>
@@ -121,17 +121,6 @@
                                             <hr>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <strong>
-                                                <i class="fa fa-university margin-r-5"></i> GSTIN
-                                            </strong>
-                                            <p class="text-muted multi-line">
-                                                {{ strtoupper($account->gstin) }}
-                                            </p>
-                                            <hr>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer">
@@ -139,16 +128,22 @@
                                     <div class="row">
                                         <div class="col-md-4"></div>
                                         <div class="col-md-4">
-                                            <div class="col-md-{{ $account->relation == 1 ? "6" : "12" }}">
-                                                <form action="{{ route('account.edit', $account->id) }}" method="get" class="form-horizontal">
-                                                    <button type="submit" class="btn btn-primary btn-block btn-flat">Edit</button>
-                                                </form>
-                                            </div>
-                                            @if($account->relation == 1)
-                                                <div class="col-md-6">
+                                            <div class="col-md-{{ $account->status == 1 ? '12' : '6' }}">
+                                                @if($account->relation == 1)
                                                     <a href="{{ route('employee.show', $account->employee->id) }}">
                                                         <button type="button" class="btn btn-info btn-block btn-flat">Employee Details</button>
                                                     </a>
+                                                @else
+                                                    <form action="{{ route('account.edit', $account->id) }}" method="get" class="form-horizontal">
+                                                        <button type="submit" class="btn btn-primary btn-block btn-flat">Edit</button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                            @if($account->status != 1)
+                                                <div class="col-md-6">
+                                                    <form action="#" method="get" class="form-horizontal">
+                                                        <button type="button" class="btn btn-warning btn-block btn-flat">Activate</button>
+                                                    </form>
                                                 </div>
                                             @endif
                                         </div>

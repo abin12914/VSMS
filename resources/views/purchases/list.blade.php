@@ -55,15 +55,6 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="col-md-4">
-                                            <label for="material_id" class="control-label">Material : </label>
-                                            {{-- adding material select component --}}
-                                            @component('components.selects.materials', ['selectedMaterialId' => $params['material_id']['paramValue'], 'selectName' => 'material_id', 'tabindex' => 4])
-                                            @endcomponent
-                                            {{-- adding error_message p tag component --}}
-                                            @component('components.paragraph.error_message', ['fieldName' => 'material_id'])
-                                            @endcomponent
-                                        </div>
-                                        <div class="col-md-4">
                                             <label for="supplier_account_id" class="control-label">Supplier : </label>
                                             {{-- adding account select component --}}
                                             @component('components.selects.accounts', ['selectedAccountId' => $params['supplier_account_id']['paramValue'], 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => true, 'tabindex' => 5])

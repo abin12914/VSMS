@@ -64,13 +64,12 @@ class ProductRepository
             if(empty($product)) {
                 $product = new Product;
             }
-            $product->name                      = $inputArray['name'];
-            $product->hsn_code                  = $inputArray['hsn_code'];
-            $product->uom_code                  = $inputArray['uom_code'];
-            $product->description               = $inputArray['description'];
-            $product->rate                      = $inputArray['rate'];
-            $product->loading_charge_per_piece  = $inputArray['loading_charge_per_piece'];
-            $product->status        = 1;
+            $product->name              = $inputArray['name'];
+            $product->uom_code          = $inputArray['uom_code'];
+            $product->description       = $inputArray['description'];
+            $product->malayalam_name    = $inputArray['malayalam_name'];
+            $product->product_code      = $inputArray['product_code'];
+            $product->status            = 1;
             //product save
             $product->save();
 

@@ -83,7 +83,7 @@
                                                     @if(!empty(old('description')))
                                                         <textarea class="form-control" name="description" id="description" rows="1" placeholder="Description" style="resize: none;" tabindex="5">{{ old('description') }}</textarea>
                                                     @else
-                                                        <textarea class="form-control" name="description" id="description" rows="1" placeholder="Truck Description" style="resize: none;" tabindex="5">{{ str_replace("[Purchase & Expense]", "", $expense->transaction->particulars) }}</textarea>
+                                                        <textarea class="form-control" name="description" id="description" rows="1" placeholder="Description" style="resize: none;" tabindex="5">{{ str_replace("[Purchase & Expense]", "", $expense->transaction->particulars) }}</textarea>
                                                     @endif
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'description'])

@@ -1,57 +1,13 @@
 $(function () {
     siblingsHandling();
     var ajaxAccountDetailUrl    = '/ajax/account/details/';
-    var ajaxOldSaleByBranchUrl  = '/ajax/last/sale'
-
-    //customer details
-    $('body').on("change", "#branch_id", function (evt) {
-        var branchId = $(this).val();
-
-        if(branchId) {
-            $.ajax({
-                url: ajaxOldSaleByBranchUrl,
-                method: "get",
-                data: {
-                    paramName : 'branch_id',
-                    paramValue : branchId,
-                },
-                success: function(result) {
-                    
-                    if(result && result.flag) {
-                        var employeeId = result.sale.loadingEmployeeId;
-                        console.log(employeeId);
-                        $('#loading_employee_id').val(employeeId);
-                        $('#loading_employee_id').trigger("change");
-                    } else {
-                        $('#loading_employee_id').val('');
-                        $('#loading_employee_id').trigger("change");
-                    }
-                },
-                error: function (err) {
-                    $('#loading_employee_id').val('');
-                    $('#loading_employee_id').trigger("change");
-                }
-            });
-        } else {
-            $('#loading_employee_id').val('');
-            $('#loading_employee_id').trigger("change");
-        }
-    });
 
     $('body').on("click", "#sale_submit_button", function (evt) {
         evt.preventDefault();
         var taxFlag         = false;
-        var cutomTitle      = 'Are you sure about the tax option?';
+        var cutomTitle      = 'Are you sure to save the sale?';
         var customButton    = 'Yes, Save it!';
 
-
-        taxFlag = $('#tax_invoice_flag').is(':checked');
-
-        if(taxFlag) {
-            cutomTitle      = 'Are you sure to save this sale as Tax Invoice ?';
-        } else {
-            customButton    = 'Yes, Save without Tax Invoice';
-        }
         swal({
           title: cutomTitle,
           type: 'warning',
@@ -62,7 +18,7 @@ $(function () {
         }).then((result) => {
           if (result.value) {
             $(this).attr('disabled', true);
-            //submit delete form on confirmation
+            //submit form on confirmation
             $(this).parents('form:first').submit();
           }
         })
@@ -86,27 +42,27 @@ $(function () {
                         if(account.type == 3) {
                             $('#customer_name').val(account.name);
                             $('#customer_phone').val(account.phone);
-                            $('#customer_address').val(account.address);
+                            $('#consignee_address').val(account.address);
                             $('#customer_gstin').val(account.gstin);
                         }
                     } else {
                         $('#customer_name').val('');
                         $('#customer_phone').val('');
-                        $('#customer_address').val('');
+                        $('#consignee_address').val('');
                         $('#customer_gstin').val('');
                     }
                 },
                 error: function (err) {
                     $('#customer_name').val('');
                     $('#customer_phone').val('');
-                    $('#customer_address').val('');
+                    $('#consignee_address').val('');
                     $('#customer_gstin').val('');
                 }
             });
         } else {
             $('#customer_name').val('');
             $('#customer_phone').val('');
-            $('#customer_address').val('');
+            $('#consignee_address').val('');
             $('#customer_gstin').val('');
         }
     });
@@ -122,7 +78,7 @@ $(function () {
                 if(confirm("Found an account related with the entered phone number. Do you want to change the 'Sale To' field?")) {
                     $('#customer_account_id').val(accountId);
                     $('#customer_account_id').trigger('change');
-                    $('#customer_address').focus();
+                    $('#consignee_address').focus();
                 }
             }
         }
@@ -137,6 +93,7 @@ $(function () {
             var rate = $(this).find(':selected').data('rate');
 
             //enabling quantity & rate in same column
+            $(this).closest('tr').find('.sale_notes').attr('disabled', false);
             $(this).closest('tr').find('.sale_quantity').attr('disabled', false);
             $(this).closest('tr').find('.sale_rate').attr('disabled', false);
             
@@ -145,19 +102,25 @@ $(function () {
 
             //enabling next combo box
             $('#product__row_'+(rowId+1)).find('.products_combo').attr('disabled', false);
+            //show more row
+            $('#product__row_'+(rowId+3)).show();
         } else {
             //disabling quantity & rate in same column
+            $(this).closest('tr').find('.sale_notes').attr('disabled', true);
             $(this).closest('tr').find('.sale_quantity').attr('disabled', true);
             $(this).closest('tr').find('.sale_rate').attr('disabled', true);
             
             //setting empty values for deselected product
+            $('#sale_notes'+rowId).val('');
             $('#sale_quantity_'+rowId).val('');
             $('#sale_rate_'+rowId).val('');
 
             $('#product__row_'+(rowId+1)).find('.products_combo').val('');
             //disabling next combo box
-            $('#product__row_'+(rowId+1)).find('.products_combo').trigger('change');
+
             $('#product__row_'+(rowId+1)).find('.products_combo').attr('disabled', true);
+            //hide more row
+            $('#product__row_'+(rowId+3)).hide();
         }
 
         //disabiling same value selection in 2 product combo boxes

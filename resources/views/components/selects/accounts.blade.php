@@ -1,7 +1,7 @@
 <select class="form-control select2" name="{{ $selectName }}" id="{{ $selectName }}" style="width: 100%" tabindex="{{ $tabindex }}">
     <option value="">Select account</option>
     @if(!empty($nonAccountFlag))
-        <option value="-1" {{ old($selectName) == '-1' ? 'selected' : '' }}>Short Term Credit Without Account</option>
+        <option value="-1" {{ old($selectName) == '-1' ? 'selected' : '' }}>New credit Account</option>
     @endif
     @if(!empty($accountsCombo) && (count($accountsCombo) > 0))
         @foreach($accountsCombo as $account)

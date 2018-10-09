@@ -29,7 +29,7 @@
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
                                     <div class="form-group">
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label for="relation_type" class="control-label">Relation : </label>
                                             <select class="form-control select2" name="relation_type" id="relation_type" style="width: 100%" tabindex="1">
                                                 <option value="">Select relation type</option>
@@ -43,28 +43,16 @@
                                             @component('components.paragraph.error_message', ['fieldName' => 'relation_type'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label for="account_id" class="control-label">Account : </label>
                                             {{-- adding account select component --}}
-                                            @component('components.selects.accounts', ['selectedAccountId' => $params['id'], 'cashAccountFlag' => false, 'selectName' => 'account_id', 'activeFlag' => !$activeFlag, 'tabindex' => 2])
+                                            @component('components.selects.accounts', ['selectedAccountId' => $params['id'], 'cashAccountFlag' => false, 'selectName' => 'account_id', 'activeFlag' => false, 'tabindex' => 2])
                                             @endcomponent
                                             {{-- adding error_message p tag component --}}
                                             @component('components.paragraph.error_message', ['fieldName' => 'account_id'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-3">
-                                            <label class="control-label"><b style="color: red;">* </b> Account Type : </label>
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <input type="checkbox" name="status_flag" id="status_flag" value="true" {{ $activeFlag ? 'checked' : ''}} tabindex="3">
-                                                </span>
-                                                <label for="status_flag" class="form-control">Include Short Term Credit Customers</label>
-                                            </div>
-                                            {{-- adding error_message p tag component --}}
-                                            @component('components.paragraph.error_message', ['fieldName' => 'status_flag'])
-                                            @endcomponent
-                                        </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label for="no_of_records" class="control-label">No Of Records Per Page : </label>
                                             {{-- adding no of records text component --}}
                                             @component('components.texts.no-of-records-text', ['noOfRecords' => $noOfRecords, 'tabindex' => 4])
@@ -123,10 +111,10 @@
                                             @foreach($accounts as $index => $account)
                                                 <tr>
                                                     <td>{{ $index + $accounts->firstItem() }}</td>
-                                                    <td>
+                                                    <td title="Inative/Suspended">
                                                         {{ $account->account_name }}
                                                         @if($account->status != 1)
-                                                            &emsp;<i class="fa fa-clock-o text-orange no-print" title="Short term credit customer"></i>
+                                                            &emsp;<i class="fa fa-exclamation-triangle text-orange no-print"></i>
                                                         @endif
                                                     </td>
                                                     <td>

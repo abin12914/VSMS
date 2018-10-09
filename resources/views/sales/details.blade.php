@@ -30,7 +30,7 @@
                                 </div>
                                 <!-- /.widget-user-image -->
                                 <h3 class="widget-user-username">Sale</h3>
-                                <h5 class="widget-user-desc">{{ $sale->branch->name }}</h5>
+                                <h5 class="widget-user-desc">xxx</h5>
                             </div>
                             <div class="box box-primary">
                                 <div class="box-body">
@@ -49,10 +49,10 @@
                                         </div>
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-industry margin-r-5"></i> Branch
+                                                <i class="fa fa-industry margin-r-5"></i> XXX
                                             </strong>
                                             <p class="text-muted multi-line">
-                                                {{ $sale->branch->name }}
+                                                xxx
                                             </p>
                                             <hr>
                                         </div>

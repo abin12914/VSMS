@@ -85,7 +85,7 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label for="description" class="control-label"><b style="color: red;">* </b>Description : </label>
-                                                    <textarea class="form-control" name="description" id="description" rows="1" placeholder="Truck Description" style="resize: none;" tabindex="5">{{ !empty(old('description')) ? old('description') : (preg_replace('#\s*\[.+\]\s*#U', '', $voucher->transaction->particulars)) }}</textarea>
+                                                    <textarea class="form-control" name="description" id="description" rows="1" placeholder="Description" style="resize: none;" tabindex="5">{{ !empty(old('description')) ? old('description') : (preg_replace('#\s*\[.+\]\s*#U', '', $voucher->transaction->particulars)) }}</textarea>
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'description'])
                                                     @endcomponent

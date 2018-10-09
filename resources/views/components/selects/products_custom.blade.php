@@ -2,7 +2,7 @@
     <option value="">Select product</option>
     @if(!empty($productsCombo) && (count($productsCombo) > 0))
         @foreach($productsCombo as $product)
-            <option value="{{ $product->id }}" {{ (old($selectName) == $product->id || $selectedProductId == $product->id) ? 'selected' : '' }} data-rate="{{ $product->rate }}">{{ $product->name }}</option>
+            <option value="{{ $product->id }}" {{ (old($selectName) == $product->id || $selectedProductId == $product->id) ? 'selected' : '' }} data-rate="{{ $product->rate }}">{{ $product->name }} - {{ !empty($product->malayalam_name) ? $product->malayalam_name. ' - ' : '' }} #{{ $product->product_code }}</option>
         @endforeach
     @endif
 </select>

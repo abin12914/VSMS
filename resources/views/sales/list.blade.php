@@ -43,15 +43,6 @@
                                             @component('components.paragraph.error_message', ['fieldName' => 'to_date'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="branch_id" class="control-label">Branch : </label>
-                                            {{-- adding branch select component --}}
-                                            @component('components.selects.branches', ['selectedBranchId' => $params['branch_id']['paramValue'], 'selectName' => 'branch_id', 'tabindex' => 3])
-                                            @endcomponent
-                                            {{-- adding error_message p tag component --}}
-                                            @component('components.paragraph.error_message', ['fieldName' => 'branch_id'])
-                                            @endcomponent
-                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="col-md-4">
@@ -123,7 +114,7 @@
                                         <tr>
                                             <th style="width: 5%;">#</th>
                                             <th style="width: 15%;">Date & Invoice No.</th>
-                                            <th style="width: 15%;">Branch</th>
+                                            {{-- <th style="width: 15%;">Branch</th> --}}
                                             <th style="width: 15%;">Account</th>
                                             <th style="width: 15%;">Customer Name</th>
                                             <th style="width: 10%;">No Of Products</th>
@@ -142,7 +133,7 @@
                                                             /{{ config('constants.branchInvoiceCode')[$saleRecord->branch_id]. $saleRecord->tax_invoice_number }}
                                                         @endif
                                                     </td>
-                                                    <td>{{ $saleRecord->branch->name }}</td>
+                                                    {{-- <td>{{ $saleRecord->branch->name }}</td> --}}
                                                     <td>
                                                         {{ $saleRecord->transaction->debitAccount->account_name }}
                                                         @if($saleRecord->transaction->debitAccount->status != 1)

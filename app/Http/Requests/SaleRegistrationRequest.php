@@ -29,10 +29,6 @@ class SaleRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'branch_id'                 =>  [
-                                                'required',
-                                                Rule::in(Branch::pluck('id')->toArray()),
-                                            ],
             'sale_date'                 =>  [
                                                 'required',
                                                 'date_format:d-m-Y',
@@ -54,42 +50,16 @@ class SaleRegistrationRequest extends FormRequest
                                                 'min:10',
                                                 'max:13',
                                             ],
-            'customer_address'          =>  [
-                                                'required',
-                                                'string',
-                                                'min:5',
-                                                'max:200',
-                                            ],
-            'customer_gstin'            =>  [
-                                                'nullable',
-                                                'string',
-                                                'size:15',
-                                            ],
-            'consignee_name'            =>  [
-                                                'nullable',
-                                                'string',
-                                                'min:3',
-                                                'max:100',
-                                            ],
             'consignee_address'         =>  [
                                                 'required',
                                                 'string',
                                                 'min:5',
                                                 'max:200',
                                             ],
-            'consignee_gstin'           =>  [
-                                                'nullable',
-                                                'string',
-                                                'size:15',
-                                            ],
             'consignment_charge'        =>  [
                                                 'required',
                                                 'min:0',
                                                 'max:9999',
-                                            ],
-            'loading_employee_id'       =>  [
-                                                'required',
-                                                Rule::in(Employee::pluck('id')->toArray()),
                                             ],
             'product_id'                =>  [
                                                 'required',

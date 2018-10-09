@@ -78,7 +78,8 @@ class EmployeeController extends Controller
         $employeeAccount     = null;
         $employeeTransaction = null;
 
-        $openingBalanceAccountId = config('constants.accountConstants.AccountOpeningBalance.id');
+        $openingBalanceAccountId    = config('constants.accountConstants.AccountOpeningBalance.id');
+        $accountRelations           = config('constants.accountRelationTypes');
 
         $destination    = '/images/accounts/'; // image file upload path
         $fileName       = "";
@@ -87,7 +88,7 @@ class EmployeeController extends Controller
         if ($request->hasFile('image_file')) {
             $file       = $request->file('image_file');
             $extension  = $file->getClientOriginalExtension(); // getting image extension
-            $fileName   = $name.'_'.time().'.'.$extension; // renameing image
+            $fileName   = $name.'_'.time().'.'.$extension; // rename image
             $file->move(public_path().$destination, $fileName); // uploading file to given path
             $fileName   = $destination.$fileName;//file name for saving to db
         }
@@ -125,7 +126,7 @@ class EmployeeController extends Controller
             $accountResponse = $accountRepo->saveAccount([
                 'account_name'      => $request->get('account_name'),
                 'description'       => $request->get('description'),
-                'relation'          => 5, //employee
+                'relation'          => array_search('Employees', $accountRelations), //employee //key=1
                 'financial_status'  => $financialStatus,
                 'opening_balance'   => $openingBalance,
                 'name'              => $name,
