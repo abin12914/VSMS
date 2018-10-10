@@ -49,16 +49,6 @@ class PurchaseController extends Controller
                 'paramOperator' => '<=',
                 'paramValue'    => $toDate,
             ],
-            'branch_id'     =>  [
-                'paramName'     => 'branch_id',
-                'paramOperator' => '=',
-                'paramValue'    => $request->get('branch_id'),
-            ],
-            'material_id'   =>  [
-                'paramName'     => 'material_id',
-                'paramOperator' => '=',
-                'paramValue'    => $request->get('material_id'),
-            ],
         ];
 
         $relationalParams = [
@@ -105,42 +95,87 @@ class PurchaseController extends Controller
         PurchaseRegistrationRequest $request,
         TransactionRepository $transactionRepo,
         AccountRepository $accountRepo,
-        MaterialRepository $materialRepo
+        $id=null
     ) {
-        $saveFlag       = false;
-        $errorCode      = 0;
-        $wageAmount     = 0;
+        $saveFlag   = false;
+        $errorCode  = 0;
 
+        //configured values
         $purchaseAccountId  = config('constants.accountConstants.Purchase.id');
+        $accountRelations   = config('constants.accountRelationTypes');
+
         $transactionDate    = Carbon::createFromFormat('d-m-Y', $request->get('purchase_date'))->format('Y-m-d');
-        $branchId           = $request->get('branch_id');
         $supplierAccountId  = $request->get('supplier_account_id');
-        $materialId         = $request->get('material_id');
-        $quantity           = $request->get('purchase_quantity');
-        $unitRate           = $request->get('purchase_rate');
-        $discount           = $request->get('purchase_discount');
-        $totalBill          = $request->get('purchase_total_bill');
+        $products           = $request->get('product_id');
+        $totalBill          = $request->get('total_bill');
+        $supplierName       = $request->get('supplier_name');
+        $supplierPhone      = $request->get('supplier_phone');
 
         //wrappin db transactions
         DB::beginTransaction();
         try {
+            foreach ($products as $index => $productId) {
+                if(!empty($request->get('purchase_quantity')[$index]) && !empty($request->get('purchase_rate')[$index])) {
+                    $productArray[$productId] = [
+                        'quantity'      => $request->get('purchase_quantity')[$index],
+                        'rate'          => $request->get('purchase_rate')[$index],
+                        'weighment_note'=> $request->get('weighment_note')[$index],
+                    ];
+                }
+            }
+
             //confirming purchase account existency.
             $purchaseAccount = $accountRepo->getAccount($purchaseAccountId);
 
-            //accessing supplier account
-            $supplierAccount = $accountRepo->getAccount($supplierAccountId);
+            //if editing
+            if(!empty($id)) {
+                $purchase = $this->voucherRepo->getVoucher($id);
+                $voucherTransaction = $transactionRepo->getTransaction($voucher->transaction_id);
+            }
 
-            //accessing material account
-            $material = $materialRepo->getMaterial($materialId);
+            if($supplierAccountId == -1) {
+                //checking for exist-ency of the account
+                $accounts = $accountRepo->getAccounts(['phone' => $supplierPhone],null,null,false);
 
-            //save purchase to transaction table
-            $transactionResponse   = $transactionRepo->saveTransaction([
+                if(empty($accounts) || count($accounts) == 0)
+                {
+                    //save quick supplier account to table
+                    $accountResponse = $accountRepo->saveAccount([
+                        'account_name'      => $supplierName,
+                        'description'       => ("New account of". $supplierName),
+                        'relation'          => array_search('Supplier', $accountRelations), //supplier key=2
+                        'financial_status'  => 0,
+                        'opening_balance'   => 0,
+                        'name'              => $supplierName,
+                        'phone'             => $supplierPhone,
+                        'address'           => '',
+                        'image'             => null,
+                        'status'            => 1, //short term credit account
+                    ]);
+
+                    if(!$accountResponse['flag']) {
+                        throw new AppCustomException("CustomError", $accountResponse['errorCode']);
+                    }
+                    $supplierAccountId  = $accountResponse['id'];
+                    $particulars        = ("Purchase from ". $supplierName. "-". $supplierPhone);
+                } else {
+                    $supplierAccount    = $accounts->first();
+                    $supplierAccountId  = $supplierAccount->id;
+                    $particulars        = ("Purchase from ". $supplierAccount->account_name. "-". $supplierAccount->phone);
+                }
+            } else {
+                //accessing debit account
+                $supplierAccount    = $accountRepo->getAccount($supplierAccountId, false);
+                $particulars        = ("Purchase from ". $supplierAccount->account_name);
+            }
+
+            //save purchase transaction to table
+            $transactionResponse = $transactionRepo->saveTransaction([
                 'debit_account_id'  => $purchaseAccountId, // debit the purchase account
-                'credit_account_id' => $supplierAccountId , // credit the supplier
+                'credit_account_id' => $supplierAccountId, // credit the supplier
                 'amount'            => $totalBill ,
                 'transaction_date'  => $transactionDate,
-                'particulars'       => ("Purchase of ". $material->name. " [". $quantity. " x ". $unitRate. " = ". ($quantity * $unitRate). " - ". $discount. " = ". $totalBill. "] Supplier : ". $supplierAccount->name ),
-                'branch_id'         => $branchId,
+                'particulars'       => ($request->get('description'). "(". $particulars. ")"),
             ]);
 
             if(!$transactionResponse['flag']) {
@@ -151,12 +186,13 @@ class PurchaseController extends Controller
             $purchaseResponse = $this->purchaseRepo->savePurchase([
                 'transaction_id'    => $transactionResponse['id'],
                 'date'              => $transactionDate,
-                'material_id'       => $materialId,
-                'quantity'          => $quantity,
-                'rate'              => $unitRate,
-                'discount'          => $discount,
+                'invoice_number'    => null,
+                'supplier_name'     => $supplierName,
+                'supplier_phone'    => $supplierPhone,
+                'description'       => $request->get('description'),
+                'discount'          => $request->get('discount'),
                 'total_amount'      => $totalBill,
-                'branch_id'         => $branchId,
+                'productsArray'     => $productArray,
             ]);
 
             if(!$purchaseResponse['flag']) {
@@ -177,7 +213,7 @@ class PurchaseController extends Controller
         }
 
         if($saveFlag) {
-            return redirect(route('purchase.index'))->with("message","Purchase details saved successfully. Reference Number : ". $transactionResponse['id'])->with("alert-class", "success");
+            return redirect(route('purchase.show', $purchaseResponse['id']))->with("message","Purchase details saved successfully. Reference Number : ". $transactionResponse['id'])->with("alert-class", "success");
         }
         
         return redirect()->back()->with("message","Failed to save the purchase details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
@@ -233,89 +269,15 @@ class PurchaseController extends Controller
         PurchaseRegistrationRequest $request,
         $id,
         TransactionRepository $transactionRepo,
-        AccountRepository $accountRepo,
-        MaterialRepository $materialRepo
+        AccountRepository $accountRepo
     ) {
-        $saveFlag       = false;
-        $errorCode      = 0;
-        $wageAmount     = 0;
+        $updateResponse = $this->store($request, $transactionRepo, $accountRepo, $id);
 
-        $purchaseAccountId  = config('constants.accountConstants.Purchase.id');
-        $transactionDate    = Carbon::createFromFormat('d-m-Y', $request->get('purchase_date'))->format('Y-m-d');
-        $branchId           = $request->get('branch_id');
-        $supplierAccountId  = $request->get('supplier_account_id');
-        $materialId         = $request->get('material_id');
-        $quantity           = $request->get('purchase_quantity');
-        $unitRate           = $request->get('purchase_rate');
-        $discount           = $request->get('purchase_discount');
-        $totalBill          = $request->get('purchase_total_bill');
-
-        //wrappin db transactions
-        DB::beginTransaction();
-        try {
-            //accessing purchase record
-            $purchase = $this->purchaseRepo->getPurchase($id);
-
-            //accessing purchase transaction
-            $purchaseTransaction = $transactionRepo->getTransaction($purchase->transaction_id);
-
-            //confirming purchase account existency.
-            $purchaseAccount = $accountRepo->getAccount($purchaseAccountId);
-
-            //accessing supplier account
-            $supplierAccount = $accountRepo->getAccount($supplierAccountId);
-
-            //accessing material account
-            $material = $materialRepo->getMaterial($materialId);
-
-            //save purchase to transaction table
-            $transactionResponse   = $transactionRepo->saveTransaction([
-                'debit_account_id'  => $purchaseAccountId, // debit the purchase account
-                'credit_account_id' => $supplierAccountId , // credit the supplier
-                'amount'            => $totalBill ,
-                'transaction_date'  => $transactionDate,
-                'particulars'       => ("Purchase of ". $material->name. " [". $quantity. " x ". $unitRate. " = ". ($quantity * $unitRate). " - ". $discount. " = ". $totalBill. "] Supplier : ". $supplierAccount->name ),
-                'branch_id'         => $branchId,
-            ], $purchaseTransaction);
-
-            if(!$transactionResponse['flag']) {
-                throw new AppCustomException("CustomError", $transactionResponse['errorCode']);
-            }
-
-            //save to purchase table
-            $purchaseResponse = $this->purchaseRepo->savePurchase([
-                'transaction_id'    => $transactionResponse['id'],
-                'date'              => $transactionDate,
-                'material_id'       => $materialId,
-                'quantity'          => $quantity,
-                'rate'              => $unitRate,
-                'discount'          => $discount,
-                'total_amount'      => $totalBill,
-                'branch_id'         => $branchId,
-            ], $purchase);
-
-            if(!$purchaseResponse['flag']) {
-                throw new AppCustomException("CustomError", $purchaseResponse['errorCode']);
-            }
-
-            DB::commit();
-            $saveFlag = true;
-        } catch (Exception $e) {
-            //roll back in case of exceptions
-            DB::rollback();
-
-            if($e->getMessage() == "CustomError") {
-                $errorCode = $e->getCode();
-            } else {
-                $errorCode = 3;
-            }
-        }
-
-        if($saveFlag) {
-            return redirect(route('purchase.index'))->with("message","Purchase details updated successfully. Updated Record Number : ". $transactionResponse['id'])->with("alert-class", "success");
+        if($updateResponse['flag']) {
+            return redirect(route('purchase.index', $updateResponse['id']))->with("message","Purchase details updated successfully. Updated Record Number : ". $updateResponse['id'])->with("alert-class", "success");
         }
         
-        return redirect()->back()->with("message","Failed to update the purchase details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
+        return redirect()->back()->with("message","Failed to update the purchase details. Error Code : ". $this->errorHead. "/". $updateResponse['errorCode'])->with("alert-class", "error");
     }
 
     /**

@@ -74,9 +74,9 @@
                                                 <div class="col-md-4">
                                                     <label for="description" class="control-label"><b style="color: red;">* </b> Notes : </label>
                                                     @if(!empty( old('description')))
-                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;"></textarea>
+                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description"></textarea>
                                                     @else
-                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;">{{ old('description') }}</textarea>
+                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description">{{ old('description') }}</textarea>
                                                     @endif
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'description'])
@@ -112,7 +112,7 @@
                                                                     @endcomponent
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control purchase_notes" name="purchase_notes[]" id="purchase_notes_{{ $i }}" placeholder="Notes" value="{{ old('purchase_notes.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control weighment_note" name="weighment_note[]" id="weighment_note_{{ $i }}" placeholder="Notes" value="{{ old('weighment_note.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" class="form-control number_only purchase_quantity" name="purchase_quantity[]" id="purchase_quantity_{{ $i }}" placeholder="Quantity" value="{{ old('purchase_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">

@@ -43,21 +43,12 @@
                                             @component('components.paragraph.error_message', ['fieldName' => 'to_date'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="branch_id" class="control-label">Branch : </label>
-                                            {{-- adding branch select component --}}
-                                            @component('components.selects.branches', ['selectedBranchId' => $params['branch_id']['paramValue'], 'selectName' => 'branch_id', 'tabindex' => 3])
-                                            @endcomponent
-                                            {{-- adding error_message p tag component --}}
-                                            @component('components.paragraph.error_message', ['fieldName' => 'branch_id'])
-                                            @endcomponent
-                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="col-md-4">
                                             <label for="supplier_account_id" class="control-label">Supplier : </label>
                                             {{-- adding account select component --}}
-                                            @component('components.selects.accounts', ['selectedAccountId' => $params['supplier_account_id']['paramValue'], 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => true, 'tabindex' => 5])
+                                            @component('components.selects.accounts', ['selectedAccountId' => $params['supplier_account_id']['paramValue'], 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'tabindex' => 5])
                                             @endcomponent
                                             {{-- adding error_message p tag component --}}
                                             @component('components.paragraph.error_message', ['fieldName' => 'supplier_account_id'])
@@ -111,16 +102,14 @@
                                     <thead>
                                         <tr>
                                             <th style="width: 5%;">#</th>
-                                            <th style="width: 10%;">Date</th>
-                                            <th style="width: 15%;">Branch</th>
-                                            <th style="width: 20%;">Supplier</th>
-                                            <th style="width: 10%;">Material</th>
-                                            <th style="width: 10%;">Quantity</th>
-                                            <th style="width: 5%;">Rate</th>
-                                            <th style="width: 5%;">Discount</th>
-                                            <th style="width: 10%;">Bill Amount</th>
-                                            <th style="width: 5%;" class="no-print">Actions</th>
-                                            <th style="width: 5%;" class="no-print">Actions</th>
+                                            <th style="width: 15%;">Date & Invoice No.</th>
+                                            {{-- <th style="width: 15%;">Branch</th> --}}
+                                            <th style="width: 15%;">Account</th>
+                                            <th style="width: 15%;">Customer Name</th>
+                                            <th style="width: 10%;">No Of Products</th>
+                                            <th style="width: 15%;">Bill Amount</th>
+                                            <th style="width: 5%;" class="no-print">Details</th>
+                                            <th style="width: 5%;" class="no-print">Print</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -128,25 +117,38 @@
                                             @foreach($purchaseRecords as $index => $purchaseRecord)
                                                 <tr>
                                                     <td>{{ $index + $purchaseRecords->firstItem() }}</td>
-                                                    <td>{{ $purchaseRecord->date->format('d-m-Y') }}</td>
-                                                    <td>{{ $purchaseRecord->branch->name }}</td>
-                                                    <td>{{ $purchaseRecord->transaction->creditAccount->account_name }}</td>
-                                                    <td>{{ $purchaseRecord->material->name }}</td>
-                                                    <td>{{ $purchaseRecord->quantity }}</td>
-                                                    <td>{{ $purchaseRecord->rate }}</td>
-                                                    <td>{{ $purchaseRecord->discount }}</td>
+                                                    <td>{{ $purchaseRecord->date->format('d-m-Y') }}
+                                                        @if(!empty($purchaseRecord->tax_invoice_number))
+                                                            /{{ config('constants.branchInvoiceCode')[$purchaseRecord->branch_id]. $purchaseRecord->tax_invoice_number }}
+                                                        @endif
+                                                    </td>
+                                                    {{-- <td>{{ $purchaseRecord->branch->name }}</td> --}}
+                                                    <td>
+                                                        {{ $purchaseRecord->transaction->debitAccount->account_name }}
+                                                        @if($purchaseRecord->transaction->debitAccount->status != 1)
+                                                            &emsp;<i class="fa fa-clock-o text-orange no-print" title="Short term credit customer"></i>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        {{ $purchaseRecord->customer_name }}
+                                                    </td>
+                                                    <td>{{ count($purchaseRecord->products) }}</td>
                                                     <td>{{ $purchaseRecord->total_amount }}</td>
                                                     <td class="no-print">
-                                                        <a href="{{ route('purchase.edit', ['id' => $purchaseRecord->id]) }}" style="float: left;">
-                                                            <button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Edit</button>
+                                                        <a href="{{ route('purchase.show', ['id' => $purchaseRecord->id]) }}">
+                                                            <button type="button" class="btn btn-info"> Details</button>
                                                         </a>
                                                     </td>
                                                     <td class="no-print">
-                                                        <form action="{{ route('purchase.destroy', $purchaseRecord->id) }}" method="post" class="form-horizontal">
-                                                            {{ method_field('DELETE') }}
-                                                            {{ csrf_field() }}
-                                                            <button type="button" class="btn btn-danger delete_button"><i class="fa fa-trash"></i> Delete</button>
-                                                        </form>
+                                                        @if(!empty($purchaseRecord->tax_invoice_number) && $purchaseRecord->tax_invoice_number > 0)
+                                                            <a href="{{ route('purchase.invoice', ['id' => $purchaseRecord->id]) }}">
+                                                                <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Invoice</button>
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('purchase.invoice', ['id' => $purchaseRecord->id]) }}">
+                                                                <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Estimate</button>
+                                                            </a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -156,9 +158,6 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td class="text-red"><b>Total Amount</b></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
                                                     <td></td>
                                                     <td class="text-red"><b>{{ $totalAmount }}</b></td>
                                                     <td class="no-print"></td>
