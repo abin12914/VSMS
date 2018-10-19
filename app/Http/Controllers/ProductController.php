@@ -64,6 +64,7 @@ class ProductController extends Controller
                 'description'       => $request->get('description'),
                 'malayalam_name'    => $request->get('malayalam_name'),
                 'product_code'      => $request->get('product_code'),
+                'weighment_wastage' => $request->get('weighment_wastage'),
             ]);
 
             if(!$response['flag']) {
@@ -140,6 +141,7 @@ class ProductController extends Controller
                 'description'       => $request->get('description'),
                 'malayalam_name'    => $request->get('malayalam_name'),
                 'product_code'      => $request->get('product_code'),
+                'weighment_wastage' => $request->get('weighment_wastage'),
             ], $product);
 
             if(!$response['flag']) {

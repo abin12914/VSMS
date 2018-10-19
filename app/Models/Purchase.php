@@ -56,10 +56,10 @@ class Purchase extends Model
     }
 
     /**
-     * Get the material details associated with the purchase
+     * The purchases that belong to the products.
      */
-    public function material()
+    public function products()
     {
-        return $this->belongsTo('App\Models\Material','material_id');
+        return $this->belongsToMany('App\Models\Product', 'purchase_product')->as('purchaseDetail')->withPivot('quantity', 'rate');
     }
 }

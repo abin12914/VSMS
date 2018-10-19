@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Repositories\PurchaseRepository;
-use App\Repositories\ProductionRepository;
 use App\Repositories\SaleRepository;
 use App\Repositories\AccountRepository;
 use App\Repositories\UserRepository;
@@ -47,16 +46,10 @@ class HomeController extends Controller
      */
     public function dashboard(
         PurchaseRepository $purchaseRepo,
-        ProductionRepository $productionRepo,
         SaleRepository $saleRepo,
         AccountRepository $accountRepo
     ){
-        $purchaseCount      = $purchaseRepo->getPurchases()->count();
-        $productionCount    = $productionRepo->getProductions()->count();
-        $saleCount          = $saleRepo->getsales()->count();
-        $accountCount       = $accountRepo->getaccounts()->count();
-
-        return view('users.dashboard', compact('purchaseCount', 'productionCount', 'saleCount', 'accountCount'));
+        return view('users.dashboard');
     }
 
     /**

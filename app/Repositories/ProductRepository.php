@@ -69,6 +69,7 @@ class ProductRepository
             $product->description       = $inputArray['description'];
             $product->malayalam_name    = $inputArray['malayalam_name'];
             $product->product_code      = $inputArray['product_code'];
+            $product->weighment_wastage = $inputArray['weighment_wastage'];
             $product->status            = 1;
             //product save
             $product->save();

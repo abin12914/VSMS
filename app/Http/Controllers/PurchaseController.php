@@ -129,8 +129,8 @@ class PurchaseController extends Controller
 
             //if editing
             if(!empty($id)) {
-                $purchase = $this->voucherRepo->getVoucher($id);
-                $voucherTransaction = $transactionRepo->getTransaction($voucher->transaction_id);
+                $purchase               = $this->purchaseRepo->getPurchase($id);
+                $purchaseTransaction    = $transactionRepo->getTransaction($purchase->transaction_id);
             }
 
             if($supplierAccountId == -1) {

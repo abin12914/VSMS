@@ -82,6 +82,15 @@
                                                 @endcomponent
                                             </div>
                                         </div>
+                                        <div class="form-group">
+                                            <label for="weighment_wastage" class="col-md-3 control-label"> Wastage : </label>
+                                            <div class="col-md-9">
+                                                <input type="text" name="weighment_wastage" class="form-control" id="weighment_wastage" placeholder="Wastage" value="{{ !empty(old('weighment_wastage')) ? old('weighment_wastage') : $product->weighment_wastage }}" tabindex="6" maxlength="4">
+                                                {{-- adding error_message p tag component --}}
+                                                @component('components.paragraph.error_message', ['fieldName' => 'weighment_wastage'])
+                                                @endcomponent
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="clearfix"> </div><br>

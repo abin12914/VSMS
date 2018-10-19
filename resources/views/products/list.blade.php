@@ -28,8 +28,9 @@
                                         <tr>
                                             <th style="width: 5%;">#</th>
                                             <th style="width: 25%;">Product Name</th>
-                                            <th style="width: 10%;">Unit Code</th>
-                                            <th style="width: 10%;">Product Code</th>
+                                            <th style="width: 5%;">Unit</th>
+                                            <th style="width: 5%;">Code</th>
+                                            <th style="width: 10%;">Wastage / Unit</th>
                                             <th style="width: 20%;">Description</th>
                                             <th style="width: 20%;">Malayalam Name</th>
                                             <th style="width: 10%;" class="no-print">Details</th>
@@ -43,6 +44,7 @@
                                                     <td>{{ $product->name }}</td>
                                                     <td>{{ $product->uom_code }}</td>
                                                     <td>{{ $product->product_code }}</td>
+                                                    <td>{{ $product->weighment_wastage }}</td>
                                                     <td>{{ $product->description }}</td>
                                                     <td>{{ $product->malayalam_name }}</td>
                                                     <td class="no-print">

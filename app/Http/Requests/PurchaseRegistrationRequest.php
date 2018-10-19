@@ -28,52 +28,114 @@ class PurchaseRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'branch_id'             =>  [
-                                            'required',
-                                            Rule::in(Branch::pluck('id')->toArray()),
-                                        ],
-            'purchase_date'         =>  [
-                                            'required',
-                                            'date_format:d-m-Y',
-                                        ],
-            'supplier_account_id'   =>  [
-                                            'required',
-                                            Rule::in(Account::pluck('id')->toArray()),
-                                        ],
-            'material_id'           =>  [
-                                            'required',
-                                            Rule::in(Material::pluck('id')->toArray()),
-                                        ],
-            'purchase_quantity'     =>  [
-                                            'required',
-                                            'numeric',
-                                            'min:1',
-                                            'max:1000',
-                                        ],
-            'purchase_rate'         =>  [
-                                            'required',
-                                            'numeric',
-                                            'min:0.1',
-                                            'max:50000',
-                                        ],
-            'purchase_bill'         =>  [
-                                            'required',
-                                            'numeric',
-                                            'max:50000',
-                                            'min:10',
-                                        ],
-            'purchase_discount'     =>  [
-                                            'required',
-                                            'numeric',
-                                            'max:1000',
-                                            'min:0',
-                                        ],
-            'purchase_total_bill'   =>  [
-                                            'required',
-                                            'numeric',
-                                            'max:999999',
-                                            'min:10',
-                                        ],
+            'purchase_date'             =>  [
+                                                'required',
+                                                'date_format:d-m-Y',
+                                            ],
+            'supplier_account_id'       =>  [
+                                                'required',
+                                                Rule::in(array_merge(['-1'], Account::pluck('id')->toArray())),
+                                            ],
+            'supplier_name'             =>  [
+                                                'required',
+                                                'string',
+                                                'min:3',
+                                                'max:100',
+                                            ],
+            'supplier_phone'            =>  [
+                                                'required_if:supplier_account_id,-1',
+                                                'nullable',
+                                                'string',
+                                                'min:10',
+                                                'max:13',
+                                            ],
+            'description'               =>  [
+                                                'required',
+                                                'string',
+                                                'min:5',
+                                                'max:200',
+                                            ],
+            'product_id'                =>  [
+                                                'required',
+                                                'array',
+                                            ],
+            'product_id.*'              =>  [
+                                                'nullable',
+                                                Rule::in(Product::pluck('id')->toArray()),
+                                                'distinct'
+                                            ],
+            'gross_weight.*'            =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'product_number.*'          =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'unit_wastage.*'            =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'total_wastage.*'           =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'net_quantity'         =>  [    
+                                                'required',
+                                                'array',
+                                            ],
+            'net_quantity.*'       =>  [    
+                                                'required',
+                                                'integer',
+                                                'min:1',
+                                                'max:99999'
+                                            ],
+            'purchase_rate'             =>  [
+                                                'required',
+                                                'array',
+                                            ],
+            'purchase_rate.*'           =>  [
+                                                'required',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:99999'
+                                            ],
+            'sub_bill'                  =>  [
+                                                'required',
+                                                'array',
+                                            ],
+            'sub_bill.*'                =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:99999'
+                                            ],
+            'total_amount'              =>  [
+                                                'required',
+                                                'numeric',
+                                                'max:99999',
+                                                'min:1'
+                                            ],
+            'discount'                  =>  [
+                                                'required',
+                                                'numeric',
+                                                'max:9999',
+                                                'min:0'
+                                            ],
+            'total_bill'                =>  [
+                                                'required',
+                                                'numeric',
+                                                'max:99999',
+                                                'min:1'
+                                            ],
         ];
     }
 
@@ -93,15 +155,49 @@ class PurchaseRegistrationRequest extends FormRequest
     }
 
     public function checkCalculations() {
-        $quanty     = $this->request->get("purchase_quantity");
-        $rate       = $this->request->get("purchase_rate");
-        $bill       = $this->request->get("purchase_bill");
-        $discount   = $this->request->get("purchase_discount");
-        $totalBill  = $this->request->get("purchase_total_bill");
+        $totalAmount        = 0;
+        $productEmptyCount  = 0;
 
-        if((($quanty * $rate) == $bill) && ($bill - $discount) == $totalBill) {
-            return true;
+        foreach ($this->request->get("product_id") as $index => $productId) {
+            if(empty($productId)) {
+                $productEmptyCount ++;
+                continue;
+            }
+
+            if(empty($this->request->get('net_quantity')[$index]) || empty($this->request->get('purchase_rate')[$index]) || empty($this->request->get('sub_bill')[$index])) {
+                return false;
+            }
+
+            //weighment deduction
+            if(!empty($this->request->get('gross_weight')[$index]) && !empty($this->request->get('product_number')[$index]) && !empty($this->request->get('unit_wastage')[$index]) && !empty($this->request->get('total_wastage')[$index])) {
+                    $totalWastage = $this->request->get('product_number')[$index] * $this->request->get('unit_wastage')[$index];
+                    if(($this->request->get('gross_weight')[$index] - $totalWastage) != $this->request->get('net_quantity')[$index]) {
+                        return false;
+                    }
+            } elseif(!empty($this->request->get('gross_weight')[$index]) || !empty($this->request->get('product_number')[$index]) || !empty($this->request->get('unit_wastage')[$index]) || !empty($this->request->get('total_wastage')[$index])) {
+                return false;
+            }
+            
+            $subTotal = $this->request->get('net_quantity')[$index] * $this->request->get('purchase_rate')[$index];
+            
+            if($subTotal != $this->request->get('sub_bill')[$index]) {
+                return false;
+            }
+            $totalAmount = $totalAmount + $subTotal;
         }
-        return false;
+
+        if($productEmptyCount > 1) {
+            return false;
+        }
+
+        $billTotal  = $this->request->get("total_amount");
+        $discount   = $this->request->get("discount");
+        $billFinal  = $this->request->get("total_bill");
+
+        if(($billTotal != $totalAmount) || (($billTotal - $discount) != $billFinal)) {
+            return false;
+        }
+        
+        return true;
     }
 }

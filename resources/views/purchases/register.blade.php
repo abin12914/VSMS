@@ -45,28 +45,28 @@
                                                             @endcomponent
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <label for="customer_account_id" class="control-label"><b style="color: red;">* </b> Purchase From : </label>
+                                                            <label for="supplier_account_id" class="control-label"><b style="color: red;">* </b> Purchase From : </label>
                                                             {{-- adding account select component --}}
-                                                            @component('components.selects.accounts', ['selectedAccountId' => old('customer_account_id'), 'cashAccountFlag' => true, 'selectName' => 'customer_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
+                                                            @component('components.selects.accounts', ['selectedAccountId' => old('supplier_account_id'), 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
                                                             @endcomponent
                                                             {{-- adding error_message p tag component --}}
-                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_account_id'])
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'supplier_account_id'])
                                                             @endcomponent
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
-                                                            <label for="customer_name" class="control-label"><b style="color: red;">* </b> Supplier Name : </label>
-                                                            <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Supplier name" value="{{ old('customer_name') }}" tabindex="3">
+                                                            <label for="supplier_name" class="control-label"><b style="color: red;">* </b> Supplier Name : </label>
+                                                            <input type="text" class="form-control" name="supplier_name" id="supplier_name" placeholder="Supplier name" value="{{ old('supplier_name') }}" tabindex="3">
                                                             {{-- adding error_message p tag component --}}
-                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_name'])
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'supplier_name'])
                                                             @endcomponent
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <label for="customer_phone" class="control-label"><b style="color: red;">* </b> Supplier Phone : </label>
-                                                            <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Supplier phone" value="{{ old('customer_phone') }}" tabindex="3">
+                                                            <label for="supplier_phone" class="control-label"><b style="color: red;">* </b> Supplier Phone : </label>
+                                                            <input type="text" class="form-control" name="supplier_phone" id="supplier_phone" placeholder="Supplier phone" value="{{ old('supplier_phone') }}" tabindex="3">
                                                             {{-- adding error_message p tag component --}}
-                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_phone'])
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'supplier_phone'])
                                                             @endcomponent
                                                         </div>
                                                     </div>
@@ -90,9 +90,12 @@
                                                 <table class="table table-bordered table-hover dataTable">
                                                     <thead>
                                                         <th style="width: 5%;">#</th>
-                                                        <th style="width: 35%;">Product</th>
-                                                        <th style="width: 20%;">Notes</th>
-                                                        <th style="width: 15%;">Quantity</th>
+                                                        <th style="width: 30%;">Product</th>
+                                                        <th style="width: 12%;">Gross Weight</th>
+                                                        <th style="width: 5%;">Nos</th>
+                                                        <th style="width: 5%;">Unit Wastage</th>
+                                                        <th style="width: 5%;">Total Wastage</th>
+                                                        <th style="width: 13%;">Net Weight</th>
                                                         <th style="width: 10%;">Rate</th>
                                                         <th style="width: 15%;">Amount</th>
                                                     </thead>
@@ -112,10 +115,19 @@
                                                                     @endcomponent
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control weighment_note" name="weighment_note[]" id="weighment_note_{{ $i }}" placeholder="Notes" value="{{ old('weighment_note.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control gross_weight decimal_number_only" name="gross_weight[]" id="gross_weight_{{ $i }}" placeholder="Gross Weight" value="{{ old('gross_weight.'. $i) }}" maxlength="7" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control number_only purchase_quantity" name="purchase_quantity[]" id="purchase_quantity_{{ $i }}" placeholder="Quantity" value="{{ old('purchase_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control product_number decimal_number_only" name="product_number[]" id="product_number_{{ $i }}" placeholder="Nos" value="{{ old('product_number.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control unit_wastage decimal_number_only" name="unit_wastage[]" id="unit_wastage_{{ $i }}" placeholder="Unit wastage" value="{{ old('unit_wastage.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control total_wastage decimal_number_only" name="total_wastage[]" id="total_wastage_{{ $i }}" placeholder="Total wastage" value="{{ old('total_wastage.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control decimal_number_only purchase_quantity" name="purchase_quantity[]" id="purchase_quantity_{{ $i }}" placeholder="Net weight" value="{{ old('purchase_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" class="form-control decimal_number_only purchase_rate" name="purchase_rate[]" id="purchase_rate_{{ $i }}" placeholder="Purchase rate" value="{{ old('purchase_rate.'. $i) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
@@ -126,6 +138,9 @@
                                                             </tr>
                                                         @endfor
                                                         <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -143,6 +158,9 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
                                                             <td>Discount</td>
                                                             <td>
                                                                 @if(!empty($errors->first('discount')))
@@ -154,6 +172,9 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
