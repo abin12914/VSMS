@@ -90,15 +90,21 @@ $(function () {
         var rowId       = $(this).data('index-no');
 
         if(fieldValue && fieldValue != '' && fieldValue != 'undefined') {
-            var rate = $(this).find(':selected').data('rate');
+            var defaultWeighmentWastage = $(this).find(':selected').data('weighment_wastage');
+            if(defaultWeighmentWastage) {
+                $('#modal_row_id').val(rowId);
+                $('#modal_product').val($(this).find(':selected').text());
+                $('#modal_gross_quatity').val('');
+                $('#modal_numbers').val('');
+                $('#modal_unit_wastage').val(defaultWeighmentWastage);
+                $('#modal_total_wastage').val('');
+                $('#modal_net_quantity').val('');
+                $('#weighment_modal').modal('show');
+            }
 
             //enabling quantity & rate in same column
-            $(this).closest('tr').find('.purchase_notes').attr('disabled', false);
-            $(this).closest('tr').find('.purchase_quantity').attr('disabled', false);
+            $(this).closest('tr').find('.net_quantity').attr('disabled', false);
             $(this).closest('tr').find('.purchase_rate').attr('disabled', false);
-            
-            //setting rate for selected product
-            $('#purchase_rate_'+rowId).val(rate);
 
             //enabling next combo box
             $('#product__row_'+(rowId+1)).find('.products_combo').attr('disabled', false);
@@ -106,13 +112,12 @@ $(function () {
             $('#product__row_'+(rowId+3)).show();
         } else {
             //disabling quantity & rate in same column
-            $(this).closest('tr').find('.purchase_notes').attr('disabled', true);
-            $(this).closest('tr').find('.purchase_quantity').attr('disabled', true);
+            $(this).closest('tr').find('.net_quantity').attr('disabled', true);
             $(this).closest('tr').find('.purchase_rate').attr('disabled', true);
             
             //setting empty values for deselected product
             $('#purchase_notes'+rowId).val('');
-            $('#purchase_quantity_'+rowId).val('');
+            $('#net_quantity_'+rowId).val('');
             $('#purchase_rate_'+rowId).val('');
 
             $('#product__row_'+(rowId+1)).find('.products_combo').val('');
@@ -131,8 +136,55 @@ $(function () {
 
     });
 
+    $('body').on("click", "#btn_modal_weighment_submit", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+
+        var rowId = $('#modal_row_id').val();
+        var grossQuantity = $('#modal_gross_quatity').val();
+        var productNumber = $('#modal_numbers').val();
+        var unitWastage   = $('#modal_unit_wastage').val();
+        var totalWastage  = $('#modal_total_wastage').val();
+        var netQuantity   = $('#modal_net_quantity').val();
+
+        if(rowId && rowId != 'undefined' && grossQuantity && productNumber && unitWastage && totalWastage && netQuantity) {
+            $('#gross_quantity_'+rowId).val(grossQuantity);
+            $('#product_number_'+rowId).val(productNumber);
+            $('#unit_wastage_'+rowId).val(unitWastage);
+            $('#total_wastage_'+rowId).val(totalWastage);
+            $('#net_quantity_'+rowId).val(netQuantity);
+            $('#notes_'+rowId).val('Deduction : '+ grossQuantity + ' - (' + productNumber + ' nos x ' + unitWastage + ') = ' + netQuantity);
+            
+            $('#weighment_modal').modal('hide');
+        } else {
+            alert("Fill all fields!");
+        }
+    });
+
+    //autofill supplier name & phone
+    $('body').on("change keyup", "#modal_gross_quatity", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+    });
+
+    //modal weighment calc event
+    $('body').on("change keyup", "#modal_gross_quatity", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+    });
+    //modal weighment calc event
+    $('body').on("change keyup", "#modal_numbers", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+    });
+    //modal weighment calc event
+    $('body').on("change keyup", "#modal_unit_wastage", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+    });
+
     //purchase quantity event actions
-    $('body').on("change keyup", ".purchase_quantity", function (evt) {
+    $('body').on("change keyup", ".net_quantity", function (evt) {
         //calculate total purchase bill
         calculateTotalPurchaseBill();
     });
@@ -150,6 +202,23 @@ $(function () {
     });
 });
 
+//method for quantity calculation
+function calculateQuantity() {
+    var grossQuantity = $('#modal_gross_quatity').val();
+    var productNumber = $('#modal_numbers').val();
+    var unitWastage   = $('#modal_unit_wastage').val();
+    var totalWastage  = 0;
+    var netQuantity   = 0;
+
+    if(grossQuantity && grossQuantity != 'undefined' && productNumber && productNumber != 'undefined' && unitWastage && unitWastage != 'undefined') {
+        totalWastage = unitWastage * productNumber;
+        netQuantity  = grossQuantity - totalWastage;
+    }
+
+    $('#modal_total_wastage').val(totalWastage);
+    $('#modal_net_quantity').val(netQuantity);
+}
+
 //method for total bill calculation of purchase
 function calculateTotalPurchaseBill() {
     var bill        = 0;
@@ -159,7 +228,7 @@ function calculateTotalPurchaseBill() {
     $('.products_combo').each(function(index) {
         var productId   = $(this).val();
         var rowId       = $(this).data('index-no');
-        var quantity    = $('#purchase_quantity_'+rowId).val();
+        var quantity    = $('#net_quantity_'+rowId).val();
         var rate        = $('#purchase_rate_'+rowId).val();
 
         if(productId && productId != '' && quantity && quantity != '' && rate && rate != '') {

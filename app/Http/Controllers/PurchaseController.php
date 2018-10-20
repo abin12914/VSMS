@@ -115,9 +115,9 @@ class PurchaseController extends Controller
         DB::beginTransaction();
         try {
             foreach ($products as $index => $productId) {
-                if(!empty($request->get('purchase_quantity')[$index]) && !empty($request->get('purchase_rate')[$index])) {
+                if(!empty($request->get('gross_quantity')[$index]) && !empty($request->get('purchase_rate')[$index])) {
                     $productArray[$productId] = [
-                        'quantity'      => $request->get('purchase_quantity')[$index],
+                        'quantity'      => $request->get('gross_quantity')[$index],
                         'rate'          => $request->get('purchase_rate')[$index],
                         'weighment_note'=> $request->get('weighment_note')[$index],
                     ];

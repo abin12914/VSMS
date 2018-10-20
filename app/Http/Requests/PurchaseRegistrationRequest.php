@@ -5,8 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\Account;
-use App\Models\Branch;
-use App\Models\Material;
+use App\Models\Product;
 
 class PurchaseRegistrationRequest extends FormRequest
 {
@@ -64,7 +63,7 @@ class PurchaseRegistrationRequest extends FormRequest
                                                 Rule::in(Product::pluck('id')->toArray()),
                                                 'distinct'
                                             ],
-            'gross_weight.*'            =>  [
+            'gross_quantity.*'          =>  [
                                                 'nullable',
                                                 'numeric',
                                                 'min:0.1',
@@ -169,12 +168,12 @@ class PurchaseRegistrationRequest extends FormRequest
             }
 
             //weighment deduction
-            if(!empty($this->request->get('gross_weight')[$index]) && !empty($this->request->get('product_number')[$index]) && !empty($this->request->get('unit_wastage')[$index]) && !empty($this->request->get('total_wastage')[$index])) {
+            if(!empty($this->request->get('gross_quantity')[$index]) && !empty($this->request->get('product_number')[$index]) && !empty($this->request->get('unit_wastage')[$index]) && !empty($this->request->get('total_wastage')[$index])) {
                     $totalWastage = $this->request->get('product_number')[$index] * $this->request->get('unit_wastage')[$index];
-                    if(($this->request->get('gross_weight')[$index] - $totalWastage) != $this->request->get('net_quantity')[$index]) {
+                    if(($this->request->get('gross_quantity')[$index] - $totalWastage) != $this->request->get('net_quantity')[$index]) {
                         return false;
                     }
-            } elseif(!empty($this->request->get('gross_weight')[$index]) || !empty($this->request->get('product_number')[$index]) || !empty($this->request->get('unit_wastage')[$index]) || !empty($this->request->get('total_wastage')[$index])) {
+            } elseif(!empty($this->request->get('gross_quantity')[$index]) || !empty($this->request->get('product_number')[$index]) || !empty($this->request->get('unit_wastage')[$index]) || !empty($this->request->get('total_wastage')[$index])) {
                 return false;
             }
             
