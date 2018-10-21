@@ -44,7 +44,7 @@
                                                             @component('components.paragraph.error_message', ['fieldName' => 'purchase_date'])
                                                             @endcomponent
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-6" id="supplier_parent_div">
                                                             <label for="supplier_account_id" class="control-label"><b style="color: red;">* </b> Purchase From : </label>
                                                             {{-- adding account select component --}}
                                                             @component('components.selects.accounts', ['selectedAccountId' => old('supplier_account_id'), 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
@@ -91,10 +91,6 @@
                                                     <thead>
                                                         <th style="width: 5%;">#</th>
                                                         <th style="width: 35%;">Product</th>
-                                                        {{-- <th style="width: 12%;">Gross Weight</th>
-                                                        <th style="width: 5%;">Nos</th>
-                                                        <th style="width: 5%;">Unit Wastage</th>
-                                                        <th style="width: 5%;">Total Wastage</th> --}}
                                                         <th style="width: 20%;">Notes</th>
                                                         <th style="width: 15%;">Net Quantity</th>
                                                         <th style="width: 10%;">Rate</th>
@@ -116,7 +112,12 @@
                                                                     @endcomponent
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" readonly="">
+                                                                    {{-- <div class="col-md-10"> --}}
+                                                                    <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" disabled>
+                                                                    {{-- </div> --}}
+                                                                    {{-- <div class="col-md-2">
+                                                                        <i class="fa fa-plus add_note" style="float: left;"></i>
+                                                                    </div> --}}
                                                                     <input type="hidden" class="form-control gross_quantity" name="gross_quantity[]" id="gross_quantity_{{ $i }}" value="{{ old('gross_quantity.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                     <input type="hidden" class="form-control product_number" name="product_number[]" id="product_number_{{ $i }}" value="{{ old('product_number.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                     <input type="hidden" class="form-control unit_wastage " name="unit_wastage[]" id="unit_wastage_{{ $i }}" value="{{ old('unit_wastage.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
@@ -129,7 +130,7 @@
                                                                     <input type="text" class="form-control decimal_number_only purchase_rate" name="purchase_rate[]" id="purchase_rate_{{ $i }}" placeholder="Purchase rate" value="{{ old('purchase_rate.'. $i) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i) }}" readonly>
+                                                                    <input type="text" class="form-control decimal_number_only sub_bill" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                 </td>
                                                             </tr>
                                                         @endfor

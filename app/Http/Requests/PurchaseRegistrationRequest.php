@@ -112,7 +112,7 @@ class PurchaseRegistrationRequest extends FormRequest
                                                 'array',
                                             ],
             'sub_bill.*'                =>  [
-                                                'nullable',
+                                                'required',
                                                 'numeric',
                                                 'min:0.1',
                                                 'max:99999'

@@ -60,6 +60,6 @@ class Purchase extends Model
      */
     public function products()
     {
-        return $this->belongsToMany('App\Models\Product', 'purchase_product')->as('purchaseDetail')->withPivot('quantity', 'rate');
+        return $this->belongsToMany('App\Models\Product', 'purchase_product')->as('purchaseDetail')->withPivot('net_quantity', 'rate', 'gross_quantity', 'product_number', 'unit_wastage', 'total_wastage');
     }
 }

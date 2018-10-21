@@ -107,49 +107,48 @@ class SaleController extends Controller
         SaleRegistrationRequest $request,
         TransactionRepository $transactionRepo,
         AccountRepository $accountRepo,
-        TransportationRepository $transportationRepo,
-        EmployeeRepository $employeeRepo,
-        ProductRepository $productRepo
+        $id=null
     ) {
-        $saveFlag           = false;
-        $errorCode          = 0;
-        $wageAmount         = 0;
-        $loadingCharge      = 0;
-        $saleProductDetail  = '';
+        $saveFlag            = false;
+        $errorCode           = 0;
+        $sale            = null;
+        $saleTransaction = null;
 
-        $saleAccountId                  = config('constants.accountConstants.Sale.id');
-        $transportationChargeAccountId  = config('constants.accountConstants.TransportationChargeAccount.id');
-        $loadingChargeAccountId         = config('constants.accountConstants.LoadingChargeAccount.id');
+        //configured values
+        $saleAccountId  = config('constants.accountConstants.Sale.id');
+        $accountRelations   = config('constants.accountRelationTypes');
 
-        $transactionDate        = Carbon::createFromFormat('d-m-Y', $request->get('sale_date'))->format('Y-m-d');
-        $branchId               = $request->get('branch_id') ?: null ;
-        $customerAccountId      = $request->get('customer_account_id');
-        $products               = $request->get('product_id');
-        $totalBill              = $request->get('total_bill');
-        $consignmentCharge      = $request->get('consignment_charge');
-        $consignmentLocation    = $request->get('consignee_address');
-        $customerName           = $request->get('customer_name');
-        $customerPhone          = $request->get('customer_phone');
-        $customerAddress        = $request->get('customer_address');
-        $customerGSTIN          = $request->get('customer_gstin');
-        $loadingEmployeeId      = $request->get('loading_employee_id');
+        $transactionDate    = Carbon::createFromFormat('d-m-Y', $request->get('sale_date'))->format('Y-m-d');
+        $customerAccountId  = $request->get('customer_account_id');
+        $products           = $request->get('product_id');
+        $totalBill          = $request->get('total_bill');
+        $customerName       = $request->get('customer_name');
+        $customerPhone      = $request->get('customer_phone');
 
         //wrappin db transactions
         DB::beginTransaction();
         try {
             foreach ($products as $index => $productId) {
-                if(!empty($request->get('sale_quantity')[$index]) && !empty($request->get('sale_rate')[$index])) {
+                if(!empty($request->get('net_quantity')[$index]) && !empty($request->get('sale_rate')[$index])) {
                     $productArray[$productId] = [
-                        'quantity'  => $request->get('sale_quantity')[$index],
-                        'rate'      => $request->get('sale_rate')[$index],
+                        'net_quantity'      => $request->get('net_quantity')[$index],
+                        'rate'              => $request->get('sale_rate')[$index],
+                        'gross_quantity'    => $request->get('gross_quantity')[$index] ?: null,
+                        'product_number'    => $request->get('product_number')[$index] ?: null,
+                        'unit_wastage'      => $request->get('unit_wastage')[$index] ?: null,
+                        'total_wastage'     => $request->get('total_wastage')[$index] ?: null,
                     ];
                 }
             }
 
             //confirming sale account existency.
             $saleAccount = $accountRepo->getAccount($saleAccountId);
-            //confirming transportation charge account existency.
-            $transportationChargeAccount = $accountRepo->getAccount($transportationChargeAccountId);
+
+            //if editing
+            if(!empty($id)) {
+                $sale               = $this->saleRepo->getSale($id);
+                $saleTransaction    = $transactionRepo->getTransaction($sale->transaction_id);
+            }
 
             if($customerAccountId == -1) {
                 //checking for exist-ency of the account
@@ -157,19 +156,18 @@ class SaleController extends Controller
 
                 if(empty($accounts) || count($accounts) == 0)
                 {
-                    //save short term customer account to table
+                    //save quick customer account to table
                     $accountResponse = $accountRepo->saveAccount([
                         'account_name'      => $customerName,
-                        'description'       => ("Short term credit account of". $customerName),
-                        'relation'          => 3, //customer
+                        'description'       => ("New account of". $customerName),
+                        'relation'          => array_search('Supplier', $accountRelations), //customer key=2
                         'financial_status'  => 0,
                         'opening_balance'   => 0,
                         'name'              => $customerName,
                         'phone'             => $customerPhone,
-                        'address'           => $customerAddress,
+                        'address'           => '',
                         'image'             => null,
-                        'gstin'             => null,
-                        'status'            => 2, //short term credit account
+                        'status'            => 1,
                     ]);
 
                     if(!$accountResponse['flag']) {
@@ -178,36 +176,24 @@ class SaleController extends Controller
                     $customerAccountId  = $accountResponse['id'];
                     $particulars        = ("Sale to ". $customerName. "-". $customerPhone);
                 } else {
-                    $customerAccount = $accounts->first();
-                    $customerAccountId = $customerAccount->id;
-                    $particulars = ("Sale to ". $customerAccount->account_name. "-". $customerAccount->phone);
+                    $customerAccount    = $accounts->first();
+                    $customerAccountId  = $customerAccount->id;
+                    $particulars        = ("Sale to ". $customerAccount->account_name. "-". $customerAccount->phone);
                 }
             } else {
                 //accessing debit account
-                $customerAccount = $accountRepo->getAccount($customerAccountId, false);
-                $particulars = ("Sale to ". $customerAccount->account_name);
-            }
-
-            $productRecords = $productRepo->getProducts([], null, [
-                'paramName'     => 'id',
-                'paramValue'    => array_keys($productArray),
-            ]);
-
-            foreach ($productRecords as $key => $productRecord) {
-                $loadingCharge = $loadingCharge + ($productArray[$productRecord->id]['quantity'] * $productRecord->loading_charge_per_piece);
-
-                $saleProductDetail = $saleProductDetail. ($productRecord->name. " => ". $productArray[$productRecord->id]['quantity']. " X ". $productArray[$productRecord->id]['rate']. " = ". ($productArray[$productRecord->id]['quantity'] * $productArray[$productRecord->id]['rate']). ", ");
+                $customerAccount    = $accountRepo->getAccount($customerAccountId, false);
+                $particulars        = ("Sale to ". $customerAccount->account_name);
             }
 
             //save sale transaction to table
-            $transactionResponse   = $transactionRepo->saveTransaction([
-                'debit_account_id'  => $customerAccountId, // debit the customer
-                'credit_account_id' => $saleAccountId, // credit the sale account
+            $transactionResponse = $transactionRepo->saveTransaction([
+                'debit_account_id'  => $saleAccountId, // debit the sale account
+                'credit_account_id' => $customerAccountId, // credit the customer
                 'amount'            => $totalBill ,
                 'transaction_date'  => $transactionDate,
-                'particulars'       => ($particulars. " [". $saleProductDetail. "]"),
-                'branch_id'         => $branchId,
-            ]);
+                'particulars'       => ($request->get('description'). "(". $particulars. ")"),
+            ], $saleTransaction);
 
             if(!$transactionResponse['flag']) {
                 throw new AppCustomException("CustomError", $transactionResponse['errorCode']);
@@ -217,64 +203,17 @@ class SaleController extends Controller
             $saleResponse = $this->saleRepo->saveSale([
                 'transaction_id'    => $transactionResponse['id'],
                 'date'              => $transactionDate,
-                'tax_invoice_flag'  => $request->get('tax_invoice_flag'),
                 'customer_name'     => $customerName,
                 'customer_phone'    => $customerPhone,
-                'customer_address'  => $customerAddress,
-                'customer_gstin'    => $customerGSTIN,
+                'description'       => $request->get('description'),
                 'discount'          => $request->get('discount'),
                 'total_amount'      => $totalBill,
-                'branch_id'         => $branchId,
                 'productsArray'     => $productArray,
-            ]);
+            ], $sale);
 
             if(!$saleResponse['flag']) {
                 throw new AppCustomException("CustomError", $saleResponse['errorCode']);
             }
-
-            //save transportation transaction to table
-            $transportationTransactionResponse = $transactionRepo->saveTransaction([
-                'debit_account_id'  => $customerAccountId, // debit the customer
-                'credit_account_id' => $transportationChargeAccountId, // credit the transportation charge account
-                'amount'            => $consignmentCharge ,
-                'transaction_date'  => $transactionDate,
-                'particulars'       => ("Transportation charge to ". $consignmentLocation. ". Sale Date :". $request->get('sale_date')),
-                'branch_id'         => $branchId,
-            ]);
-
-            if(!$transportationTransactionResponse['flag']) {
-                throw new AppCustomException("CustomError", $transportationTransactionResponse['errorCode']);
-            }
-
-            //save loading charge transaction to table
-            /*$loadingChargeTransactionResponse = $transactionRepo->saveTransaction([
-                'debit_account_id'  => $loadingChargeAccountId, // debit the loadingCharge account
-                'credit_account_id' => $employee->account_id, // credit the employee account
-                'amount'            => $loadingCharge ,
-                'transaction_date'  => $transactionDate,
-                'particulars'       => ("Loading charge generated for Sale Invoice No:". $saleResponse['id']),
-                'branch_id'         => $branchId,
-            ]);
-
-            if(!$loadingChargeTransactionResponse['flag']) {
-                throw new AppCustomException("CustomError", $loadingChargeTransactionResponse['errorCode']);
-            }
-
-            //save to sale table
-            $transportationResponse = $transportationRepo->saveTransportation([
-                'transaction_id'                => $transportationTransactionResponse['id'],
-                'sale_id'                       => $saleResponse['id'],
-                'consignee_name'                => $request->get('consignee_name'),
-                'consignee_gstin'               => $request->get('consignee_gstin'),
-                'consignee_address'             => $consignmentLocation,
-                'consignment_vehicle_number'    => $request->get('consignment_vehicle_number'),
-                'consignment_charge'            => $consignmentCharge,
-                'loading_charge_transaction_id' => $loadingChargeTransactionResponse['id'],
-            ]);
-
-            if(!$transportationResponse['flag']) {
-                throw new AppCustomException("CustomError", $transportationResponse['errorCode']);
-            }*/
 
             DB::commit();
             $saveFlag = true;

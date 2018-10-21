@@ -34,4 +34,12 @@ class Product extends Model
     {
         return $this->belongsToMany('App\Models\Sale', 'sale_product');
     }
+
+    /**
+     * The products that belong to the purchase.
+     */
+    public function purchases()
+    {
+        return $this->belongsToMany('App\Models\Purchase', 'purchase_product');
+    }
 }

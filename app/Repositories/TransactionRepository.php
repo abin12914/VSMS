@@ -82,7 +82,7 @@ class TransactionRepository
             $transaction->transaction_date  = $inputArray['transaction_date'];
             $transaction->particulars       = $inputArray['particulars'];
             $transaction->status            = 1;
-            $transaction->branch_id         = $inputArray['branch_id'];
+            $transaction->branch_id         = null;
             $transaction->created_user_id   = Auth::user()->id;
             //transaction save
             $transaction->save();

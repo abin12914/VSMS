@@ -70,15 +70,16 @@ class PurchaseRepository
             //purchase saving
             $purchase->transaction_id   = $inputArray['transaction_id'];
             $purchase->date             = $inputArray['date'];
-            $purchase->material_id      = $inputArray['material_id'];
-            $purchase->quantity         = $inputArray['quantity'];
-            $purchase->rate             = $inputArray['rate'];
+            $purchase->supplier_name    = $inputArray['supplier_name'];
+            $purchase->supplier_phone   = $inputArray['supplier_phone'];
+            $purchase->description      = $inputArray['description'];
             $purchase->discount         = $inputArray['discount'];
             $purchase->total_amount     = $inputArray['total_amount'];
-            $purchase->branch_id        = $inputArray['branch_id'];
             $purchase->status           = 1;
             //purchase save
             $purchase->save();
+
+            $purchase->products()->sync($inputArray['productsArray']);
 
             $saveFlag = true;
         } catch (Exception $e) {

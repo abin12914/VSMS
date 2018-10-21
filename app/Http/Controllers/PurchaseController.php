@@ -97,8 +97,10 @@ class PurchaseController extends Controller
         AccountRepository $accountRepo,
         $id=null
     ) {
-        $saveFlag   = false;
-        $errorCode  = 0;
+        $saveFlag            = false;
+        $errorCode           = 0;
+        $purchase            = null;
+        $purchaseTransaction = null;
 
         //configured values
         $purchaseAccountId  = config('constants.accountConstants.Purchase.id');
@@ -115,11 +117,14 @@ class PurchaseController extends Controller
         DB::beginTransaction();
         try {
             foreach ($products as $index => $productId) {
-                if(!empty($request->get('gross_quantity')[$index]) && !empty($request->get('purchase_rate')[$index])) {
+                if(!empty($request->get('net_quantity')[$index]) && !empty($request->get('purchase_rate')[$index])) {
                     $productArray[$productId] = [
-                        'quantity'      => $request->get('gross_quantity')[$index],
-                        'rate'          => $request->get('purchase_rate')[$index],
-                        'weighment_note'=> $request->get('weighment_note')[$index],
+                        'net_quantity'      => $request->get('net_quantity')[$index],
+                        'rate'              => $request->get('purchase_rate')[$index],
+                        'gross_quantity'    => $request->get('gross_quantity')[$index] ?: null,
+                        'product_number'    => $request->get('product_number')[$index] ?: null,
+                        'unit_wastage'      => $request->get('unit_wastage')[$index] ?: null,
+                        'total_wastage'     => $request->get('total_wastage')[$index] ?: null,
                     ];
                 }
             }
@@ -150,7 +155,7 @@ class PurchaseController extends Controller
                         'phone'             => $supplierPhone,
                         'address'           => '',
                         'image'             => null,
-                        'status'            => 1, //short term credit account
+                        'status'            => 1,
                     ]);
 
                     if(!$accountResponse['flag']) {
@@ -176,7 +181,7 @@ class PurchaseController extends Controller
                 'amount'            => $totalBill ,
                 'transaction_date'  => $transactionDate,
                 'particulars'       => ($request->get('description'). "(". $particulars. ")"),
-            ]);
+            ], $purchaseTransaction);
 
             if(!$transactionResponse['flag']) {
                 throw new AppCustomException("CustomError", $transactionResponse['errorCode']);
@@ -186,14 +191,13 @@ class PurchaseController extends Controller
             $purchaseResponse = $this->purchaseRepo->savePurchase([
                 'transaction_id'    => $transactionResponse['id'],
                 'date'              => $transactionDate,
-                'invoice_number'    => null,
                 'supplier_name'     => $supplierName,
                 'supplier_phone'    => $supplierPhone,
                 'description'       => $request->get('description'),
                 'discount'          => $request->get('discount'),
                 'total_amount'      => $totalBill,
                 'productsArray'     => $productArray,
-            ]);
+            ], $purchase);
 
             if(!$purchaseResponse['flag']) {
                 throw new AppCustomException("CustomError", $purchaseResponse['errorCode']);

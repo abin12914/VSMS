@@ -35,65 +35,54 @@
                                     <div class="col-md-10">
                                         <div class="form-group">
                                             <div class="row">
-                                                <div class="col-md-4">
-                                                    <label for="sale_date" class="control-label"><b style="color: red;">* </b> Sale Date : </label>
-                                                    <input type="text" class="form-control decimal_number_only datepicker_reg" name="sale_date" id="sale_date" placeholder="Sale date" value="{{ old('sale_date') }}" tabindex="2">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'sale_date'])
-                                                    @endcomponent
+                                                <div class="col-md-8">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="sale_date" class="control-label"><b style="color: red;">* </b> Sale Date : </label>
+                                                            <input type="text" class="form-control decimal_number_only datepicker_reg" name="sale_date" id="sale_date" placeholder="Sale date" value="{{ old('sale_date') }}" tabindex="2">
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'sale_date'])
+                                                            @endcomponent
+                                                        </div>
+                                                        <div class="col-md-6" id="customer_parent_div">
+                                                            <label for="customer_account_id" class="control-label"><b style="color: red;">* </b> Sale From : </label>
+                                                            {{-- adding account select component --}}
+                                                            @component('components.selects.accounts', ['selectedAccountId' => old('customer_account_id'), 'cashAccountFlag' => true, 'selectName' => 'customer_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
+                                                            @endcomponent
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_account_id'])
+                                                            @endcomponent
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="customer_name" class="control-label"><b style="color: red;">* </b> Supplier Name : </label>
+                                                            <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Supplier name" value="{{ old('customer_name') }}" tabindex="3">
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_name'])
+                                                            @endcomponent
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="customer_phone" class="control-label"><b style="color: red;">* </b> Supplier Phone : </label>
+                                                            <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Supplier phone" value="{{ old('customer_phone') }}" tabindex="3">
+                                                            {{-- adding error_message p tag component --}}
+                                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_phone'])
+                                                            @endcomponent
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <label for="customer_account_id" class="control-label"><b style="color: red;">* </b> Sale To : </label>
-                                                    {{-- adding account select component --}}
-                                                    @component('components.selects.accounts', ['selectedAccountId' => old('customer_account_id'), 'cashAccountFlag' => true, 'selectName' => 'customer_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
-                                                    @endcomponent
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'customer_account_id'])
-                                                    @endcomponent
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="customer_name" class="control-label"><b style="color: red;">* </b> Customer Name : </label>
-                                                    <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Customer name" value="{{ old('customer_name') }}" tabindex="3">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'customer_name'])
-                                                    @endcomponent
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <label for="customer_phone" class="control-label"><b style="color: red;">* </b> Customer Phone : </label>
-                                                    <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Customer phone" value="{{ old('customer_phone') }}" tabindex="3">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'customer_phone'])
-                                                    @endcomponent
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="consignee_address" class="control-label"><b style="color: red;">* </b> Consignment Address : </label>
-                                                    @if(!empty(old('consignee_address')))
-                                                        <textarea  class="form-control" name="consignee_address" id="consignee_address" placeholder="Consignment Location" tabindex="3" rows="1" style="resize: none;">{{ old('consignee_address') }}</textarea>
+                                                    <label for="description" class="control-label"><b style="color: red;">* </b> Notes : </label>
+                                                    @if(!empty( old('description')))
+                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description"></textarea>
                                                     @else
-                                                        <textarea  class="form-control" name="consignee_address" id="consignee_address" placeholder="Consignment Location" tabindex="3" rows="1" style="resize: none;"></textarea>
+                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description">{{ old('description') }}</textarea>
                                                     @endif
                                                     {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'consignee_address'])
+                                                    @component('components.paragraph.error_message', ['fieldName' => 'description'])
                                                     @endcomponent
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <label for="consignment_vehicle_number" class="control-label"><b style="color: red;">* </b> Consignment Vehicle Number : </label>
-                                                    <input type="text" class="form-control" name="consignment_vehicle_number" id="consignment_vehicle_number" placeholder="eg: KL-63 AA-1234" value="{{ old('consignment_vehicle_number') }}" tabindex="4" maxlength="15" minlength="5">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'consignment_vehicle_number'])
-                                                    @endcomponent
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <label for="consignment_charge" class="control-label"><b style="color: red;">* </b> Consignment Charge : </label>
-                                                    <input type="text" class="form-control decimal_number_only" name="consignment_charge" id="consignment_charge" placeholder="Consignment Charge" value="{{ old('consignment_charge') }}" tabindex="4" maxlength="5">
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'consignment_charge'])
-                                                    @endcomponent
-                                                </div>
-                                            </div>
+                                            </div><br>
                                         </div>
                                         <br><br>
                                         <div class="form-group">
@@ -103,7 +92,7 @@
                                                         <th style="width: 5%;">#</th>
                                                         <th style="width: 35%;">Product</th>
                                                         <th style="width: 20%;">Notes</th>
-                                                        <th style="width: 15%;">Quantity</th>
+                                                        <th style="width: 15%;">Net Quantity</th>
                                                         <th style="width: 10%;">Rate</th>
                                                         <th style="width: 15%;">Amount</th>
                                                     </thead>
@@ -111,7 +100,7 @@
                                                         @for($i = 0; $i < 50; $i++)
                                                             <tr id="product__row_{{ $i }}" style="display : {{ (($i > 2) && empty(old('product_id.'. $i ))) ? 'none' : '' }}">
                                                                 <td>
-                                                                    @if(!empty($errors->first('product_id.'. $i)) || !empty($errors->first('sale_quantity.'. $i)) || !empty($errors->first('sale_rate.'. $i)) || !empty($errors->first('sub_bill.'. $i)))
+                                                                    @if(!empty($errors->first('product_id.'. $i)) || !empty($errors->first('net_quantity.'. $i)) || !empty($errors->first('sale_rate.'. $i)) || !empty($errors->first('sub_bill.'. $i)))
                                                                         {{ $i + 1 }} &nbsp;
                                                                         <i class="fa fa-hand-o-right" style="color: red;" title="Invalid data in this row."></i>
                                                                     @else
@@ -123,16 +112,25 @@
                                                                     @endcomponent
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control sale_notes" name="sale_notes[]" id="sale_notes_{{ $i }}" placeholder="Notes" value="{{ old('sale_notes.'. $i) }}" maxlength="100" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    {{-- <div class="col-md-10"> --}}
+                                                                    <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" disabled>
+                                                                    {{-- </div> --}}
+                                                                    {{-- <div class="col-md-2">
+                                                                        <i class="fa fa-plus add_note" style="float: left;"></i>
+                                                                    </div> --}}
+                                                                    <input type="hidden" class="form-control gross_quantity" name="gross_quantity[]" id="gross_quantity_{{ $i }}" value="{{ old('gross_quantity.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <input type="hidden" class="form-control product_number" name="product_number[]" id="product_number_{{ $i }}" value="{{ old('product_number.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <input type="hidden" class="form-control unit_wastage " name="unit_wastage[]" id="unit_wastage_{{ $i }}" value="{{ old('unit_wastage.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <input type="hidden" class="form-control total_wastage" name="total_wastage[]" id="total_wastage_{{ $i }}" value="{{ old('total_wastage.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only sale_quantity" name="sale_quantity[]" id="sale_quantity_{{ $i }}" placeholder="Quantity" value="{{ old('sale_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control decimal_number_only net_quantity" name="net_quantity[]" id="net_quantity_{{ $i }}" placeholder="Net Quantity" value="{{ old('net_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" class="form-control decimal_number_only sale_rate" name="sale_rate[]" id="sale_rate_{{ $i }}" placeholder="Sale rate" value="{{ old('sale_rate.'. $i) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i) }}" readonly>
+                                                                    <input type="text" class="form-control decimal_number_only sub_bill" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                 </td>
                                                             </tr>
                                                         @endfor
@@ -211,6 +209,74 @@
     </section>
     <!-- /.content -->
 </div>
+<div class="modal modal-default" data-backdrop="static" data-keyboard="false" id="weighment_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close modal_close_button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    <i class="fa fa-question-circle"> Weighment Details</i>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">Product : <p class="pull-right">:</p></label>
+                    <div class="col-sm-7">
+                        <input type="text" id="modal_product" name="modal_product" class="form-control" style="width: 100%;" disabled>
+                        <input type="hidden" name="modal_row_id" id="modal_row_id">
+                    </div>
+                </div><br><br>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">Gross Quantity : <p class="pull-right">:</p></label>
+                    <div class="col-sm-7">
+                        <input type="text" id="modal_gross_quatity" name="modal_gross_quatity" class="form-control" style="width: 100%;">
+                    </div>
+                </div><br><br>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">Numbers : <p class="pull-right">:</p></label>
+                    <div class="col-sm-7">
+                        <input type="text" id="modal_numbers" name="modal_numbers" class="form-control" style="width: 100%;">
+                    </div>
+                </div><br><br>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">Unit Wastage : <p class="pull-right">:</p></label>
+                    <div class="col-sm-7">
+                        <input type="text" id="modal_unit_wastage" name="modal_unit_wastage" class="form-control" style="width: 100%;">
+                    </div>
+                </div><br><br>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">Total Wastage : <p class="pull-right">:</p></label>
+                    <div class="col-sm-7">
+                        <input type="text" id="modal_total_wastage" name="modal_total_wastage" class="form-control" style="width: 100%;" readonly>
+                    </div>
+                </div><br><br>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label">Net Quantity : <p class="pull-right">:</p></label>
+                    <div class="col-sm-7">
+                        <input type="text" id="modal_net_quantity" name="modal_net_quantity" class="form-control" style="width: 100%;" readonly>
+                    </div>
+                </div><br><br>
+                {{-- <div id="modal_warning">
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-sm-11">
+                            <h4>Are You Sure to delete existing timetable and generate new one?</h4>
+                        </div>
+                    </div>
+                </div> --}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning pull-left modal_close_button" data-dismiss="modal">Cancel & Proceed W/o Quantity Deduction</button>
+                <button type="button" id="btn_modal_weighment_submit" class="btn btn-info">Confirm & Add Deduction Details</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 @endsection
 @section('scripts')
     <script src="/js/registrations/saleRegistration.js?rndstr={{ rand(1000,9999) }}"></script>

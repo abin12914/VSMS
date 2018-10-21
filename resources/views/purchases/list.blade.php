@@ -29,23 +29,21 @@
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
                                     <div class="form-group">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="from_date" class="control-label">From Date : </label>
                                             <input type="text" class="form-control datepicker" name="from_date" id="from_date" value="{{ !empty(old('from_date')) ? old('from_date') : $params['from_date']['paramValue'] }}" tabindex="1">
                                             {{-- adding error_message p tag component --}}
                                             @component('components.paragraph.error_message', ['fieldName' => 'from_date'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="to_date" class="control-label">To Date : </label>
                                             <input type="text" class="form-control datepicker" name="to_date" id="to_date" value="{{ !empty(old('to_date')) ? old('to_date') : $params['to_date']['paramValue'] }}" tabindex="2">
                                             {{-- adding error_message p tag component --}}
                                             @component('components.paragraph.error_message', ['fieldName' => 'to_date'])
                                             @endcomponent
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="supplier_account_id" class="control-label">Supplier : </label>
                                             {{-- adding account select component --}}
                                             @component('components.selects.accounts', ['selectedAccountId' => $params['supplier_account_id']['paramValue'], 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'tabindex' => 5])
@@ -54,7 +52,7 @@
                                             @component('components.paragraph.error_message', ['fieldName' => 'supplier_account_id'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="no_of_records" class="control-label">No Of Records Per Page : </label>
                                             {{-- adding no of records text component --}}
                                             @component('components.texts.no-of-records-text', ['noOfRecords' => $noOfRecords, 'tabindex' => 6])
@@ -103,9 +101,8 @@
                                         <tr>
                                             <th style="width: 5%;">#</th>
                                             <th style="width: 15%;">Date & Invoice No.</th>
-                                            {{-- <th style="width: 15%;">Branch</th> --}}
-                                            <th style="width: 15%;">Account</th>
-                                            <th style="width: 15%;">Customer Name</th>
+                                            <th style="width: 15%;">Transaction Account</th>
+                                            <th style="width: 15%;">Supplier Name</th>
                                             <th style="width: 10%;">No Of Products</th>
                                             <th style="width: 15%;">Bill Amount</th>
                                             <th style="width: 5%;" class="no-print">Details</th>
@@ -122,15 +119,11 @@
                                                             /{{ config('constants.branchInvoiceCode')[$purchaseRecord->branch_id]. $purchaseRecord->tax_invoice_number }}
                                                         @endif
                                                     </td>
-                                                    {{-- <td>{{ $purchaseRecord->branch->name }}</td> --}}
                                                     <td>
-                                                        {{ $purchaseRecord->transaction->debitAccount->account_name }}
-                                                        @if($purchaseRecord->transaction->debitAccount->status != 1)
-                                                            &emsp;<i class="fa fa-clock-o text-orange no-print" title="Short term credit customer"></i>
-                                                        @endif
+                                                        {{ $purchaseRecord->transaction->creditAccount->account_name }}
                                                     </td>
                                                     <td>
-                                                        {{ $purchaseRecord->customer_name }}
+                                                        {{ $purchaseRecord->supplier_name }}
                                                     </td>
                                                     <td>{{ count($purchaseRecord->products) }}</td>
                                                     <td>{{ $purchaseRecord->total_amount }}</td>
@@ -140,7 +133,7 @@
                                                         </a>
                                                     </td>
                                                     <td class="no-print">
-                                                        @if(!empty($purchaseRecord->tax_invoice_number) && $purchaseRecord->tax_invoice_number > 0)
+                                                        {{-- @if(!empty($purchaseRecord->tax_invoice_number) && $purchaseRecord->tax_invoice_number > 0)
                                                             <a href="{{ route('purchase.invoice', ['id' => $purchaseRecord->id]) }}">
                                                                 <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Invoice</button>
                                                             </a>
@@ -148,7 +141,7 @@
                                                             <a href="{{ route('purchase.invoice', ['id' => $purchaseRecord->id]) }}">
                                                                 <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Estimate</button>
                                                             </a>
-                                                        @endif
+                                                        @endif --}}
                                                     </td>
                                                 </tr>
                                             @endforeach

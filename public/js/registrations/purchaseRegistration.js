@@ -24,15 +24,20 @@ $(function () {
         })
     });
 
-    //customer details
-    $('body').on("change", "#customer_account_id", function (evt) {
-        var customerAccountId   = $(this).val();
+    //to invoke weighment modal
+    /*$('body').on("click", ".add_note", function (evt) {
+        $(this).closest('tr').find('.products_combo').trigger('change');
+    });*/
 
-        if(customerAccountId && customerAccountId != -1) {
+    //supplier details
+    $('body').on("change", "#supplier_account_id", function (evt) {
+        var supplierAccountId   = $(this).val();
+
+        if(supplierAccountId && supplierAccountId != -1) {
             var selectedOption = $(this).find(':selected');
             
             $.ajax({
-                url: ajaxAccountDetailUrl + customerAccountId,
+                url: ajaxAccountDetailUrl + supplierAccountId,
                 method: "get",
                 data: {},
                 success: function(result) {
@@ -40,46 +45,49 @@ $(function () {
                     if(result && result.flag) {
                         var account = result.account;
                         if(account.type == 3) {
-                            $('#customer_name').val(account.name);
-                            $('#customer_phone').val(account.phone);
-                            $('#consignee_address').val(account.address);
-                            $('#customer_gstin').val(account.gstin);
+                            $('#supplier_name').val(account.name);
+                            $('#supplier_phone').val(account.phone);
                         }
                     } else {
-                        $('#customer_name').val('');
-                        $('#customer_phone').val('');
-                        $('#consignee_address').val('');
-                        $('#customer_gstin').val('');
+                        $('#supplier_name').val('');
+                        $('#supplier_phone').val('');
                     }
                 },
                 error: function (err) {
-                    $('#customer_name').val('');
-                    $('#customer_phone').val('');
-                    $('#consignee_address').val('');
-                    $('#customer_gstin').val('');
+                    $('#supplier_name').val('');
+                    $('#supplier_phone').val('');
                 }
             });
         } else {
-            $('#customer_name').val('');
-            $('#customer_phone').val('');
-            $('#consignee_address').val('');
-            $('#customer_gstin').val('');
+            $('#supplier_name').val('');
+            $('#supplier_phone').val('');
         }
     });
 
     //
-    $('body').on("keyup", "#customer_phone", function (evt) {
-        var input       = $(this).val();
-        var accountId   = $('#customer_account_id').val();
+    $('body').on("keyup", "#supplier_phone", function (evt) {
+        var input               = $(this).val();
+        var selectedAccountId   = $('#supplier_account_id').val();
 
-        if(input.length > 9 && accountId != -1) {
-            accountId = $('#customer_account_id').find(`[data-phone='${input}']`).val();
-            if(accountId && accountId > 0) {
-                if(confirm("Found an account related with the entered phone number. Do you want to change the 'Sale To' field?")) {
-                    $('#customer_account_id').val(accountId);
-                    $('#customer_account_id').trigger('change');
-                    $('#consignee_address').focus();
+        if(input.length > 9) {
+            accountId   = $('#supplier_account_id').find(`[data-phone='${input}']`).val();
+            accountName = $('#supplier_account_id').find(`[data-phone='${input}']`).text();
+
+            if(selectedAccountId != -1) {
+                if(accountId && accountId > 0 && accountId != selectedAccountId) {
+                    if(confirm("Found an account related to the entered phone number. Do you want to change the 'supplier account' field to " + accountName + "?")) {
+                        $('#supplier_account_id').val(accountId);
+                        $('#supplier_account_id').trigger('change');
+                        $('#supplier_parent_div').addClass('has-warning');
+                        $('#description').focus();
+                    }
                 }
+            } else {
+                $('#supplier_account_id').val(accountId);
+                $('#supplier_account_id').trigger('change');
+                $('#supplier_parent_div').addClass('has-warning');
+                $('#description').focus();
+                alert('Found an account related to the entered phone number. Purchase would credited to '+ accountName);
             }
         }
     });
@@ -105,6 +113,7 @@ $(function () {
             //enabling quantity & rate in same column
             $(this).closest('tr').find('.net_quantity').attr('disabled', false);
             $(this).closest('tr').find('.purchase_rate').attr('disabled', false);
+            $(this).closest('tr').find('.sub_bill').attr('disabled', false);
 
             //enabling next combo box
             $('#product__row_'+(rowId+1)).find('.products_combo').attr('disabled', false);
@@ -114,6 +123,7 @@ $(function () {
             //disabling quantity & rate in same column
             $(this).closest('tr').find('.net_quantity').attr('disabled', true);
             $(this).closest('tr').find('.purchase_rate').attr('disabled', true);
+            $(this).closest('tr').find('.sub_bill').attr('disabled', true);
             
             //setting empty values for deselected product
             $('#purchase_notes'+rowId).val('');
@@ -159,12 +169,6 @@ $(function () {
         } else {
             alert("Fill all fields!");
         }
-    });
-
-    //autofill supplier name & phone
-    $('body').on("change keyup", "#modal_gross_quatity", function (evt) {
-        //calculate total quantity
-        calculateQuantity();
     });
 
     //modal weighment calc event

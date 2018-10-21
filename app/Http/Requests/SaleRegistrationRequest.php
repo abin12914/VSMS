@@ -5,9 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\Account;
-use App\Models\Branch;
 use App\Models\Product;
-use App\Models\Employee;
 
 class SaleRegistrationRequest extends FormRequest
 {
@@ -29,7 +27,7 @@ class SaleRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'sale_date'                 =>  [
+            'sale_date'             =>  [
                                                 'required',
                                                 'date_format:d-m-Y',
                                             ],
@@ -50,16 +48,11 @@ class SaleRegistrationRequest extends FormRequest
                                                 'min:10',
                                                 'max:13',
                                             ],
-            'consignee_address'         =>  [
+            'description'               =>  [
                                                 'required',
                                                 'string',
                                                 'min:5',
                                                 'max:200',
-                                            ],
-            'consignment_charge'        =>  [
-                                                'required',
-                                                'min:0',
-                                                'max:9999',
                                             ],
             'product_id'                =>  [
                                                 'required',
@@ -70,21 +63,45 @@ class SaleRegistrationRequest extends FormRequest
                                                 Rule::in(Product::pluck('id')->toArray()),
                                                 'distinct'
                                             ],
-            'sale_quantity'             =>  [    
+            'gross_quantity.*'          =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'product_number.*'          =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'unit_wastage.*'            =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'total_wastage.*'           =>  [
+                                                'nullable',
+                                                'numeric',
+                                                'min:0.1',
+                                                'max:9999',
+                                            ],
+            'net_quantity'         =>  [    
                                                 'required',
                                                 'array',
                                             ],
-            'sale_quantity.*'           =>  [    
+            'net_quantity.*'       =>  [    
                                                 'required',
                                                 'integer',
                                                 'min:1',
                                                 'max:99999'
                                             ],
-            'sale_rate'                 =>  [
+            'sale_rate'             =>  [
                                                 'required',
                                                 'array',
                                             ],
-            'sale_rate.*'               =>  [
+            'sale_rate.*'           =>  [
                                                 'required',
                                                 'numeric',
                                                 'min:0.1',
@@ -95,7 +112,7 @@ class SaleRegistrationRequest extends FormRequest
                                                 'array',
                                             ],
             'sub_bill.*'                =>  [
-                                                'nullable',
+                                                'required',
                                                 'numeric',
                                                 'min:0.1',
                                                 'max:99999'
@@ -117,10 +134,6 @@ class SaleRegistrationRequest extends FormRequest
                                                 'numeric',
                                                 'max:99999',
                                                 'min:1'
-                                            ],
-            'tax_invoice__flag'         =>  [
-                                                'nullable',
-                                                'boolean'
                                             ],
         ];
     }
@@ -150,11 +163,21 @@ class SaleRegistrationRequest extends FormRequest
                 continue;
             }
 
-            if(empty($this->request->get('sale_quantity')[$index]) || empty($this->request->get('sale_rate')[$index]) || empty($this->request->get('sub_bill')[$index])) {
+            if(empty($this->request->get('net_quantity')[$index]) || empty($this->request->get('sale_rate')[$index]) || empty($this->request->get('sub_bill')[$index])) {
+                return false;
+            }
+
+            //weighment deduction
+            if(!empty($this->request->get('gross_quantity')[$index]) && !empty($this->request->get('product_number')[$index]) && !empty($this->request->get('unit_wastage')[$index]) && !empty($this->request->get('total_wastage')[$index])) {
+                    $totalWastage = $this->request->get('product_number')[$index] * $this->request->get('unit_wastage')[$index];
+                    if(($this->request->get('gross_quantity')[$index] - $totalWastage) != $this->request->get('net_quantity')[$index]) {
+                        return false;
+                    }
+            } elseif(!empty($this->request->get('gross_quantity')[$index]) || !empty($this->request->get('product_number')[$index]) || !empty($this->request->get('unit_wastage')[$index]) || !empty($this->request->get('total_wastage')[$index])) {
                 return false;
             }
             
-            $subTotal = $this->request->get('sale_quantity')[$index] * $this->request->get('sale_rate')[$index];
+            $subTotal = $this->request->get('net_quantity')[$index] * $this->request->get('sale_rate')[$index];
             
             if($subTotal != $this->request->get('sub_bill')[$index]) {
                 return false;

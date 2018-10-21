@@ -48,7 +48,7 @@ class Sale extends Model
     }
 
     /**
-     * Get the branch details associated with the purchase
+     * Get the branch details associated with the sale
      */
     public function branch()
     {
@@ -60,14 +60,6 @@ class Sale extends Model
      */
     public function products()
     {
-        return $this->belongsToMany('App\Models\Product', 'sale_product')->as('saleDetail')->withPivot('quantity', 'rate');
-    }
-
-    /**
-     * The transportation that belong to the sale.
-     */
-    public function transportation()
-    {
-        return $this->hasOne('App\Models\Transportation', 'sale_id');
+        return $this->belongsToMany('App\Models\Product', 'sale_product')->as('saleDetail')->withPivot('net_quantity', 'rate', 'gross_quantity', 'product_number', 'unit_wastage', 'total_wastage');;
     }
 }
