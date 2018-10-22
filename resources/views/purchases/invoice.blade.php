@@ -28,7 +28,7 @@
                                                 <b>Ref. Number</b>
                                             </td>
                                             <td style="width: 30%;">
-                                                {{ $purchase->id }}
+                                                {{ $purchase->id }}/{{ $purchase->transaction_id }}
                                             </td>
                                             <td style="width: 20%;">
                                                 <b>Date</b>
@@ -39,16 +39,30 @@
                                         </tr>
                                         <tr>
                                             <td style="width: 20%;">
-                                                <b>Serial Number</b>
+                                                <b>Transaction Account</b>
                                             </td>
                                             <td style="width: 30%;">
-                                                sdfsd
+                                                {{ $purchase->transaction->creditAccount->account_name }}
                                             </td>
                                             <td style="width: 20%;">
-                                                fsdfsdfsdf
+                                                <b>Notes</b>
                                             </td>
                                             <td style="width: 30%;">
-                                                fsdfdsf
+                                                {{ $purchase->description }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 20%;">
+                                                <b>Supplier Name</b>
+                                            </td>
+                                            <td style="width: 30%;">
+                                                {{ $purchase->supplier_name }}
+                                            </td>
+                                            <td style="width: 20%;">
+                                                <b>Supplier Phone</b>
+                                            </td>
+                                            <td style="width: 30%;">
+                                                {{ $purchase->supplier_phone }}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -57,15 +71,17 @@
                         </tr>
                         <tr>
                             <td>
-                                <table class="table table-bordered">
+                                <table class="table table-bordered -ssd">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%;">#</th>
-                                            <th style="width: 30%;">Description of Product/Service</th>
-                                            <th style="width: 10%;">HSN</th>
-                                            <th style="width: 10%;">UOM</th>
-                                            <th style="width: 15%;">Quantity</th>
-                                            <th style="width: 15%;">Rate</th>
+                                            <th style="width: 25%;">Product</th>
+                                            <th style="width: 8%;">Gross Quantity</th>
+                                            <th style="width: 8%;">Product Number</th>
+                                            <th style="width: 8%;">Unit Wastage</th>
+                                            <th style="width: 8%;">Total Wastage</th>
+                                            <th style="width: 13%;">Net Quantity</th>
+                                            <th style="width: 10%;">Rate</th>
                                             <th style="width: 15%;">Amount</th>
                                         </tr>
                                     </thead>
@@ -74,14 +90,21 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $product->name }}</td>
-                                                <td>{{ $product->hsn_code }}</td>
-                                                <td>{{ $product->uom_code }}</td>
-                                                <td>{{ $product->purchaseDetail->quantity }}</td>
-                                                <td>{{ $product->purchaseDetail->rate }}</td>
-                                                <td>{{ ($product->purchaseDetail->quantity * $product->purchaseDetail->rate) }}</td>
+                                                <td>
+                                                    {{ $product->purchaseDetail->gross_quantity ?: $product->purchaseDetail->net_quantity }}
+                                                    {{ $product->uom_code }}
+                                                </td>
+                                                <td>{{ $product->purchaseDetail->product_number ?: '-' }}</td>
+                                                <td>{{ $product->purchaseDetail->unit_wastage ?: '-' }}</td>
+                                                <td>{{ $product->purchaseDetail->total_wastage ?: 0 }}</td>
+                                                <td>{{ $product->purchaseDetail->net_quantity }} {{ $product->uom_code }}</td>
+                                                <td>{{ $product->purchaseDetail->rate }}/-</td>
+                                                <td>{{ ($product->purchaseDetail->net_quantity * $product->purchaseDetail->rate) }}</td>
                                             </tr>
                                         @endforeach
                                         <tr>
+                                            <th></th>
+                                            <th></th>
                                             <th></th>
                                             <th></th>
                                             <th></th>
@@ -95,6 +118,8 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
+                                            <th></th>
+                                            <th></th>
                                             <th>Discount</th>
                                             <th></th>
                                             <td>{{ $purchase->discount or 0}}</td>
@@ -104,33 +129,13 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
+                                            <th></th>
+                                            <th></th>
                                             <th>Value of supply</th>
                                             <th></th>
                                             <td>{{ $purchase->total_amount }}</td>
                                         </tr>
                                     </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <table class="table table-bordered" style="margin-bottom: 0px;">
-                                    <tr>
-                                        <td style="width: 50%;">
-                                            <p class="text-muted well well-sm no-shadow">
-                                                <b><u>Terms And Conditions</u></b>
-                                                <br>&emsp;1. Seller is not responsible for any loss or damage of goods in transport
-                                                <br>&emsp;1. Dispute if any will be subject to seller court jurisdiction
-                                            </p>
-                                        </td>
-                                        <td style="width: 50%;"><br>
-                                            <p class="text-muted well well-sm no-shadow">
-                                                <i>Certify that the particulars given above are true and correct.</i>
-                                                <br><br><br>
-                                                <p class="text-center">(Authorized Signatory)</p>
-                                            </p>
-                                        </td>
-                                    </tr>
                                 </table>
                             </td>
                         </tr>

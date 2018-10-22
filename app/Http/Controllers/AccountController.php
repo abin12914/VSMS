@@ -305,6 +305,9 @@ class AccountController extends Controller
      */
     public function getDetails($id=null)
     {
+        $oldBalance['debit']    = 0;
+        $oldBalance['credit']   = 0;
+
         if(empty($id)) {
             return [
                 'flag'      => false,
@@ -315,7 +318,8 @@ class AccountController extends Controller
         $account    = [];
 
         try {
-            $account = $this->accountRepo->getAccount($id,false);
+            $account    = $this->accountRepo->getAccount($id,false);
+            $oldBalance = $this->getOldBalance($id, null);
         } catch (\Exception $e) {
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
@@ -336,6 +340,57 @@ class AccountController extends Controller
                 'address'   => $account->address,
                 'type'      => $account->type,
             ],
+            'oldBalance' => [
+                'oldDebit'  => $oldBalance['debit'] ?: 0,
+                'oldCredit' => $oldBalance['credit'] ?: 0,
+            ],
+        ];
+    }
+
+    /**
+     * return the specified resource.
+     *
+     * @param  int  $id
+     * @param  date $fromDate
+     * @return json
+     */
+    public function getOldBalance($id, $uptoDate=null, TransactionRepository $transactionRepo)
+    {
+        $params     = [];
+        $orParams   = [];
+
+        $orParams = [
+            'debit_account_id'   =>  [
+                'paramName'      => 'debit_account_id',
+                'paramOperator'  => '=',
+                'paramValue'     => $id,
+            ],
+            'credit_account_id'  =>  [
+                'paramName'      => 'credit_account_id',
+                'paramOperator'  => '=',
+                'paramValue'     => $id,
+            ]
+        ];
+
+        if(!empty($uptoDate)) {
+            $params = [
+                'from_date' =>  [
+                    'paramName'     => 'transaction_date',
+                    'paramOperator' => '<',
+                    'paramValue'    => $uptoDate,
+                ]
+            ];
+        }
+
+        //old balance values
+        $transactions = $this->transactionRepo->getTransactions($params, $orParams, null, null);
+        $debit        = $transactions->where('debit_account_id', $accountId)->sum('amount');
+        $credit       = $transactions->where('credit_account_id', $accountId)->sum('amount');
+
+        return [
+            'flag'      => true,
+            'debit'     => $debit,
+            'credit'    => $credit,
         ];
     }
 }
