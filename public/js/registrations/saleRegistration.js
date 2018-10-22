@@ -24,6 +24,11 @@ $(function () {
         })
     });
 
+    //to invoke weighment modal
+    /*$('body').on("click", ".add_note", function (evt) {
+        $(this).closest('tr').find('.products_combo').trigger('change');
+    });*/
+
     //customer details
     $('body').on("change", "#customer_account_id", function (evt) {
         var customerAccountId   = $(this).val();
@@ -42,44 +47,47 @@ $(function () {
                         if(account.type == 3) {
                             $('#customer_name').val(account.name);
                             $('#customer_phone').val(account.phone);
-                            $('#consignee_address').val(account.address);
-                            $('#customer_gstin').val(account.gstin);
                         }
                     } else {
                         $('#customer_name').val('');
                         $('#customer_phone').val('');
-                        $('#consignee_address').val('');
-                        $('#customer_gstin').val('');
                     }
                 },
                 error: function (err) {
                     $('#customer_name').val('');
                     $('#customer_phone').val('');
-                    $('#consignee_address').val('');
-                    $('#customer_gstin').val('');
                 }
             });
         } else {
             $('#customer_name').val('');
             $('#customer_phone').val('');
-            $('#consignee_address').val('');
-            $('#customer_gstin').val('');
         }
     });
 
     //
     $('body').on("keyup", "#customer_phone", function (evt) {
-        var input       = $(this).val();
-        var accountId   = $('#customer_account_id').val();
+        var input               = $(this).val();
+        var selectedAccountId   = $('#customer_account_id').val();
 
-        if(input.length > 9 && accountId != -1) {
-            accountId = $('#customer_account_id').find(`[data-phone='${input}']`).val();
-            if(accountId && accountId > 0) {
-                if(confirm("Found an account related with the entered phone number. Do you want to change the 'Sale To' field?")) {
-                    $('#customer_account_id').val(accountId);
-                    $('#customer_account_id').trigger('change');
-                    $('#consignee_address').focus();
+        if(input.length > 9) {
+            accountId   = $('#customer_account_id').find(`[data-phone='${input}']`).val();
+            accountName = $('#customer_account_id').find(`[data-phone='${input}']`).text();
+
+            if(selectedAccountId != -1) {
+                if(accountId && accountId > 0 && accountId != selectedAccountId) {
+                    if(confirm("Found an account related to the entered phone number. Do you want to change the 'customer account' field to " + accountName + "?")) {
+                        $('#customer_account_id').val(accountId);
+                        $('#customer_account_id').trigger('change');
+                        $('#customer_parent_div').addClass('has-warning');
+                        $('#description').focus();
+                    }
                 }
+            } else if(accountId && accountId > 0) {
+                $('#customer_account_id').val(accountId);
+                $('#customer_account_id').trigger('change');
+                $('#customer_parent_div').addClass('has-warning');
+                $('#description').focus();
+                alert('Found an account related to the entered phone number. Sale would credited to '+ accountName);
             }
         }
     });
@@ -90,15 +98,22 @@ $(function () {
         var rowId       = $(this).data('index-no');
 
         if(fieldValue && fieldValue != '' && fieldValue != 'undefined') {
-            var rate = $(this).find(':selected').data('rate');
+            var defaultWeighmentWastage = $(this).find(':selected').data('weighment_wastage');
+            if(defaultWeighmentWastage) {
+                $('#modal_row_id').val(rowId);
+                $('#modal_product').val($(this).find(':selected').text());
+                $('#modal_gross_quatity').val('');
+                $('#modal_numbers').val('');
+                $('#modal_unit_wastage').val(defaultWeighmentWastage);
+                $('#modal_total_wastage').val('');
+                $('#modal_net_quantity').val('');
+                $('#weighment_modal').modal('show');
+            }
 
             //enabling quantity & rate in same column
-            $(this).closest('tr').find('.sale_notes').attr('disabled', false);
-            $(this).closest('tr').find('.sale_quantity').attr('disabled', false);
+            $(this).closest('tr').find('.net_quantity').attr('disabled', false);
             $(this).closest('tr').find('.sale_rate').attr('disabled', false);
-            
-            //setting rate for selected product
-            $('#sale_rate_'+rowId).val(rate);
+            $(this).closest('tr').find('.sub_bill').attr('disabled', false);
 
             //enabling next combo box
             $('#product__row_'+(rowId+1)).find('.products_combo').attr('disabled', false);
@@ -106,13 +121,13 @@ $(function () {
             $('#product__row_'+(rowId+3)).show();
         } else {
             //disabling quantity & rate in same column
-            $(this).closest('tr').find('.sale_notes').attr('disabled', true);
-            $(this).closest('tr').find('.sale_quantity').attr('disabled', true);
+            $(this).closest('tr').find('.net_quantity').attr('disabled', true);
             $(this).closest('tr').find('.sale_rate').attr('disabled', true);
+            $(this).closest('tr').find('.sub_bill').attr('disabled', true);
             
             //setting empty values for deselected product
             $('#sale_notes'+rowId).val('');
-            $('#sale_quantity_'+rowId).val('');
+            $('#net_quantity_'+rowId).val('');
             $('#sale_rate_'+rowId).val('');
 
             $('#product__row_'+(rowId+1)).find('.products_combo').val('');
@@ -127,31 +142,89 @@ $(function () {
         siblingsHandling();
         initializeSelect2();
         //calculate total sale bill
-        calculateTotalPurchaseBill();
+        calculateTotalSaleBill();
 
     });
 
-    //purchase quantity event actions
-    $('body').on("change keyup", ".sale_quantity", function (evt) {
+    $('body').on("click", "#btn_modal_weighment_submit", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+
+        var rowId = $('#modal_row_id').val();
+        var grossQuantity = $('#modal_gross_quatity').val();
+        var productNumber = $('#modal_numbers').val();
+        var unitWastage   = $('#modal_unit_wastage').val();
+        var totalWastage  = $('#modal_total_wastage').val();
+        var netQuantity   = $('#modal_net_quantity').val();
+
+        if(rowId && rowId != 'undefined' && grossQuantity && productNumber && unitWastage && totalWastage && netQuantity) {
+            $('#gross_quantity_'+rowId).val(grossQuantity);
+            $('#product_number_'+rowId).val(productNumber);
+            $('#unit_wastage_'+rowId).val(unitWastage);
+            $('#total_wastage_'+rowId).val(totalWastage);
+            $('#net_quantity_'+rowId).val(netQuantity);
+            $('#notes_'+rowId).val('Deduction : '+ grossQuantity + ' - (' + productNumber + ' nos x ' + unitWastage + ') = ' + netQuantity);
+            
+            $('#weighment_modal').modal('hide');
+        } else {
+            alert("Fill all fields!");
+        }
+    });
+
+    //modal weighment calc event
+    $('body').on("change keyup", "#modal_gross_quatity", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+    });
+    //modal weighment calc event
+    $('body').on("change keyup", "#modal_numbers", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+    });
+    //modal weighment calc event
+    $('body').on("change keyup", "#modal_unit_wastage", function (evt) {
+        //calculate total quantity
+        calculateQuantity();
+    });
+
+    //sale quantity event actions
+    $('body').on("change keyup", ".net_quantity", function (evt) {
         //calculate total sale bill
-        calculateTotalPurchaseBill();
+        calculateTotalSaleBill();
     });
 
-    //purchase rate event actions
+    //sale rate event actions
     $('body').on("change keyup", ".sale_rate", function (evt) {
         //calculate total sale bill
-        calculateTotalPurchaseBill();
+        calculateTotalSaleBill();
     });
 
-    //purchase rate event actions
+    //sale rate event actions
     $('body').on("change keyup", "#discount", function (evt) {
         //calculate total sale bill
-        calculateTotalPurchaseBill();
+        calculateTotalSaleBill();
     });
 });
 
-//method for total bill calculation of purchase
-function calculateTotalPurchaseBill() {
+//method for quantity calculation
+function calculateQuantity() {
+    var grossQuantity = $('#modal_gross_quatity').val();
+    var productNumber = $('#modal_numbers').val();
+    var unitWastage   = $('#modal_unit_wastage').val();
+    var totalWastage  = 0;
+    var netQuantity   = 0;
+
+    if(grossQuantity && grossQuantity != 'undefined' && productNumber && productNumber != 'undefined' && unitWastage && unitWastage != 'undefined') {
+        totalWastage = unitWastage * productNumber;
+        netQuantity  = grossQuantity - totalWastage;
+    }
+
+    $('#modal_total_wastage').val(totalWastage);
+    $('#modal_net_quantity').val(netQuantity);
+}
+
+//method for total bill calculation of sale
+function calculateTotalSaleBill() {
     var bill        = 0;
     var totalBill   = 0;
     var discount    = ($('#discount').val() > 0 ? $('#discount').val() : 0 );
@@ -159,7 +232,7 @@ function calculateTotalPurchaseBill() {
     $('.products_combo').each(function(index) {
         var productId   = $(this).val();
         var rowId       = $(this).data('index-no');
-        var quantity    = $('#sale_quantity_'+rowId).val();
+        var quantity    = $('#net_quantity_'+rowId).val();
         var rate        = $('#sale_rate_'+rowId).val();
 
         if(productId && productId != '' && quantity && quantity != '' && rate && rate != '') {

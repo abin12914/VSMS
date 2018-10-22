@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use App\Repositories\SaleRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\AccountRepository;
-use App\Repositories\EmployeeRepository;
-use App\Repositories\ProductRepository;
-use App\Repositories\TransportationRepository;
 use App\Http\Requests\SaleRegistrationRequest;
 use App\Http\Requests\SaleFilterRequest;
 use Carbon\Carbon;
@@ -51,19 +48,9 @@ class SaleController extends Controller
                 'paramOperator' => '<=',
                 'paramValue'    => $toDate,
             ],
-            'branch_id' =>  [
-                'paramName'     => 'branch_id',
-                'paramOperator' => '=',
-                'paramValue'    => $request->get('branch_id'),
-            ]
         ];
 
         $relationalParams = [
-            'customer_type' =>  [
-                'relation'      => 'transaction.debitAccount',
-                'paramName'     => 'status',
-                'paramValue'    => $request->get('customer_type'),
-            ],
             'customer_account_id'   =>  [
                 'relation'      => 'transaction',
                 'paramName'     => 'debit_account_id',
@@ -109,13 +96,13 @@ class SaleController extends Controller
         AccountRepository $accountRepo,
         $id=null
     ) {
-        $saveFlag            = false;
-        $errorCode           = 0;
-        $sale            = null;
-        $saleTransaction = null;
+        $saveFlag           = false;
+        $errorCode          = 0;
+        $sale               = null;
+        $saleTransaction    = null;
 
         //configured values
-        $saleAccountId  = config('constants.accountConstants.Sale.id');
+        $saleAccountId      = config('constants.accountConstants.Sale.id');
         $accountRelations   = config('constants.accountRelationTypes');
 
         $transactionDate    = Carbon::createFromFormat('d-m-Y', $request->get('sale_date'))->format('Y-m-d');
@@ -158,9 +145,9 @@ class SaleController extends Controller
                 {
                     //save quick customer account to table
                     $accountResponse = $accountRepo->saveAccount([
-                        'account_name'      => $customerName,
+                        'account_name'      => $customerName. "-". $customerPhone,
                         'description'       => ("New account of". $customerName),
-                        'relation'          => array_search('Supplier', $accountRelations), //customer key=2
+                        'relation'          => array_search('Customer', $accountRelations), //customer key=2
                         'financial_status'  => 0,
                         'opening_balance'   => 0,
                         'name'              => $customerName,
@@ -188,8 +175,8 @@ class SaleController extends Controller
 
             //save sale transaction to table
             $transactionResponse = $transactionRepo->saveTransaction([
-                'debit_account_id'  => $saleAccountId, // debit the sale account
-                'credit_account_id' => $customerAccountId, // credit the customer
+                'debit_account_id'  => $customerAccountId, // debit the customer
+                'credit_account_id' => $saleAccountId, // credit the sale account
                 'amount'            => $totalBill ,
                 'transaction_date'  => $transactionDate,
                 'particulars'       => ($request->get('description'). "(". $particulars. ")"),
@@ -271,7 +258,6 @@ class SaleController extends Controller
      */
     public function edit($id)
     {
-        return redirect()->back()->with('message', 'Editing is temporarily restricted!')->with('alert-class', 'warning');
         $errorCode  = 0;
         $sale       = [];
 
@@ -303,165 +289,15 @@ class SaleController extends Controller
         SaleRegistrationRequest $request,
         $id,
         TransactionRepository $transactionRepo,
-        AccountRepository $accountRepo,
-        TransportationRepository $transportationRepo
+        AccountRepository $accountRepo
     ) {
-        $saveFlag   = false;
-        $errorCode  = 0;
-        $wageAmount = 0;
-        $transportationTransaction = null;
+        $updateResponse = $this->store($request, $transactionRepo, $accountRepo, $id);
 
-        $saleAccountId                  = config('constants.accountConstants.Sale.id');
-        $transportationChargeAccountId  = config('constants.accountConstants.TransportationChargeAccount.id');
-
-        $transactionDate        = Carbon::createFromFormat('d-m-Y', $request->get('sale_date'))->format('Y-m-d');
-        $branchId               = $request->get('branch_id');
-        $saleType               = $request->get('sale_type');
-        $products               = $request->get('product_id');
-        $totalBill              = $request->get('total_bill');
-        $transportationCharge   = $request->get('transportation_charge');
-        $transportationLocation = $request->get('transportation_location');
-
-        foreach ($products as $index => $productId) {
-            if(!empty($request->get('sale_quantity')[$index]) && !empty($request->get('sale_rate')[$index])) {
-                $productArray[$productId] = [
-                    'quantity'  => $request->get('sale_quantity')[$index],
-                    'rate'      => $request->get('sale_rate')[$index],
-                ];
-            }
-        }
-
-        //wrappin db transactions
-        DB::beginTransaction();
-        try {
-            //get sale
-            $sale = $this->saleRepo->getSale($id);
-            //get sale transaction
-            $saleTransaction = $transactionRepo->getTransaction($sale->transaction_id);
-            //get sale transportation
-            $transportation = $transportationRepo->getTransportations([['paramName' => 'sale_id', 'paramOperator' => '=', 'paramValue' => $sale->id]])->first();
-            if(!empty($transportation)) {
-                $transportationTransaction = $transactionRepo->getTransaction($transportation->transaction_id);
-            }
-
-            //confirming sale account existency.
-            $saleAccount = $accountRepo->getAccount($saleAccountId);
-            //confirming transportation charge account existency.
-            $transportationChargeAccount = $accountRepo->getAccount($transportationChargeAccountId);
-
-            if($saleType != 1) {
-                $customerName       = $request->get('name');
-                $customerPhone      = $request->get('phone');
-
-                //checking for exist-ency of the account
-                $accounts = $accountRepo->getAccounts(['phone' => $customerPhone],null,null,false);
-
-                if(empty($accounts) || count($accounts) == 0)
-                {
-                    //save short term customer account to table
-                    $accountResponse = $accountRepo->saveAccount([
-                        'account_name'      => $customerName,
-                        'description'       => ("Short term credit account of". $customerName),
-                        'relation'          => 3, //customer
-                        'financial_status'  => 0,
-                        'opening_balance'   => 0,
-                        'name'              => $customerName,
-                        'phone'             => $customerPhone,
-                        'address'           => $customerName. " - ". $customerPhone,
-                        'image'             => null,
-                        'status'            => 2, //short term credit account
-                    ]);
-
-                    if(!$accountResponse['flag']) {
-                        throw new AppCustomException("CustomError", $accountResponse['errorCode']);
-                    }
-                    $customerAccountId  = $accountResponse['id'];
-                    $particulars        = ("Sale invoice of Rs.". $totalBill. "/- generated for ". $customerName. "-". $customerPhone);
-                } else {
-                    $customerAccountId = $accounts->first()->id;
-                    //accessing debit account
-                    $customerAccount = $accountRepo->getAccount($customerAccountId, false);
-                    $particulars = ("Sale invoice of Rs.". $totalBill. "/- generated for ". $customerAccount->account_name. "-". $customerAccount->phone);
-                }
-            } else {
-                $customerAccountId = $request->get('customer_account_id');
-                //accessing debit account
-                $customerAccount = $accountRepo->getAccount($customerAccountId, false);
-                $particulars = ("Sale invoice of Rs.". $totalBill. "/- generated for ". $customerAccount->account_name);
-            }
-
-            //save sale transaction to table
-            $transactionResponse   = $transactionRepo->saveTransaction([
-                'debit_account_id'  => $customerAccountId, // debit the customer
-                'credit_account_id' => $saleAccountId, // credit the sale account
-                'amount'            => $totalBill ,
-                'transaction_date'  => $transactionDate,
-                'particulars'       => $particulars,
-                'branch_id'         => $branchId,
-            ], $saleTransaction);
-
-            if(!$transactionResponse['flag']) {
-                throw new AppCustomException("CustomError", $transactionResponse['errorCode']);
-            }
-
-            //save to sale table
-            $saleResponse = $this->saleRepo->saveSale([
-                'transaction_id' => $transactionResponse['id'],
-                'date'           => $transactionDate,
-                'productsArray'  => $productArray,
-                'discount'       => $request->get('discount'),
-                'total_amount'   => $totalBill,
-                'branch_id'      => $branchId,
-            ], $sale);
-
-            if(!$saleResponse['flag']) {
-                throw new AppCustomException("CustomError", $saleResponse['errorCode']);
-            }
-
-            //save transportation transaction to table
-            $transportationTransactionResponse = $transactionRepo->saveTransaction([
-                'debit_account_id'  => $customerAccountId, // debit the customer
-                'credit_account_id' => $transportationChargeAccountId, // credit the transportation charge account
-                'amount'            => $transportationCharge ,
-                'transaction_date'  => $transactionDate,
-                'particulars'       => ("Transportation charge to ". $transportationLocation. ". Sale Invoice No:". $saleResponse['id']),
-                'branch_id'         => $branchId,
-            ], $transportationTransaction);
-
-            if(!$transportationTransactionResponse['flag']) {
-                throw new AppCustomException("CustomError", $transportationTransactionResponse['errorCode']);
-            }
-
-            //save to sale table
-            $transportationResponse = $transportationRepo->saveTransportation([
-                'transaction_id'            => $transportationTransactionResponse['id'],
-                'sale_id'                   => $saleResponse['id'],
-                'transportation_location'   => $transportationLocation,
-                'transportation_charge'     => $transportationCharge,
-            ], $transportation);
-
-            if(!$transportationResponse['flag']) {
-                throw new AppCustomException("CustomError", $transportationResponse['errorCode']);
-            }
-
-            DB::commit();
-            $saveFlag = true;
-        } catch (Exception $e) {
-            //roll back in case of exceptions
-            DB::rollback();
-
-            if($e->getMessage() == "CustomError") {
-                $errorCode = $e->getCode();
-            } else {
-                $errorCode = 4;
-            }
-        }
-
-        if($saveFlag) {
-            return redirect(route('sale.show', $sale->id))->with("message","Sale details updated successfully. Updated Record Number : ". $transactionResponse['id'])->with("alert-class", "success");
+        if($updateResponse['flag']) {
+            return redirect(route('sale.index', $updateResponse['id']))->with("message","Sale details updated successfully. Updated Record Number : ". $updateResponse['id'])->with("alert-class", "success");
         }
         
-        return redirect()->back()->with("message","Failed to update the sale details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
+        return redirect()->back()->with("message","Failed to update the sale details. Error Code : ". $this->errorHead. "/". $updateResponse['errorCode'])->with("alert-class", "error");
     }
 
     /**
@@ -536,56 +372,5 @@ class SaleController extends Controller
         return view('sales.invoice', [
             'sale' => $sale,
         ]);
-    }
-
-    /**
-     * return the specified resource.
-     *
-     * @return json
-     */
-    public function getLastSale(Request $request, EmployeeRepository $employeeRepo)
-    {
-        $paramName  = $request->get('paramName');
-        $paramValue = $request->get('paramValue');
-
-        $errorCode  = 0;
-        $sale       = null;
-        $employee   = null;
-
-        $params = [
-            $paramName =>  [
-                'paramName'     => $paramName,
-                'paramOperator' => '=',
-                'paramValue'    => $paramValue,
-            ],
-        ];
-
-        try {
-            $sales = $this->saleRepo->getSales($params, [], null);
-
-            $lastSale = $sales->sortByDesc('id')->first();
-
-            $employeeParams = [
-                'account_id' => $lastSale->transportation->LoadingChargetransaction->credit_account_id,
-            ];
-            $employee = $employeeRepo->getEmployees($employeeParams, null);
-        } catch (\Exception $e) {
-            if($e->getMessage() == "CustomError") {
-                $errorCode = $e->getCode();
-            } else {
-                $errorCode = 8;
-            }
-            return [
-                'flag'      => false,
-                'message'   => "Record not found".$errorCode,
-            ];
-        }
-
-        return [
-            'flag'  => true,
-            'sale'  => [
-                'loadingEmployeeId' => $employee->first()->id,
-            ],
-        ];
     }
 }

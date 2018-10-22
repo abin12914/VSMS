@@ -50,22 +50,27 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ProductRegistrationRequest $request)
+    public function store(ProductRegistrationRequest $request, $id=null)
     {
+        $product        = null;
         $saveFlag       = false;
         $errorCode      = 0;
 
         //wrappin db transactions
         DB::beginTransaction();
         try {
+            if(!empty($id)) {
+                $product = $this->productRepo->getProduct($id);
+            }
+
             $response   = $this->productRepo->saveProduct([
                 'name'              => $request->get('product_name'),
                 'uom_code'          => strtoupper($request->get('uom_code')),
                 'description'       => $request->get('description'),
                 'malayalam_name'    => $request->get('malayalam_name'),
                 'product_code'      => $request->get('product_code'),
-                'weighment_wastage' => $request->get('weighment_wastage'),
-            ]);
+                'weighment_wastage' => $request->get('weighment_wastage') ?: null,
+            ], $product);
 
             if(!$response['flag']) {
                 throw new AppCustomException("CustomError", $accountResponse['errorCode']);
@@ -85,9 +90,22 @@ class ProductController extends Controller
         }
 
         if($saveFlag) {
-            return redirect(route('product.index'))->with("message","Product details saved successfully. Reference Number : ". $response['id'])->with("alert-class", "success");
+            if(!empty($id)) {
+                return [
+                    'flag'  => true,
+                    'id'    => $response['id']
+                ];
+            }
+            return redirect(route('account.show', $response['id']))->with("message","Account details saved successfully. Reference Number : ". $response['id'])->with("alert-class", "success");
         }
-        
+
+        if(!empty($id)) {
+            return [
+                'flag'          => false,
+                'errorCode'    => $errorCode
+            ];
+        }
+
         return redirect()->back()->with("message","Failed to save the product details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
     }
 
@@ -126,46 +144,13 @@ class ProductController extends Controller
      */
     public function update(ProductRegistrationRequest $request, $id)
     {
-        $saveFlag   = false;
-        $errorCode  = 0;
+        $updateResponse = $this->store($request, $id);
 
-        //wrappin db transactions
-        DB::beginTransaction();
-        try {
-            //get product
-            $product = $this->productRepo->getProduct($id);
-
-            $response = $this->productRepo->saveProduct([
-                'name'              => $request->get('product_name'),
-                'uom_code'          => strtoupper($request->get('uom_code')),
-                'description'       => $request->get('description'),
-                'malayalam_name'    => $request->get('malayalam_name'),
-                'product_code'      => $request->get('product_code'),
-                'weighment_wastage' => $request->get('weighment_wastage'),
-            ], $product);
-
-            if(!$response['flag']) {
-                throw new AppCustomException("CustomError", $accountResponse['errorCode']);
-            }
-
-            DB::commit();
-            $saveFlag = true;
-        } catch (Exception $e) {
-            //roll back in case of exceptions
-            DB::rollback();
-
-            if($e->getMessage() == "CustomError") {
-                $errorCode = $e->getCode();
-            } else {
-                $errorCode = 1;
-            }
-        }
-
-        if($saveFlag) {
-            return redirect(route('product.index'))->with("message","Product details updated successfully. Updated Record Number : ". $response['id'])->with("alert-class", "success");
+        if($updateResponse['flag']) {
+            return redirect(route('product.index'))->with("message","Product details updated successfully. Updated Record Number : ". $updateResponse['id'])->with("alert-class", "success");
         }
         
-        return redirect()->back()->with("message","Failed to update the product details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
+        return redirect()->back()->with("message","Failed to update the Product details. Error Code : ". $this->errorHead. "/". $updateResponse['errorCode'])->with("alert-class", "error");
     }
 
     /**

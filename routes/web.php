@@ -40,10 +40,8 @@ Route::group(['middleware' => 'auth.check'], function () {
         //staff
         Route::resource('employee', 'EmployeeController');
 
-        //production
-        Route::resource('production', 'ProductionController');
-
         //purchases
+        Route::get('/purchase/{id}/invoice', 'PurchaseController@invoice')->name('purchase.invoice');
         Route::resource('purchase', 'PurchaseController');
 
         //sales

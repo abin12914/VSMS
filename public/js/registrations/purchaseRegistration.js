@@ -82,7 +82,7 @@ $(function () {
                         $('#description').focus();
                     }
                 }
-            } else {
+            } else if(accountId && accountId > 0) {
                 $('#supplier_account_id').val(accountId);
                 $('#supplier_account_id').trigger('change');
                 $('#supplier_parent_div').addClass('has-warning');

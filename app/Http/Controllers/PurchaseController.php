@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Repositories\PurchaseRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\AccountRepository;
-use App\Repositories\MaterialRepository;
 use App\Http\Requests\PurchaseRegistrationRequest;
 use App\Http\Requests\PurchaseFilterRequest;
 use Carbon\Carbon;
@@ -146,7 +145,7 @@ class PurchaseController extends Controller
                 {
                     //save quick supplier account to table
                     $accountResponse = $accountRepo->saveAccount([
-                        'account_name'      => $supplierName,
+                        'account_name'      => $supplierName. "-". $customerPhone,
                         'description'       => ("New account of". $supplierName),
                         'relation'          => array_search('Supplier', $accountRelations), //supplier key=2
                         'financial_status'  => 0,
@@ -231,7 +230,24 @@ class PurchaseController extends Controller
      */
     public function show($id)
     {
-        //
+        $errorCode  = 0;
+        $purchase   = [];
+
+        try {
+            $purchase = $this->purchaseRepo->getPurchase($id);
+        } catch (\Exception $e) {
+            if($e->getMessage() == "CustomError") {
+                $errorCode = $e->getCode();
+            } else {
+                $errorCode = 2;
+            }
+            //throwing methodnotfound exception when no model is fetched
+            throw new ModelNotFoundException("Purchase", $errorCode);
+        }
+
+        return view('purchases.details', [
+            'purchase' => $purchase,
+        ]);
     }
 
     /**
@@ -251,7 +267,7 @@ class PurchaseController extends Controller
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
             } else {
-                $errorCode = 2;
+                $errorCode = 3;
             }
             //throwing methodnotfound exception when no model is fetched
             throw new ModelNotFoundException("Purchase", $errorCode);
@@ -322,5 +338,39 @@ class PurchaseController extends Controller
         }
         
         return redirect()->back()->with("message","Failed to delete the purchase details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
+    }
+
+    /**
+     * Show the invoice for print.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function invoice($id)
+    {
+        $errorCode  = 0;
+        $purchase       = [];
+
+        try {
+            $purchase = $this->purchaseRepo->getPurchase($id);
+        } catch (\Exception $e) {
+            if($e->getMessage() == "CustomError") {
+                $errorCode = $e->getCode();
+            } else {
+                $errorCode = 7;
+            }
+            //throwing methodnotfound exception when no model is fetched
+            throw new ModelNotFoundException("Purchase", $errorCode);
+        }
+
+        if(empty($purchase->tax_invoice_number)) {
+            return view('purchases.invoice', [
+                'purchase' => $purchase,
+            ]);
+            
+        }
+
+        return view('purchases.invoice', [
+            'purchase' => $purchase,
+        ]);
     }
 }

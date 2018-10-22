@@ -30,7 +30,8 @@ class AccountRepository
             }
 
             if($typeFlag) {
-                $accounts = $accounts->where('type', 3); //personal accounts
+                $typeId     = array_search('Personal', config('constants.accountTypes')); //type id=3 //personal account
+                $accounts   = $accounts->where('type', $typeId);
             }
 
             foreach ($params as $key => $value) {
@@ -63,6 +64,7 @@ class AccountRepository
     public function saveAccount($inputArray, $account=null)
     {
         $saveFlag   = false;
+        $typeId     = array_search('Personal', config('constants.accountTypes')); //type id=3 //personal account
 
         try {
             //account saving
@@ -71,7 +73,7 @@ class AccountRepository
             }
             $account->account_name      = $inputArray['account_name'];
             $account->description       = $inputArray['description'];
-            $account->type              = 3; //type = personal account
+            $account->type              = $typeId; //type = personal account
             $account->relation          = $inputArray['relation'];
             $account->financial_status  = $inputArray['financial_status'];
             $account->opening_balance   = $inputArray['opening_balance'];
@@ -79,7 +81,6 @@ class AccountRepository
             $account->phone             = $inputArray['phone'];
             $account->address           = $inputArray['address'];
             $account->image             = $inputArray['image'];
-            $account->gstin             = !empty($inputArray['gstin']) ? $inputArray['gstin'] : null;
             $account->status            = $inputArray['status'];
             //account save
             $account->save();

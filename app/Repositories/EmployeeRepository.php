@@ -95,12 +95,18 @@ class EmployeeRepository
     /**
      * return employee.
      */
-    public function getEmployee($id)
+    public function getEmployee($id, $activeFlag=true)
     {
         $employee = [];
 
         try {
-            $employee = Employee::with('account')->active()->findOrFail($id);
+            $employee = Employee::with('account');
+
+            if($activeFlag) {
+                $employee = $employee->active();
+            }
+
+            $employee = $employee->findOrFail($id);
         } catch (Exception $e) {
             if($e->getMessage() == "CustomError") {
                 $this->errorCode = $e->getCode();
