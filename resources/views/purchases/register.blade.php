@@ -180,7 +180,7 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
-                                                            <td>Old Balance</td>
+                                                            <td>Old Balance <i id=""></i></td>
                                                             <td></td>
                                                             <td>
                                                                 <input type="text" class="form-control" name="old_balance" id="old_balance" placeholder="Old Balance" value="{{ old('old_balance') ?: 0 }}" readonly>

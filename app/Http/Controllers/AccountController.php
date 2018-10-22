@@ -303,7 +303,7 @@ class AccountController extends Controller
      * @param  int  $id
      * @return json
      */
-    public function getDetails($id=null)
+    public function getDetails($id=null, TransactionRepository $transactionRepo)
     {
         $oldBalance['debit']    = 0;
         $oldBalance['credit']   = 0;
@@ -319,13 +319,14 @@ class AccountController extends Controller
 
         try {
             $account    = $this->accountRepo->getAccount($id,false);
-            $oldBalance = $this->getOldBalance($id, null);
+            $oldBalance = $this->getOldBalance($id, null, $transactionRepo);
         } catch (\Exception $e) {
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
             } else {
                 $errorCode = 2;
             }
+            
             return [
                 'flag'      => false,
                 'message'   => "Record not found".$errorCode,
@@ -383,9 +384,9 @@ class AccountController extends Controller
         }
 
         //old balance values
-        $transactions = $this->transactionRepo->getTransactions($params, $orParams, null, null);
-        $debit        = $transactions->where('debit_account_id', $accountId)->sum('amount');
-        $credit       = $transactions->where('credit_account_id', $accountId)->sum('amount');
+        $transactions = $transactionRepo->getTransactions($params, $orParams, null, null);
+        $debit        = $transactions->where('debit_account_id', $id)->sum('amount');
+        $credit       = $transactions->where('credit_account_id', $id)->sum('amount');
 
         return [
             'flag'      => true,

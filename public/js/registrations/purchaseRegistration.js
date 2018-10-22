@@ -31,6 +31,7 @@ $(function () {
 
     //supplier details
     $('body').on("change", "#supplier_account_id", function (evt) {
+        var oldBalanceAmount    = 0;
         var supplierAccountId   = $(this).val();
 
         if(supplierAccountId && supplierAccountId != -1) {
@@ -43,11 +44,20 @@ $(function () {
                 success: function(result) {
                     
                     if(result && result.flag) {
-                        var account = result.account;
+                        var account     = result.account;
+                        var obDebit     = result.oldBalance.oldDebit;
+                        var obCredit    = result.oldBalance.oldCredit;
+
                         if(account.type == 3) {
                             $('#supplier_name').val(account.name);
                             $('#supplier_phone').val(account.phone);
                         }
+
+                        if(obDebit != 'undefined' && obCredit != 'undefined') {
+                            oldBalanceAmount = obDebit - obCredit;
+                        }
+
+                        $('#old_balance').val(oldBalanceAmount);
                     } else {
                         $('#supplier_name').val('');
                         $('#supplier_phone').val('');
