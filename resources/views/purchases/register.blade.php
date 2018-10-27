@@ -180,7 +180,7 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
-                                                            <td>Old Balance <i id=""></i></td>
+                                                            <td>Old Balance <i id="ob_info"></i></td>
                                                             <td></td>
                                                             <td>
                                                                 <input type="text" class="form-control" name="old_balance" id="old_balance" placeholder="Old Balance" value="{{ old('old_balance') ?: 0 }}" readonly>
@@ -193,17 +193,17 @@
                                                             <td>Total</td>
                                                             <td></td>
                                                             <td>
-                                                                <input type="text" class="form-control" name="bill_ob_amount" id="bill_ob_amount" placeholder="Bill + Old Balance" value="{{ old('bill_ob_amount') }}" readonly>
+                                                                <input type="text" class="form-control" name="bill_plus_ob_amount" id="bill_plus_ob_amount" placeholder="Bill + Old Balance" value="{{ old('bill_plus_ob_amount') }}" readonly>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
-                                                            <td>Cash Paid</td>
+                                                            <td>Cash Paid To Supplier</td>
                                                             <td></td>
                                                             <td>
-                                                                <input type="text" class="form-control" name="cash_paid" id="cash_paid" placeholder="Cash Paid" value="{{ old('cash_paid') }}">
+                                                                <input type="text" class="form-control decimal_number_only" name="cash_paid" id="cash_paid" placeholder="Cash Paid" value="{{ old('cash_paid') ?: 0 }}" maxlength="6">
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -213,7 +213,7 @@
                                                             <td>Outstanding Balance</td>
                                                             <td></td>
                                                             <td>
-                                                                <input type="text" class="form-control" name="cash_paid" id="cash_paid" placeholder="Cash Paid" value="{{ old('cash_paid') }}" readonly>
+                                                                <input type="text" class="form-control" name="outstanding_amount" id="outstanding_amount" placeholder="Outstanding Balance" value="{{ old('outstanding_amount') }}" readonly>
                                                             </td>
                                                         </tr>
                                                     </tbody>

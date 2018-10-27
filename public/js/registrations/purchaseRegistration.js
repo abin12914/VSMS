@@ -33,6 +33,8 @@ $(function () {
     $('body').on("change", "#supplier_account_id", function (evt) {
         var oldBalanceAmount    = 0;
         var supplierAccountId   = $(this).val();
+        $('#ob_info').html('');
+        $('#old_balance').val(0);
 
         if(supplierAccountId && supplierAccountId != -1) {
             var selectedOption = $(this).find(':selected');
@@ -57,7 +59,15 @@ $(function () {
                             oldBalanceAmount = obDebit - obCredit;
                         }
 
+                        if(oldBalanceAmount < 0) {
+                            //debit < credit => company owes supplier
+                            $('#ob_info').html(' (To give supplier)');
+                        } else {
+                            //debit > credit => supplier owes company
+                            $('#ob_info').html(' (Get from supplier)');
+                        }
                         $('#old_balance').val(oldBalanceAmount);
+                        calculateTotalPurchaseBill();
                     } else {
                         $('#supplier_name').val('');
                         $('#supplier_phone').val('');
@@ -72,6 +82,8 @@ $(function () {
             $('#supplier_name').val('');
             $('#supplier_phone').val('');
         }
+        //calculate total purchase bill
+        calculateTotalPurchaseBill();
     });
 
     //
@@ -152,7 +164,7 @@ $(function () {
         siblingsHandling();
         initializeSelect2();
         //calculate total purchase bill
-        calculateTotalPurchaseBill();
+        //calculateTotalPurchaseBill(); //wont work
 
     });
 
@@ -214,6 +226,12 @@ $(function () {
         //calculate total purchase bill
         calculateTotalPurchaseBill();
     });
+
+    //purchase rate event actions
+    $('body').on("change keyup", "#cash_paid", function (evt) {
+        //calculate total purchase bill
+        calculateTotalPurchaseBill();
+    });
 });
 
 //method for quantity calculation
@@ -235,9 +253,15 @@ function calculateQuantity() {
 
 //method for total bill calculation of purchase
 function calculateTotalPurchaseBill() {
-    var bill        = 0;
-    var totalBill   = 0;
-    var discount    = ($('#discount').val() > 0 ? $('#discount').val() : 0 );
+    var bill              = 0;
+    var totalBill         = 0;
+    var billPlusObAmount  = 0;
+    var outstandingAmount = 0;
+    var discount          = parseFloat($('#discount').val() > 0 ? $('#discount').val() : 0 );
+    var oldBalance        = parseFloat($('#old_balance').val() != 'undefined' ? $('#old_balance').val() : 0 );
+    var cashPaid          = parseFloat($('#cash_paid').val() != 'undefined' ? $('#cash_paid').val() : 0 );
+    $('#bill_plus_ob_amount').val(0);
+    $('#outstanding_amount').val(0);
 
     $('.products_combo').each(function(index) {
         var productId   = $(this).val();
@@ -257,17 +281,21 @@ function calculateTotalPurchaseBill() {
         $('#total_amount').val(bill);
         if((bill - discount) > 0) {
             totalBill = bill - discount;
-            $('#total_bill').val(totalBill);
         } else {
             $('#discount').val(0);
-            $('#total_bill').val(bill);
+            totalBill = bill;
         }
-
+        $('#total_bill').val(totalBill);
     } else {
         $('#total_amount').val(0);
         $('#discount').val(0);
         $('#total_bill').val(0);
     }
+
+    billPlusObAmount = oldBalance + totalBill;
+    $('#bill_plus_ob_amount').val(billPlusObAmount);
+    outstandingAmount = billPlusObAmount - cashPaid;
+    $('#outstanding_amount').val(outstandingAmount);
 }
 
 function siblingsHandling() {

@@ -189,11 +189,15 @@ class PurchaseRegistrationRequest extends FormRequest
             return false;
         }
 
-        $billTotal  = $this->request->get("total_amount");
-        $discount   = $this->request->get("discount");
-        $billFinal  = $this->request->get("total_bill");
+        $billTotal   = $this->request->get("total_amount");
+        $discount    = $this->request->get("discount");
+        $totalBill   = $this->request->get("total_bill");
+        $oldBalance  = $this->request->get("old_balance");
+        $billPlusOb  = $this->request->get("bill_plus_ob_amount");
+        $cashPaid    = $this->request->get("cash_paid");
+        $outStanding = $this->request->get('outstanding_amount');
 
-        if(($billTotal != $totalAmount) || (($billTotal - $discount) != $billFinal)) {
+        if(($billTotal != $totalAmount) || (($billTotal - $discount) != $totalBill) || (($totalBill + $oldBalance) != $billPlusOb) || (($billPlusOb - $cashPaid) != $outStanding)) {
             return false;
         }
         
