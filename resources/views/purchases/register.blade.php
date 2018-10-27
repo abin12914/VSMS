@@ -211,7 +211,11 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td>Outstanding Balance</td>
-                                                            <td></td>
+                                                            <td>
+                                                                @if(!empty($errors->first('calculations')))
+                                                                    <i class="fa fa-hand-o-right" style="color: red;" title="Error in calculations. Try again later."></i>
+                                                                @endif
+                                                            </td>
                                                             <td>
                                                                 <input type="text" class="form-control" name="outstanding_amount" id="outstanding_amount" placeholder="Outstanding Balance" value="{{ old('outstanding_amount') }}" readonly>
                                                             </td>

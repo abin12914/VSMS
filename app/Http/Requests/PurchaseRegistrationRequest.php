@@ -135,6 +135,11 @@ class PurchaseRegistrationRequest extends FormRequest
                                                 'max:99999',
                                                 'min:1'
                                             ],
+            'cash_paid'                 =>  [
+                                                'required',
+                                                'min:0',
+                                                'max:999999',
+                                            ],
         ];
     }
 

@@ -111,6 +111,7 @@ class PurchaseController extends Controller
         $totalBill          = $request->get('total_bill');
         $supplierName       = $request->get('supplier_name');
         $supplierPhone      = $request->get('supplier_phone');
+        $cashPaid           = $request->get('cash_paid');
 
         //wrappin db transactions
         DB::beginTransaction();
