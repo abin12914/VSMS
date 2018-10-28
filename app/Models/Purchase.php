@@ -50,9 +50,9 @@ class Purchase extends Model
     /**
      * Get the branch details associated with the purchase
      */
-    public function branch()
+    public function payment()
     {
-        return $this->belongsTo('App\Models\Branch','branch_id');
+        return $this->belongsTo('App\Models\Voucher','voucher_id');
     }
 
     /**

@@ -319,7 +319,7 @@ class AccountController extends Controller
 
         try {
             $account    = $this->accountRepo->getAccount($id,false);
-            $oldBalance = $this->getOldBalance($id, null, $transactionRepo);
+            $oldBalance = $transactionRepo->getOldBalance($id, null, null);
         } catch (\Exception $e) {
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
@@ -345,53 +345,6 @@ class AccountController extends Controller
                 'oldDebit'  => $oldBalance['debit'] ?: 0,
                 'oldCredit' => $oldBalance['credit'] ?: 0,
             ],
-        ];
-    }
-
-    /**
-     * return the specified resource.
-     *
-     * @param  int  $id
-     * @param  date $fromDate
-     * @return json
-     */
-    public function getOldBalance($id, $uptoDate=null, TransactionRepository $transactionRepo)
-    {
-        $params     = [];
-        $orParams   = [];
-
-        $orParams = [
-            'debit_account_id'   =>  [
-                'paramName'      => 'debit_account_id',
-                'paramOperator'  => '=',
-                'paramValue'     => $id,
-            ],
-            'credit_account_id'  =>  [
-                'paramName'      => 'credit_account_id',
-                'paramOperator'  => '=',
-                'paramValue'     => $id,
-            ]
-        ];
-
-        if(!empty($uptoDate)) {
-            $params = [
-                'from_date' =>  [
-                    'paramName'     => 'transaction_date',
-                    'paramOperator' => '<',
-                    'paramValue'    => $uptoDate,
-                ]
-            ];
-        }
-
-        //old balance values
-        $transactions = $transactionRepo->getTransactions($params, $orParams, null, null);
-        $debit        = $transactions->where('debit_account_id', $id)->sum('amount');
-        $credit       = $transactions->where('credit_account_id', $id)->sum('amount');
-
-        return [
-            'flag'      => true,
-            'debit'     => $debit,
-            'credit'    => $credit,
         ];
     }
 }

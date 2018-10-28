@@ -73,7 +73,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label for="description" class="control-label"><b style="color: red;">* </b> Notes : </label>
-                                                    @if(!empty( old('description')))
+                                                    @if(empty(old('description')))
                                                         <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description"></textarea>
                                                     @else
                                                         <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description">{{ old('description') }}</textarea>

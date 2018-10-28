@@ -292,9 +292,9 @@ function calculateTotalPurchaseBill() {
         $('#total_bill').val(0);
     }
 
-    billPlusObAmount = oldBalance + totalBill;
+    billPlusObAmount = oldBalance - totalBill;
     $('#bill_plus_ob_amount').val(billPlusObAmount);
-    outstandingAmount = billPlusObAmount - cashPaid;
+    outstandingAmount = billPlusObAmount + cashPaid;
     $('#outstanding_amount').val(outstandingAmount);
 }
 

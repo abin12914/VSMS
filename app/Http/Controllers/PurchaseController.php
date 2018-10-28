@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Repositories\PurchaseRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\AccountRepository;
+use App\Repositories\VoucherRepository;
 use App\Http\Requests\PurchaseRegistrationRequest;
 use App\Http\Requests\PurchaseFilterRequest;
 use Carbon\Carbon;
@@ -94,16 +95,21 @@ class PurchaseController extends Controller
         PurchaseRegistrationRequest $request,
         TransactionRepository $transactionRepo,
         AccountRepository $accountRepo,
+        VoucherRepository $voucherRepo,
         $id=null
     ) {
         $saveFlag            = false;
         $errorCode           = 0;
         $purchase            = null;
         $purchaseTransaction = null;
+        $voucher             = null;
+        $voucherTransaction  = null;
+        $voucherResponse     = null;
 
         //configured values
         $purchaseAccountId  = config('constants.accountConstants.Purchase.id');
         $accountRelations   = config('constants.accountRelationTypes');
+        $cashAccountId      = config('constants.accountConstants.Cash.id');
 
         $transactionDate    = Carbon::createFromFormat('d-m-Y', $request->get('purchase_date'))->format('Y-m-d');
         $supplierAccountId  = $request->get('supplier_account_id');
@@ -136,6 +142,10 @@ class PurchaseController extends Controller
             if(!empty($id)) {
                 $purchase               = $this->purchaseRepo->getPurchase($id);
                 $purchaseTransaction    = $transactionRepo->getTransaction($purchase->transaction_id);
+                if(!empty($purchase->voucher_id)) {
+                    $voucher            = $this->voucherRepo->getVoucher($purchase->voucher_id);
+                    $voucherTransaction = $transactionRepo->getTransaction($voucher->transaction_id);
+                }
             }
 
             if($supplierAccountId == -1) {
@@ -174,6 +184,25 @@ class PurchaseController extends Controller
                 $particulars        = ("Purchase from ". $supplierAccount->account_name);
             }
 
+            //save voucher transaction if cash paid to supplier
+            if(!empty($cashPaid) && $cashPaid >= 1) {
+                $voucherTransactionResponse = $transactionRepo->saveTransaction([
+                    'debit_account_id'  => $supplierAccountId, // debit the supplier account
+                    'credit_account_id' => $cashAccountId, // credit cash account
+                    'amount'            => $cashPaid ,
+                    'transaction_date'  => $transactionDate,
+                    'particulars'       => ("Cash paid with the purchase bill of Rs.". $totalBill),
+                ], $voucherTransaction);
+
+                $voucherResponse = $voucherRepo->saveVoucher([
+                    'transaction_id' => $voucherTransactionResponse['id'],
+                    'date'           => $transactionDate,
+                    'voucher_type'   => 2, //cash payment
+                    'amount'         => $cashPaid,
+                ], $voucher);
+
+            }
+
             //save purchase transaction to table
             $transactionResponse = $transactionRepo->saveTransaction([
                 'debit_account_id'  => $purchaseAccountId, // debit the purchase account
@@ -191,6 +220,7 @@ class PurchaseController extends Controller
             $purchaseResponse = $this->purchaseRepo->savePurchase([
                 'transaction_id'    => $transactionResponse['id'],
                 'date'              => $transactionDate,
+                'voucher_id'        => (!empty($voucherResponse['id']) ?: null),
                 'supplier_name'     => $supplierName,
                 'supplier_phone'    => $supplierPhone,
                 'description'       => $request->get('description'),
@@ -259,6 +289,8 @@ class PurchaseController extends Controller
      */
     public function edit($id)
     {
+        return redirect()->back()->with("message","Edit disabled!")->with("alert-class", "error");
+
         $errorCode  = 0;
         $purchase   = [];
 
@@ -309,6 +341,8 @@ class PurchaseController extends Controller
      */
     public function destroy($id)
     {
+        return redirect()->back()->with("message","Deletion disabled!")->with("alert-class", "error");
+
         $deleteFlag = false;
         $errorCode  = 0;
 
@@ -346,28 +380,23 @@ class PurchaseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function invoice($id)
+    public function invoice($id, TransactionRepository $transactionRepo)
     {
         $errorCode  = 0;
         $purchase       = [];
 
         try {
-            $purchase = $this->purchaseRepo->getPurchase($id);
+            $purchase       = $this->purchaseRepo->getPurchase($id);
+            $currentBalance = $transactionRepo->getOldBalance($purchase->transaction->credit_account_id, null, $purchase->payment->);
+            $oldBalance     =   (($currentBalance['debit'] - ($purchase->payment ? $purchase->payment->amount : 0)) - ($currentBalance['credit']- $purchase->total_amount));
         } catch (\Exception $e) {
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
             } else {
                 $errorCode = 7;
-            }
+            }dd($e);
             //throwing methodnotfound exception when no model is fetched
             throw new ModelNotFoundException("Purchase", $errorCode);
-        }
-
-        if(empty($purchase->tax_invoice_number)) {
-            return view('purchases.invoice', [
-                'purchase' => $purchase,
-            ]);
-            
         }
 
         return view('purchases.invoice', [

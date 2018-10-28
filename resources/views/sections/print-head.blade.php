@@ -6,5 +6,5 @@
     </div>
 @endif
 <div class="visible-print-block">
-    <h4><u>@yield('title')</u></h4>
+    {{-- <h4><u>@yield('title')</u></h4> --}}
 </div>

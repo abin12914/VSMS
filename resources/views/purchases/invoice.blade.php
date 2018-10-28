@@ -16,6 +16,7 @@
     <section class="invoice">
         <div class="row">
             <div class="col-md-12">
+                @include('sections.print-head')
                 <h6 class="text-center">Receipt of purchase</h6>
                 <table class="table table-bordered" style="margin-bottom: 0px;">
                     <tbody>
@@ -123,6 +124,39 @@
                                             <th>Discount</th>
                                             <th></th>
                                             <td>{{ $purchase->discount or 0}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Value of supply</th>
+                                            <th></th>
+                                            <td>{{ $purchase->total_amount }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Old Ba</th>
+                                            <th></th>
+                                            <td>{{ $purchase->total_amount }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Value of supply</th>
+                                            <th></th>
+                                            <td>{{ $purchase->total_amount }}</td>
                                         </tr>
                                         <tr>
                                             <th></th>

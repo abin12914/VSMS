@@ -202,7 +202,7 @@ class PurchaseRegistrationRequest extends FormRequest
         $cashPaid    = $this->request->get("cash_paid");
         $outStanding = $this->request->get('outstanding_amount');
 
-        if(($billTotal != $totalAmount) || (($billTotal - $discount) != $totalBill) || (($totalBill + $oldBalance) != $billPlusOb) || (($billPlusOb - $cashPaid) != $outStanding)) {
+        if(($billTotal != $totalAmount) || (($billTotal - $discount) != $totalBill) || (($oldBalance - $totalBill) != $billPlusOb) || (($billPlusOb + $cashPaid) != $outStanding)) {
             return false;
         }
         

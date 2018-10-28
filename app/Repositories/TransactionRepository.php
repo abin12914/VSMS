@@ -170,4 +170,54 @@ class TransactionRepository
             'error_code'    => $repositoryCode."/D/04",
         ];
     }
+
+    public function getOldBalance($accountId, $uptoDate=null, $uptoId=null)
+    {
+        $params     = [];
+        $orParams   = [];
+
+        $orParams = [
+            'debit_account_id'   =>  [
+                'paramName'      => 'debit_account_id',
+                'paramOperator'  => '=',
+                'paramValue'     => $accountId,
+            ],
+            'credit_account_id'  =>  [
+                'paramName'      => 'credit_account_id',
+                'paramOperator'  => '=',
+                'paramValue'     => $accountId,
+            ]
+        ];
+
+        if(!empty($uptoDate)) {
+            $params = $params + [
+                'from_date' =>  [
+                    'paramName'     => 'transaction_date',
+                    'paramOperator' => '<',
+                    'paramValue'    => $uptoDate,
+                ]
+            ];
+        }
+
+        if(!empty($uptoId)) {
+            $params = $params + [
+                'id' =>  [
+                    'paramName'     => 'id',
+                    'paramOperator' => '<',
+                    'paramValue'    => $uptoId,
+                ]
+            ];
+        }
+
+        //old balance values
+        $transactions = $this->getTransactions($params, $orParams, null, null);
+        $debit        = $transactions->where('debit_account_id', $accountId)->sum('amount');
+        $credit       = $transactions->where('credit_account_id', $accountId)->sum('amount');
+
+        return [
+            'flag'      => true,
+            'debit'     => $debit,
+            'credit'    => $credit,
+        ];
+    }
 }

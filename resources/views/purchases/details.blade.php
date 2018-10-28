@@ -18,8 +18,7 @@
         <!-- Main row -->
         <div class="row no-print">
             <div class="col-md-12">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <!-- Widget: user widget style 1 -->
                     <div class="box box-widget widget-user-2">
                         @if(!empty($purchase))
@@ -30,49 +29,26 @@
                                 </div>
                                 <!-- /.widget-user-image -->
                                 <h3 class="widget-user-username">Purchase</h3>
-                                <h5 class="widget-user-desc">xxx</h5>
+                                <h5 class="widget-user-desc">Ref : #{{ $purchase->id }}/{{ $purchase->transaction->id }}</h5>
                             </div>
                             <div class="box box-primary">
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-paperclip margin-r-5"></i> Reference Number
-                                            </strong>
-                                            <p class="text-muted multi-line">
-                                                #{{ $purchase->id }}/{{ $purchase->transaction->id }}
-                                                @if(!empty($purchase->tax_invoice_number))
-                                                    /{{ config('constants.branchInvoiceCode')[$purchase->branch_id]. $purchase->tax_invoice_number }}
-                                                @endif
-                                            </p>
-                                            <hr>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <strong>
-                                                <i class="fa fa-industry margin-r-5"></i> XXX
-                                            </strong>
-                                            <p class="text-muted multi-line">
-                                                xxx
-                                            </p>
-                                            <hr>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <strong>
-                                                <i class="fa fa-user-o margin-r-5"></i> Purchase Account
-                                            </strong>
-                                            <p class="text-muted multi-line">
-                                                {{ $purchase->transaction->debitAccount->account_name }}
-                                            </p>
-                                            <hr>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <strong>
                                                 <i class="fa fa-calendar margin-r-5"></i> Date
                                             </strong>
                                             <p class="text-muted multi-line">
-                                                {{ $purchase->date->format('d-m-Y') }}
+                                                <strong>{{ $purchase->date->format('d-m-Y') }}</strong>
+                                            </p>
+                                            <hr>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>
+                                                <i class="fa fa-user-o margin-r-5"></i> Supplier Account
+                                            </strong>
+                                            <p class="text-muted multi-line">
+                                                {{ $purchase->transaction->creditAccount->account_name }}
                                             </p>
                                             <hr>
                                         </div>
@@ -80,19 +56,19 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-edit margin-r-5"></i> Billing Name
+                                                <i class="fa fa-phone margin-r-5"></i> Supplier Name & Phone
                                             </strong>
                                             <p class="text-muted multi-line">
-                                                {{ $purchase->customer_name }}
+                                                {{ $purchase->supplier_name }} - {{ $purchase->supplier_phone }}
                                             </p>
                                             <hr>
                                         </div>
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-map-marker margin-r-5"></i> Consignment Location
+                                                <i class="fa fa-edit margin-r-5"></i> Notes
                                             </strong>
                                             <p class="text-muted multi-line">
-                                                {{ $purchase->transportation->consignee_address or 'No Consignment' }}
+                                                {{ $purchase->description }}
                                             </p>
                                             <hr>
                                         </div>
@@ -100,50 +76,63 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-inr margin-r-5"></i> Consignment Charge
+                                                <i class="fa fa-map-marker margin-r-5"></i> Bill Amount
                                             </strong>
                                             <p class="text-muted multi-line">
-                                                {{ $purchase->transportation->consignment_charge or 'No Consignment charge' }}
+                                                {{ $purchase->total_amount }}
                                             </p>
                                             <hr>
                                         </div>
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-inr margin-r-5"></i>  Total Bill
+                                                <i class="fa fa-user-o margin-r-5"></i> Cash Paid
                                             </strong>
                                             <p class="text-muted multi-line">
-                                                {{ $purchase->total_amount or 'error' }}
+                                                {{ !empty($purchase->voucher) ? $purchase->voucher->amount : 0 }}
                                             </p>
                                             <hr>
                                         </div>
                                     </div>
                                     <div class="box-header with-border">
-                                        <h3 class="box-title"></h3>
+                                        <h3 class="box-title">Purchase Items</h3>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-1"></div>
-                                        <div class="col-md-10">
+                                        <div class="col-md-12">
                                             <table class="table table-responsive table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th style="width: 5%;">#</th>
-                                                        <th style="width: 35%;">Product</th>
-                                                        <th style="width: 20%;">Quantity</th>
-                                                        <th style="width: 20%;">Rate</th>
-                                                        <th style="width: 20%;">Amount</th>
+                                                        <th style="width: 30%;">Item</th>
+                                                        <th style="width: 10%;">Gross Quantity</th>
+                                                        <th style="width: 5%;">Product Number</th>
+                                                        <th style="width: 10%;">Unit Wastage</th>
+                                                        <th style="width: 10%;">Total Wastage</th>
+                                                        <th style="width: 10%;">Net Quantity</th>
+                                                        <th style="width: 10%;">Rate</th>
+                                                        <th style="width: 10%;">Total</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach($purchase->products as $index => $product)
                                                         <tr>
                                                             <td>{{ $index + 1 }}</td>
-                                                            <td>{{ $product->name }}</td>
-                                                            <td>{{ $product->purchaseDetail->quantity }}</td>
+                                                            <td>{{ $product->name. " - ". $product->malayalam_name }}</td>
+                                                            <td>
+                                                                {{ $product->purchaseDetail->gross_quantity ?: $product->purchaseDetail->net_quantity }}
+                                                            </td>
+                                                            <td>{{ $product->purchaseDetail->product_number ?: '-' }}</td>
+                                                            <td>{{ $product->purchaseDetail->unit_wastage ?: '-' }}</td>
+                                                            <td>{{ $product->purchaseDetail->total_wastage ?: '-' }}</td>
+                                                            <td>{{ $product->purchaseDetail->net_quantity }}</td>
                                                             <td>{{ $product->purchaseDetail->rate }}</td>
-                                                            <td>{{ $product->purchaseDetail->quantity * $product->purchaseDetail->rate }}</td>
+                                                            <td>{{ $product->purchaseDetail->net_quantity * $product->purchaseDetail->rate }}</td>
                                                         </tr>
                                                     @endforeach
                                                     <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
                                                         <td></td>
                                                         <td></td>
                                                         <td><strong>Total</strong></td>
@@ -153,11 +142,19 @@
                                                     <tr>
                                                         <td></td>
                                                         <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
                                                         <td><strong>Discount</strong></td>
                                                         <td></td>
                                                         <td><strong>{{ $purchase->discount or 0 }}</strong></td>
                                                     </tr>
                                                     <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
                                                         <td></td>
                                                         <td></td>
                                                         <td><strong>Total Bill Amount</strong></td>
