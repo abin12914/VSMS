@@ -72,7 +72,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <table class="table table-bordered -ssd">
+                                <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%;">#</th>
@@ -103,71 +103,47 @@
                                                 <td>{{ ($product->purchaseDetail->net_quantity * $product->purchaseDetail->rate) }}</td>
                                             </tr>
                                         @endforeach
+                                    </tbody>
+                                </table>
+                                <table class="table table-bordered">
+                                    <tbody>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Amount</th>
-                                            <th></th>
-                                            <td>{{ ($purchase->total_amount + $purchase->discount) }}</td>
+                                            <td style="width: 5%;"></td>
+                                            <td style="width: 80%;">Total</td>
+                                            <td style="width: 15%;">{{ ($purchase->total_amount + $purchase->discount) }}</td>
                                         </tr>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Discount</th>
-                                            <th></th>
+                                            <td></td>
+                                            <td>Discount</td>
                                             <td>{{ $purchase->discount or 0}}</td>
                                         </tr>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Value of supply</th>
-                                            <th></th>
+                                            <td></td>
+                                            <td>Total Bill Amount</td>
                                             <td>{{ $purchase->total_amount }}</td>
                                         </tr>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Old Ba</th>
-                                            <th></th>
-                                            <td>{{ $purchase->total_amount }}</td>
+                                            <td></td>
+                                            <td>
+                                                Old Balance 
+                                                <b>{{ $oldBalance > 0 ? '(To get from supplier)' : '(To give supplier)' }}</b>
+                                            </td>
+                                            <td>{{ $oldBalance }}</td>
                                         </tr>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Value of supply</th>
-                                            <th></th>
-                                            <td>{{ $purchase->total_amount }}</td>
+                                            <td></td>
+                                            <td>Total</td>
+                                            <td>{{ $oldBalance - $purchase->total_amount }}</td>
                                         </tr>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Value of supply</th>
-                                            <th></th>
-                                            <td>{{ $purchase->total_amount }}</td>
+                                            <td></td>
+                                            <td>Cash Paid To Supplier</td>
+                                            <td>{{ !empty($purchase->payment) ? $purchase->payment->amount : 0  }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Outstanding Balance</td>
+                                            <td>{{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

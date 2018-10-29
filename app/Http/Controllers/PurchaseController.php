@@ -220,7 +220,7 @@ class PurchaseController extends Controller
             $purchaseResponse = $this->purchaseRepo->savePurchase([
                 'transaction_id'    => $transactionResponse['id'],
                 'date'              => $transactionDate,
-                'voucher_id'        => (!empty($voucherResponse['id']) ?: null),
+                'voucher_id'        => (!empty($voucherResponse['id']) ? $voucherResponse['id'] : null),
                 'supplier_name'     => $supplierName,
                 'supplier_phone'    => $supplierPhone,
                 'description'       => $request->get('description'),
@@ -364,7 +364,7 @@ class PurchaseController extends Controller
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
             } else {
-                $errorCode = 3;
+                $errorCode = 4;
             }
         }
 
@@ -383,24 +383,31 @@ class PurchaseController extends Controller
     public function invoice($id, TransactionRepository $transactionRepo)
     {
         $errorCode  = 0;
-        $purchase       = [];
+        $purchase   = [];
+        $oldBalance = 0;
 
         try {
             $purchase       = $this->purchaseRepo->getPurchase($id);
-            $currentBalance = $transactionRepo->getOldBalance($purchase->transaction->credit_account_id, null, $purchase->payment->);
-            $oldBalance     =   (($currentBalance['debit'] - ($purchase->payment ? $purchase->payment->amount : 0)) - ($currentBalance['credit']- $purchase->total_amount));
+            if(!empty($purchase->payment)) {
+                $oldBal = $transactionRepo->getOldBalance($purchase->transaction->credit_account_id, null, $purchase->payment->transaction_id);
+            } else {
+                $oldBal = $transactionRepo->getOldBalance($purchase->transaction->credit_account_id, null, $purchase->transaction_id);
+            }
+
+            $oldBalance = $oldBal['debit'] - $oldBal['credit'];
         } catch (\Exception $e) {
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
             } else {
-                $errorCode = 7;
-            }dd($e);
+                $errorCode = 5;
+            }
             //throwing methodnotfound exception when no model is fetched
             throw new ModelNotFoundException("Purchase", $errorCode);
         }
 
         return view('purchases.invoice', [
-            'purchase' => $purchase,
+            'purchase'      => $purchase,
+            'oldBalance'    => $oldBalance
         ]);
     }
 }

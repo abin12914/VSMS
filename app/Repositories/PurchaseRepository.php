@@ -70,6 +70,7 @@ class PurchaseRepository
             //purchase saving
             $purchase->transaction_id   = $inputArray['transaction_id'];
             $purchase->date             = $inputArray['date'];
+            $purchase->voucher_id       = $inputArray['voucher_id'];
             $purchase->supplier_name    = $inputArray['supplier_name'];
             $purchase->supplier_phone   = $inputArray['supplier_phone'];
             $purchase->description      = $inputArray['description'];
