@@ -26,24 +26,24 @@
                                     <tbody>
                                         <tr>
                                             <td style="width: 20%;">
-                                                <b>Ref. Number</b>
+                                                <b>Date & Ref. Number</b>
                                             </td>
                                             <td style="width: 30%;">
-                                                {{ $purchase->id }}/{{ $purchase->transaction_id }}
+                                                {{ $purchase->date->format('d-m-Y') }}&emsp;#{{ $purchase->id }}/{{ $purchase->transaction_id }}
                                             </td>
                                             <td style="width: 20%;">
-                                                <b>Date</b>
+                                                <b>Supplier</b>
                                             </td>
                                             <td style="width: 30%;">
-                                                {{ $purchase->date->format('d-m-Y') }}
+                                                {{ $purchase->transaction->creditAccount->account_name }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width: 20%;">
-                                                <b>Transaction Account</b>
+                                                <b>Supplier Detail</b>
                                             </td>
                                             <td style="width: 30%;">
-                                                {{ $purchase->transaction->creditAccount->account_name }}
+                                                {{ $purchase->supplier_name }}, {{ $purchase->supplier_phone }}
                                             </td>
                                             <td style="width: 20%;">
                                                 <b>Notes</b>
@@ -52,26 +52,13 @@
                                                 {{ $purchase->description }}
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td style="width: 20%;">
-                                                <b>Supplier Name</b>
-                                            </td>
-                                            <td style="width: 30%;">
-                                                {{ $purchase->supplier_name }}
-                                            </td>
-                                            <td style="width: 20%;">
-                                                <b>Supplier Phone</b>
-                                            </td>
-                                            <td style="width: 30%;">
-                                                {{ $purchase->supplier_phone }}
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </td>
                         </tr>
                         <tr>
                             <td>
+                                <h4>Purchase Details</h4>
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -103,50 +90,90 @@
                                                 <td>{{ ($product->purchaseDetail->net_quantity * $product->purchaseDetail->rate) }}</td>
                                             </tr>
                                         @endforeach
-                                    </tbody>
-                                </table>
-                                <table class="table table-bordered">
-                                    <tbody>
                                         <tr>
-                                            <td style="width: 5%;"></td>
-                                            <td style="width: 80%;">Total</td>
-                                            <td style="width: 15%;">{{ ($purchase->total_amount + $purchase->discount) }}</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><strong>Total</strong></td>
+                                            <td></td>
+                                            <td>{{ ($purchase->total_amount + $purchase->discount) }}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td>Discount</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><strong>Discount</strong></td>
+                                            <td></td>
                                             <td>{{ $purchase->discount or 0}}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td>Total Bill Amount</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><strong>Total Bill</strong></td>
+                                            <td></td>
                                             <td>{{ $purchase->total_amount }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                Old Balance 
-                                                <b>{{ $oldBalance > 0 ? '(To get from supplier)' : '(To give supplier)' }}</b>
-                                            </td>
-                                            <td>{{ $oldBalance }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>Total</td>
-                                            <td>{{ $oldBalance - $purchase->total_amount }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>Cash Paid To Supplier</td>
-                                            <td>{{ !empty($purchase->payment) ? $purchase->payment->amount : 0  }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>Outstanding Balance</td>
-                                            <td>{{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                <h4>Payment Details</h4>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 5%;">=></td>
+                                            <td style="width: 65%;">Total Bill</td>
+                                            <td style="width: 15%;">{{ $purchase->total_amount }}</td>
+                                            <td style="width: 15%;">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>=></td>
+                                            @if($oldBalance == 0)
+                                                <td>Old Balance</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                            @elseif($oldBalance < 0)
+                                                <td>
+                                                    Old Balance 
+                                                    <b> (To give supplier)</b>
+                                                </td>
+                                                <td>{{ abs($oldBalance) }}</td>
+                                                <td>-</td>
+                                            @else
+                                                <td>
+                                                    Old Balance 
+                                                    <b> (To get from supplier)</b>
+                                                </td>
+                                                <td></td>
+                                                <td>{{ abs($oldBalance) }}</td>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <td>=></td>
+                                            <td>Cash Paid To Supplier</td>
+                                            <td></td>
+                                            <td>{{ !empty($purchase->payment) ? $purchase->payment->amount : 0  }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                @if($oldBalance - $purchase->total_amount + (!empty($purchase->payment) ? $purchase->payment->amount : 0) == 0)
+                                    <h5>Outstanding Balance = {{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}
+                                    </h5>
+                                @elseif($oldBalance - $purchase->total_amount + (!empty($purchase->payment) ? $purchase->payment->amount : 0) > 0)
+                                    <h5>Outstanding Balance = {{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}
+                                    </h5>
+                                @else
+                                    <h5>Outstanding Balance = {{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}
+                                    </h5>
+                                @endif
                             </td>
                         </tr>
                     </tbody>
