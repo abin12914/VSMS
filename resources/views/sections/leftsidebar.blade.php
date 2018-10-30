@@ -87,6 +87,11 @@
                                     <i class="fa fa-circle-o text-green"></i> Account Statement
                                 </a>
                             </li>
+                            <li class="{{ Request::is('reports/credir-list')? 'active' : '' }}">
+                                <a href="{{ route('report.credit.list') }}">
+                                    <i class="fa fa-circle-o text-green"></i> Credit List
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <li class="treeview {{ ( Request::is('purchase/*') || Request::is('purchase') )? 'active' : '' }}">

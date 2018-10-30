@@ -19,7 +19,7 @@ class TransactionRepository
     /**
      * Return transactions.
      */
-    public function getTransactions($params=[], $orParams=[], $relation=null, $noOfRecords=null)
+    public function getTransactions($params=[], $orParams=[], $relationalParams=[], $relation=null, $noOfRecords=null)
     {
         $transactions = [];
         try {
@@ -40,6 +40,15 @@ class TransactionRepository
                     }
                 }
             });
+
+            //whereHas parameters
+            foreach ($relationalParams as $param) {
+                if(!empty($param) && !empty($param['paramValue'])) {
+                    $transactions = $transactions->whereHas($param['relation'], function($qry) use($param) {
+                        $qry->where($param['paramName'], $param['paramValue']);
+                    });
+                }
+            }
 
             //has relation checking
             if(!empty($relation)) {

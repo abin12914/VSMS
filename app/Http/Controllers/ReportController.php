@@ -99,20 +99,20 @@ class ReportController extends Controller
             } //else both transactions are included with or condition
 
             //display data
-            $transactions   = $this->transactionRepo->getTransactions($params, $orParams, $relation, $noOfRecords);
+            $transactions   = $this->transactionRepo->getTransactions($params, $orParams, [], $relation, $noOfRecords);
 
             //subtotal values
-            $subTotaltransactions = $this->transactionRepo->getTransactions($params, $orParams, $relation, null);
+            $subTotaltransactions = $this->transactionRepo->getTransactions($params, $orParams, [], $relation, null);
             $subTotalDebit  = $subTotaltransactions->where('debit_account_id', $accountId)->sum('amount');
             $subTotalCredit = $subTotaltransactions->where('credit_account_id', $accountId)->sum('amount');
 
             //outstanding values
-            $outstandingDebit   = $this->transactionRepo->getTransactions([], $debitParam, null, null)->sum('amount');
-            $outstandingCredit  = $this->transactionRepo->getTransactions([], $creditParam, null, null)->sum('amount');
+            $outstandingDebit   = $this->transactionRepo->getTransactions([], $debitParam, [], null, null)->sum('amount');
+            $outstandingCredit  = $this->transactionRepo->getTransactions([], $creditParam, [], null, null)->sum('amount');
 
             //old balance values
             if(!empty($fromDate)) {
-                $obtransactions = $this->transactionRepo->getTransactions($obParam, $orParams, $relation, null);
+                $obtransactions = $this->transactionRepo->getTransactions($obParam, $orParams, [], $relation, null);
                 $obDebit        = $obtransactions->where('debit_account_id', $accountId)->sum('amount');
                 $obCredit       = $obtransactions->where('credit_account_id', $accountId)->sum('amount');
             }
@@ -151,7 +151,7 @@ class ReportController extends Controller
         ]);
     }
 
-    public function creditList()
+    public function creditList(Request $request, AccountRepository $accountRepo)
     {
         $creditAmount       = [];
         $debitAmount        = [];
@@ -159,28 +159,38 @@ class ReportController extends Controller
         $totalCredit        = 0;
         $totalDebit         = 0;
 
-        $accountRelation    = $request->get('relation');
+        $accountRelation    = $request->get('relation_type');
 
         if(!empty($accountRelation)) {
-            $accounts = Account::where('type', 3)->get();
+            $params = [
+                'relation' => $accountRelation,
+            ];
+
+            $accounts = $accountRepo->getAccounts($params, null, true, false);
 
             if(empty($accounts)) {
                 session()->flash('fixed-message', 'No accounts available to show!');
-                return view('reposrts.credit-list');
+                return view('reports.credit-list');
             }
 
-            $debitQuery = Transaction::whereHas('debitAccount', function ($qry) use($accountRelation) {
-                        $qry->where('type', 'personal')->Where('relation', $accountRelation);
-                    })->where('status', '1');
+            $debitRelationalParams = [
+                'relation_type'   =>  [
+                    'relation'      => 'debitAccount',
+                    'paramName'     => 'relation',
+                    'paramValue'    => $accountRelation,
+                ]
+            ];
 
-            $creditQuery = Transaction::whereHas('creditAccount', function ($qry) use($accountRelation) {
-                        $qry->where('type', 'personal')->Where('relation', $accountRelation);
-                    })->where('status', '1');
+            $creditRelationalParams = [
+                'relation_type'   =>  [
+                    'relation'      => 'creditAccount',
+                    'paramName'     => 'relation',
+                    'paramValue'    => $accountRelation,
+                ]
+            ];
 
-
-            $debitTransactions = $debitQuery->orderBy('id','desc')->get();
-
-            $creditTransactions = $creditQuery->orderBy('id','desc')->get();
+            $debitTransactions     = $this->transactionRepo->getTransactions($params, [], $debitRelationalParams, null, null);
+            $creditTransactions    = $this->transactionRepo->getTransactions($params, [], $creditRelationalParams, null, null);
 
             foreach ($debitTransactions as $key => $transaction) {
                 if(empty($debitAmount[$transaction->debit_account_id])) {
@@ -207,18 +217,19 @@ class ReportController extends Controller
                 }
 
                 if($debitAmount[$account->id] > $creditAmount[$account->id]) {
-                    $totalDebit = $totalDebit + ($debitAmount[$account->id] - $creditAmount[$account->id]);
+                    $totalDebit     = $totalDebit + ($debitAmount[$account->id] - $creditAmount[$account->id]);
                 } else {
-                    $totalCredit = $totalCredit + ($creditAmount[$account->id] - $debitAmount[$account->id]);
+                    $totalCredit    = $totalCredit + ($creditAmount[$account->id] - $debitAmount[$account->id]);
                 }
             }
         }
 
-        return view('reposrts.credit-list',[
+        return view('reports.credit-list',[
                 'accounts'          => $accounts,
                 'creditAmount'      => $creditAmount,
                 'debitAmount'       => $debitAmount,
                 'relation'          => $accountRelation,
+                'relationTypes'     => config('constants.accountRelationTypes'),
                 'totalCreditAmount' => $totalCredit,
                 'totalDebitAmount'  => $totalDebit
             ]);

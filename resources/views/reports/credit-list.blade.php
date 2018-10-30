@@ -8,7 +8,7 @@
             <small>List</small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="{{ route('user-dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="{{ route('dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">Credit List</li>
         </ol>
     </section>
@@ -31,25 +31,25 @@
                     </div>
                     <!-- /.box-header -->
                     <div class="box-header">
-                        <form action="{{ route('credit-list') }}" method="get" class="form-horizontal">
+                        <form action="{{ route('report.credit.list') }}" method="get" class="form-horizontal">
                             <div class="row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
                                     <div class="form-group">
-                                        <div class="col-sm-12 {{ !empty($errors->first('relation')) ? 'has-error' : '' }}">
-                                            <label for="relation" class="control-label">Relation : </label>
-                                            <select class="form-control" name="relation" id="relation" tabindex="3" style="width: 100%">
-                                                <option value="" {{ (empty($relation) || (empty(old('relation')) && $relation == 0)) ? 'selected' : '' }}>Select transaction type</option>
-                                                <option value="employee" {{ (!empty($relation) && ((old('relation') == 'employee' ) || $relation == 'employee')) ? 'selected' : '' }}>Employee</option>
-                                                <option value="supplier" {{ (!empty($relation) && (old('relation') == 'supplier' || $relation == 'supplier')) ? 'selected' : '' }}>Supplier</option>
-                                                <option value="customer" {{ (!empty($relation) && (old('relation') == 'customer' || $relation == 'customer')) ? 'selected' : '' }}>Customer</option>
-                                                <option value="contractor" {{ (!empty($relation) && (old('relation') == 'contractor' || $relation == 'contractor')) ? 'selected' : '' }}>Contractor</option>
-                                                <option value="owner" {{ (!empty($relation) && (old('relation') == 'owner' || $relation == 'owner')) ? 'selected' : '' }}>Owner</option>
-                                                <option value="general" {{ (!empty($relation) && (old('relation') == 'general' || $relation == 'general')) ? 'selected' : '' }}>General</option>
-                                                <option value="operator" {{ (!empty($relation) && (old('relation') == 'operator' || $relation == 'operator')) ? 'selected' : '' }}>Operator</option>
-                                            </select>
-                                            @if(!empty($errors->first('relation')))
-                                                <p style="color: red;" >{{$errors->first('relation')}}</p>
+                                        <div class="col-sm-12 {{ !empty($errors->first('relation_type')) ? 'has-error' : '' }}">
+                                            <label for="relation_type" class="control-label">Relation : </label>
+                                            <select class="form-control select2" name="relation_type" id="relation_type" tabindex="7" style="width: 100%;">
+                                                    <option value="" {{ empty(old('relation_type')) ? 'selected' : '' }}>Select primary relation type</option>
+                                                    @if(!empty($relationTypes))
+                                                        @foreach($relationTypes as $key => $relationType)
+                                                            <option value="{{ $key }}" {{ (old('relation_type', $relation) == $key) ? 'selected' : '' }}>
+                                                                {{ $relationType }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            @if(!empty($errors->first('relation_type')))
+                                                <p style="color: red;" >{{$errors->first('relation_type')}}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -101,13 +101,13 @@
                                                 <tr>
                                                     <td>{{ ($index+1) }}</td>
                                                     <td>{{ $account->account_name }}</td>
-                                                    <td>{{ $account->accountDetail->name }}</td>
-                                                    @if($creditAmount[$account->id] > $debitAmount[$account->id])
-                                                        <td></td>
-                                                        <td>{{ round(($creditAmount[$account->id] - $debitAmount[$account->id]), 2) }}</td>
-                                                    @elseif($debitAmount[$account->id] > $creditAmount[$account->id])
+                                                    <td>{{ $account->name }}</td>
+                                                    @if($debitAmount[$account->id] > $creditAmount[$account->id])
                                                         <td>{{ round(($debitAmount[$account->id] - $creditAmount[$account->id]), 2) }}</td>
                                                         <td></td>
+                                                    @elseif($creditAmount[$account->id] > $debitAmount[$account->id])
+                                                        <td></td>
+                                                        <td>{{ round(($creditAmount[$account->id] - $debitAmount[$account->id]), 2) }}</td>
                                                     @else
                                                         <td>-</td>
                                                         <td>-</td>

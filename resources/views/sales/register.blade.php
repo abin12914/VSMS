@@ -112,12 +112,14 @@
                                                                     @endcomponent
                                                                 </td>
                                                                 <td>
-                                                                    {{-- <div class="col-md-10"> --}}
-                                                                    <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" value="{{ old('product_id.'. $i) }}" readonly>
-                                                                    {{-- </div> --}}
-                                                                    {{-- <div class="col-md-2">
-                                                                        <i class="fa fa-plus add_note" style="float: left;"></i>
-                                                                    </div> --}}
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" value="{{ old('product_id.'. $i) }}" readonly>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <button type="button" id="add_note_{{ $i }}" class="btn btn-primary btn-block btn-flat add_note">
+                                                                            <i class="fa fa-plus"></i>
+                                                                        </button>
+                                                                    </div>
                                                                     <input type="hidden" class="form-control gross_quantity" name="gross_quantity[]" id="gross_quantity_{{ $i }}" value="{{ old('gross_quantity.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                     <input type="hidden" class="form-control product_number" name="product_number[]" id="product_number_{{ $i }}" value="{{ old('product_number.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                     <input type="hidden" class="form-control unit_wastage " name="unit_wastage[]" id="unit_wastage_{{ $i }}" value="{{ old('unit_wastage.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
