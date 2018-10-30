@@ -1,104 +1,55 @@
 @extends('layouts.app')
-@section('title', 'Sale Invoice')
+@section('title', 'Sale Receipt')
 @section('content')
 <div class="content-wrapper">
      <section class="content-header">
         <h1>
-            Sales<small>Invoice</small>
+            Sales<small>Receipt</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ route('dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
             <li><a href="{{ route('sale.index') }}"> Sale</a></li>
-            <li class="active"> Invoice</li>
+            <li class="active"> Receipt</li>
         </ol>
     </section>
     <!-- Main content -->
     <section class="invoice">
         <div class="row">
             <div class="col-md-12">
-                <h5 class="text-center">Bill of supply</h5>
+                @include('sections.print-head')
+                <h6 class="text-center">Receipt of sale</h6>
                 <table class="table table-bordered" style="margin-bottom: 0px;">
                     <tbody>
                         <tr>
                             <td>
-                                <table class="table border-top-only-table" style="margin-bottom: 0px;">
+                                <table class="table table-bordered" style="margin-bottom: 0px;">
                                     <tbody>
                                         <tr>
-                                            <td style="width: 60%;">
-                                                <table class="table border-top-only-table" style="width: 100%; margin-bottom: 0px;">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td style="border-top: none !important;">
-                                                                <b>{{ $sale->branch->name }}</b><br>
-                                                                {{ $sale->branch->level > 0 ? 'Branch : ' : '' }}<b>{{ $sale->branch->place }}<br>
-                                                                {{ $sale->branch->address }}</b><br><br>
-                                                                <b>GSTIN/UIN</b> : {{ $sale->branch->gstin }} &emsp;<b>State</b> : Kerala &emsp;<b>Code</b> : 32
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="width: 100%;">
-                                                                <u><i>Buyer</i></u><br><br>
-                                                                <b>{{ $sale->customer_name }}<br>
-                                                                {{ $sale->customer_address }}</b><br>
-                                                                <b>GSTIN/UIN</b> : {{ $sale->customer_gstin }} &emsp;<b>State</b> : Kerala &emsp;<b>Code</b> :32
-                                                                <br>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                            <td style="width: 20%;">
+                                                <b>Date & Ref. Number</b>
                                             </td>
-                                            <td style="width: 40%;">
-                                                <table class="table table-bordered" style="width: 100%; margin-bottom: 0px;">
-                                                    <tbody>
-                                                        <tr>
-                                                            <b>Composite Tax Dealer</b>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="width: 40%;">
-                                                                <b>Serial Number</b>
-                                                            </td>
-                                                            <td style="width: 60%;">
-                                                                @if(!empty(config('constants.branchInvoiceCode')[$sale->branch_id]))
-                                                                    {{ config('constants.branchInvoiceCode')[$sale->branch_id]. $sale->tax_invoice_number }}
-                                                                @else
-                                                                    {{ $sale->branch_id. "/". $sale->tax_invoice_number }}
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="width: 40%;">
-                                                                <b>Date</b>
-                                                            </td>
-                                                            <td style="width: 60%;">
-                                                                {{ $sale->date->format('d-m-Y') }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="width: 40%;">
-                                                                <b>Vehicle Number</b>
-                                                            </td>
-                                                            <td style="width: 60%;">
-                                                                {{ $sale->transportation->consignment_vehicle_number }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="width: 40%;">
-                                                                <b>Destination</b>
-                                                            </td>
-                                                            <td style="width: 60%;">
-                                                                {{ $sale->transportation->consignee_address }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="width: 40%;">
-                                                                Notes
-                                                            </td>
-                                                            <td style="width: 60%;">
-                                                                
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                            <td style="width: 30%;">
+                                                {{ $sale->date->format('d-m-Y') }}&emsp;#{{ $sale->id }}/{{ $sale->transaction_id }}
+                                            </td>
+                                            <td style="width: 20%;">
+                                                <b>Customer</b>
+                                            </td>
+                                            <td style="width: 30%;">
+                                                {{ $sale->transaction->debitAccount->account_name }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 20%;">
+                                                <b>Customer Detail</b>
+                                            </td>
+                                            <td style="width: 30%;">
+                                                {{ $sale->supplier_name }}, {{ $sale->supplier_phone }}
+                                            </td>
+                                            <td style="width: 20%;">
+                                                <b>Notes</b>
+                                            </td>
+                                            <td style="width: 30%;">
+                                                {{ $sale->description }}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -107,15 +58,18 @@
                         </tr>
                         <tr>
                             <td>
+                                <h4>Sale Details</h4>
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%;">#</th>
-                                            <th style="width: 30%;">Description of Product/Service</th>
-                                            <th style="width: 10%;">HSN</th>
-                                            <th style="width: 10%;">UOM</th>
-                                            <th style="width: 15%;">Quantity</th>
-                                            <th style="width: 15%;">Rate</th>
+                                            <th style="width: 25%;">Product</th>
+                                            <th style="width: 8%;">Gross Quantity</th>
+                                            <th style="width: 8%;">Product Number</th>
+                                            <th style="width: 8%;">Unit Wastage</th>
+                                            <th style="width: 8%;">Total Wastage</th>
+                                            <th style="width: 13%;">Net Quantity</th>
+                                            <th style="width: 10%;">Rate</th>
                                             <th style="width: 15%;">Amount</th>
                                         </tr>
                                     </thead>
@@ -124,64 +78,104 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $product->name }}</td>
-                                                <td>{{ $product->hsn_code }}</td>
-                                                <td>{{ $product->uom_code }}</td>
-                                                <td>{{ $product->saleDetail->quantity }}</td>
-                                                <td>{{ $product->saleDetail->rate }}</td>
-                                                <td>{{ ($product->saleDetail->quantity * $product->saleDetail->rate) }}</td>
+                                                <td>
+                                                    {{ $product->saleDetail->gross_quantity ?: $product->saleDetail->net_quantity }}
+                                                    {{ $product->uom_code }}
+                                                </td>
+                                                <td>{{ $product->saleDetail->product_number ?: '-' }}</td>
+                                                <td>{{ $product->saleDetail->unit_wastage ?: '-' }}</td>
+                                                <td>{{ $product->saleDetail->total_wastage ?: 0 }}</td>
+                                                <td>{{ $product->saleDetail->net_quantity }} {{ $product->uom_code }}</td>
+                                                <td>{{ $product->saleDetail->rate }}/-</td>
+                                                <td>{{ ($product->saleDetail->net_quantity * $product->saleDetail->rate) }}</td>
                                             </tr>
                                         @endforeach
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Amount</th>
-                                            <th></th>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><strong>Total Price</strong></td>
+                                            <td></td>
                                             <td>{{ ($sale->total_amount + $sale->discount) }}</td>
                                         </tr>
+                                        @if(!empty($sale->discount) && $sale->discount > 0)
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><strong>Discount</strong></td>
+                                                <td></td>
+                                                <td>{{ $sale->discount or 0}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><strong>Total Bill</strong></td>
+                                                <td></td>
+                                                <td>{{ $sale->total_amount }}</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                                <h4>Payment Details</h4>
+                                <table class="table table-bordered">
+                                    <tbody>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Discount</th>
-                                            <th></th>
-                                            <td>{{ $sale->discount or 0}}</td>
+                                            <td style="width: 5%;">#</td>
+                                            <td style="width: 65%;">Total Bill</td>
+                                            <td style="width: 15%;">-</td>
+                                            <td style="width: 15%;">{{ $sale->total_amount }}</td>
                                         </tr>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Value of supply</th>
-                                            <th></th>
-                                            <td>{{ $sale->total_amount }}</td>
+                                            <td>#</td>
+                                            @if($oldBalance == 0)
+                                                <td>Old Balance</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                            @elseif($oldBalance < 0)
+                                                <td>
+                                                    Old Balance 
+                                                    <b> (Payable To {{ $sale->transaction->debitAccount->account_name }})</b>
+                                                </td>
+                                                <td>{{ abs($oldBalance) }}</td>
+                                                <td>-</td>
+                                            @else
+                                                <td>
+                                                    Old Balance 
+                                                    <b> (Recievable From {{ $sale->transaction->debitAccount->account_name }})</b>
+                                                </td>
+                                                <td></td>
+                                                <td>{{ abs($oldBalance) }}</td>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <td>#</td>
+                                            <td>Cash Received From Customer</td>
+                                            <td>{{ (!empty($sale->payment) && $sale->payment->amount > 0) ? $sale->payment->amount : '-'  }}</td>
+                                            <td>-</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <table class="table table-bordered" style="margin-bottom: 0px;">
-                                    <tr>
-                                        <td style="width: 50%;">
-                                            <p class="text-muted well well-sm no-shadow">
-                                                <b><u>Terms And Conditions</u></b>
-                                                <br>&emsp;1. Seller is not responsible for any loss or damage of goods in transport
-                                                <br>&emsp;1. Dispute if any will be subject to seller court jurisdiction
-                                            </p>
-                                        </td>
-                                        <td style="width: 50%;"><br>
-                                            <p class="text-muted well well-sm no-shadow">
-                                                <i>Certify that the particulars given above are true and correct.</i>
-                                                <br><br><br>
-                                                <p class="text-center">(Authorized Signatory)</p>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                </table>
+                                @if($oldBalance + $sale->total_amount - (!empty($sale->payment) ? $sale->payment->amount : 0) == 0)
+                                    <h4>Outstanding Balance = 0/-
+                                    </h4>
+                                @elseif($oldBalance + $sale->total_amount - (!empty($sale->payment) ? $sale->payment->amount : 0) > 0)
+                                    <h4>Outstanding Balance (Recievable From {{ $sale->transaction->debitAccount->account_name }}) = {{ abs($oldBalance + $sale->total_amount) - (!empty($sale->payment) ? $sale->payment->amount : 0) }}/-
+                                    </h4>
+                                @else
+                                    <h4>Outstanding Balance (Payable To {{ $sale->transaction->debitAccount->account_name }}) = {{ abs($oldBalance + $sale->total_amount) - (!empty($sale->payment) ? $sale->payment->amount : 0) }}/-
+                                    </h4>
+                                @endif
                             </td>
                         </tr>
                     </tbody>
@@ -192,7 +186,7 @@
             <div class="col-md-12">
                 <a>
                     <button type="button" class="btn btn-lg btn-default" onclick="event.preventDefault(); print();">
-                        <i class="fa fa-print"></i> Print Invoice
+                        <i class="fa fa-print"></i> Print Receipt
                     </button>
                 </a>
             </div>

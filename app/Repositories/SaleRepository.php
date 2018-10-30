@@ -23,7 +23,7 @@ class SaleRepository
         $sales = [];
 
         try {
-            $sales = Sale::with(['branch', 'transaction.debitAccount', 'products'])->active();
+            $sales = Sale::with(['transaction.debitAccount', 'products'])->active();
 
             foreach ($params as $param) {
                 if(!empty($param) && !empty($param['paramValue'])) {
@@ -49,7 +49,7 @@ class SaleRepository
                 $this->errorCode = $e->getCode();
             } else {
                 $this->errorCode = $this->repositoryCode + 1;
-            }
+            }dd($e);
             throw new AppCustomException("CustomError", $this->errorCode);
         }
 
@@ -70,6 +70,7 @@ class SaleRepository
             }
             $sale->transaction_id   = $inputArray['transaction_id'];
             $sale->date             = $inputArray['date'];
+            $sale->voucher_id       = $inputArray['voucher_id'];
             $sale->customer_name    = $inputArray['customer_name'];
             $sale->customer_phone   = $inputArray['customer_phone'];
             $sale->description      = $inputArray['description'];

@@ -25,7 +25,7 @@
                             <!-- Add the bg color to the header using any of the bg-* classes -->
                             <div class="widget-user-header bg-yellow">
                                 <div class="widget-user-image">
-                                    <img class="img-circle" src="/images/public/service.png" alt="User Avatar">
+                                    <img class="img-circle" src="/images/public/cart.png" alt="User Avatar">
                                 </div>
                                 <!-- /.widget-user-image -->
                                 <h3 class="widget-user-username">Purchase</h3>
@@ -76,7 +76,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-map-marker margin-r-5"></i> Bill Amount
+                                                <i class="fa fa-calculator margin-r-5"></i> Bill Amount
                                             </strong>
                                             <p class="text-muted multi-line">
                                                 {{ $purchase->total_amount }}
@@ -85,10 +85,10 @@
                                         </div>
                                         <div class="col-md-6">
                                             <strong>
-                                                <i class="fa fa-user-o margin-r-5"></i> Cash Paid
+                                                <i class="fa fa-inr margin-r-5"></i> Cash Paid
                                             </strong>
                                             <p class="text-muted multi-line">
-                                                {{ !empty($purchase->voucher) ? $purchase->voucher->amount : 0 }}
+                                                {{ !empty($purchase->payment) ? $purchase->payment->amount : 0 }}
                                             </p>
                                             <hr>
                                         </div>
@@ -122,7 +122,9 @@
                                                             </td>
                                                             <td>{{ $product->purchaseDetail->product_number ?: '-' }}</td>
                                                             <td>{{ $product->purchaseDetail->unit_wastage ?: '-' }}</td>
-                                                            <td>{{ $product->purchaseDetail->total_wastage ?: '-' }}</td>
+                                                            <td>
+                                                                {{ !empty($product->purchaseDetail->gross_quantity) ? $product->purchaseDetail->total_wastage : '0' }}
+                                                            </td>
                                                             <td>{{ $product->purchaseDetail->net_quantity }}</td>
                                                             <td>{{ $product->purchaseDetail->rate }}</td>
                                                             <td>{{ $product->purchaseDetail->net_quantity * $product->purchaseDetail->rate }}</td>
@@ -173,15 +175,9 @@
                                         <div class="col-md-3"></div>
                                         <div class="col-md-6">
                                             <div class="col-md-4">
-                                                @if(!empty($purchase->tax_invoice_number) && $purchase->tax_invoice_number > 0)
-                                                    <a href="{{ route('purchase.invoice', ['id' => $purchase->id]) }}" target="_blank">
-                                                        <button type="button" class="btn btn-default btn-block btn-flat"><i class="fa fa-print"></i> Invoice</button>
-                                                    </a>
-                                                @else
-                                                    <a href="{{ route('purchase.invoice', ['id' => $purchase->id]) }}" target="_blank">
-                                                        <button type="button" class="btn btn-default btn-block btn-flat"><i class="fa fa-print"></i> Estimate</button>
-                                                    </a>
-                                                @endif
+                                                <a href="{{ route('purchase.invoice', ['id' => $purchase->id]) }}" target="_blank">
+                                                    <button type="button" class="btn btn-default btn-block btn-flat"><i class="fa fa-print"></i> Invoice</button>
+                                                </a>
                                             </div>
                                             <div class="col-md-4">
                                                 <form action="{{ route('purchase.edit', $purchase->id) }}" method="get" class="form-horizontal">

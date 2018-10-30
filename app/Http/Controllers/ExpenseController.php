@@ -113,7 +113,6 @@ class ExpenseController extends Controller
 
         $expenseAccountId   = config('constants.accountConstants.ServiceAndExpense.id');
         $transactionDate    = Carbon::createFromFormat('d-m-Y', $request->get('date'))->format('Y-m-d');
-        $branchId           = $request->get('branch_id');
         $totalBill          = $request->get('bill_amount');
 
         //wrappin db transactions
@@ -133,7 +132,6 @@ class ExpenseController extends Controller
                 'amount'            => $totalBill ,
                 'transaction_date'  => $transactionDate,
                 'particulars'       => $request->get('description')."[Purchase & Expense]",
-                'branch_id'         => $branchId,
             ], $expenseTransaction);
 
             if(!$transactionResponse['flag']) {
@@ -146,7 +144,6 @@ class ExpenseController extends Controller
                 'date'           => $transactionDate,
                 'service_id'     => $request->get('service_id'),
                 'bill_amount'    => $totalBill,
-                'branch_id'      => $branchId,
             ], $expense);
 
             if(!$expenseResponse['flag']) {
@@ -158,7 +155,7 @@ class ExpenseController extends Controller
         } catch (Exception $e) {
             //roll back in case of exceptions
             DB::rollback();
-
+dd($e);
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
             } else {

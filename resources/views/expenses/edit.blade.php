@@ -37,32 +37,10 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <label for="branch_id" class="control-label"><b style="color: red;">* </b> Branch : </label>
-                                                    {{-- adding branch select component --}}
-                                                    @component('components.selects.branches', ['selectedBranchId' => !empty(old('branch_id')) ? old('branch_id') : $expense->branch_id, 'selectName' => 'branch_id', 'tabindex' => 1])
-                                                    @endcomponent
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'branch_id'])
-                                                    @endcomponent
-                                                </div>
-                                                <div class="col-md-6">
                                                     <label for="date" class="control-label"><b style="color: red;">* </b> Date : </label>
                                                     <input type="text" class="form-control decimal_number_only" name="date" id="date" placeholder="Transaction date" value="{{ !empty(old('date')) ? old('date') : $expense->date->format('d-m-Y') }}" tabindex="2">
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'date'])
-                                                    @endcomponent
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label for="service_id" class="control-label"><b style="color: red;">* </b> Service : </label>
-                                                    {{-- adding services select component --}}
-                                                    @component('components.selects.services', ['selectedServiceId' => !empty(old('service_id')) ? old('service_id') : $expense->service_id, 'selectName' => 'service_id', 'tabindex' => 3])
-                                                    @endcomponent
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'service_id'])
                                                     @endcomponent
                                                 </div>
                                                 <div class="col-md-6">
@@ -79,6 +57,26 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-6">
+                                                    <label for="service_id" class="control-label"><b style="color: red;">* </b> Service : </label>
+                                                    {{-- adding services select component --}}
+                                                    @component('components.selects.services', ['selectedServiceId' => !empty(old('service_id')) ? old('service_id') : $expense->service_id, 'selectName' => 'service_id', 'tabindex' => 3])
+                                                    @endcomponent
+                                                    {{-- adding error_message p tag component --}}
+                                                    @component('components.paragraph.error_message', ['fieldName' => 'service_id'])
+                                                    @endcomponent
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="bill_amount" class="control-label"><b style="color: red;">* </b> Bill Amount: </label>
+                                                    <input type="text" class="form-control decimal_number_only" name="bill_amount" id="bill_amount" placeholder="Bill amount" value="{{ !empty(old('bill_amount')) ? old('bill_amount') : $expense->bill_amount }}" maxlength="8" tabindex="6">
+                                                    {{-- adding error_message p tag component --}}
+                                                    @component('components.paragraph.error_message', ['fieldName' => 'bill_amount'])
+                                                    @endcomponent
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
                                                     <label for="description" class="control-label"><b style="color: red;">* </b> Description: </label>
                                                     @if(!empty(old('description')))
                                                         <textarea class="form-control" name="description" id="description" rows="1" placeholder="Description" style="resize: none;" tabindex="5">{{ old('description') }}</textarea>
@@ -87,13 +85,6 @@
                                                     @endif
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'description'])
-                                                    @endcomponent
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="bill_amount" class="control-label"><b style="color: red;">* </b> Bill Amount: </label>
-                                                    <input type="text" class="form-control decimal_number_only" name="bill_amount" id="bill_amount" placeholder="Bill amount" value="{{ !empty(old('bill_amount')) ? old('bill_amount') : $expense->bill_amount }}" maxlength="8" tabindex="6">
-                                                    {{-- adding error_message p tag component --}}
-                                                    @component('components.paragraph.error_message', ['fieldName' => 'bill_amount'])
                                                     @endcomponent
                                                 </div>
                                             </div>

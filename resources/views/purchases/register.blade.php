@@ -113,7 +113,7 @@
                                                                 </td>
                                                                 <td>
                                                                     {{-- <div class="col-md-10"> --}}
-                                                                    <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" disabled>
+                                                                    <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" readonly>
                                                                     {{-- </div> --}}
                                                                     {{-- <div class="col-md-2">
                                                                         <i class="fa fa-plus add_note" style="float: left;"></i>
@@ -275,19 +275,19 @@
                 <div class="form-group">
                     <label class="col-sm-5 control-label">Gross Quantity : <p class="pull-right">:</p></label>
                     <div class="col-sm-7">
-                        <input type="text" id="modal_gross_quatity" name="modal_gross_quatity" class="form-control" style="width: 100%;">
+                        <input type="text" id="modal_gross_quatity" name="modal_gross_quatity" class="form-control decimal_number_only" style="width: 100%;">
                     </div>
                 </div><br><br>
                 <div class="form-group">
                     <label class="col-sm-5 control-label">Numbers : <p class="pull-right">:</p></label>
                     <div class="col-sm-7">
-                        <input type="text" id="modal_numbers" name="modal_numbers" class="form-control" style="width: 100%;">
+                        <input type="text" id="modal_numbers" name="modal_numbers" class="form-control decimal_number_only" style="width: 100%;">
                     </div>
                 </div><br><br>
                 <div class="form-group">
                     <label class="col-sm-5 control-label">Unit Wastage : <p class="pull-right">:</p></label>
                     <div class="col-sm-7">
-                        <input type="text" id="modal_unit_wastage" name="modal_unit_wastage" class="form-control" style="width: 100%;">
+                        <input type="text" id="modal_unit_wastage" name="modal_unit_wastage" class="form-control decimal_number_only" style="width: 100%;">
                     </div>
                 </div><br><br>
                 <div class="form-group">
@@ -302,14 +302,6 @@
                         <input type="text" id="modal_net_quantity" name="modal_net_quantity" class="form-control" style="width: 100%;" readonly>
                     </div>
                 </div><br><br>
-                {{-- <div id="modal_warning">
-                    <div class="row">
-                        <div class="col-md-1"></div>
-                        <div class="col-sm-11">
-                            <h4>Are You Sure to delete existing timetable and generate new one?</h4>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left modal_close_button" data-dismiss="modal">Cancel & Proceed W/o Quantity Deduction</button>

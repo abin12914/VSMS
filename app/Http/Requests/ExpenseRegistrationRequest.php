@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\Branch;
 use App\Models\Service;
 use App\Models\Account;
 
@@ -28,10 +27,6 @@ class ExpenseRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'branch_id'             =>  [
-                                            'required',
-                                            Rule::in(Branch::pluck('id')->toArray()),
-                                        ],
             'date'                  =>  [
                                             'required',
                                             'date_format:d-m-Y',

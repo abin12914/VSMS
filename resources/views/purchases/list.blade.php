@@ -114,11 +114,7 @@
                                             @foreach($purchaseRecords as $index => $purchaseRecord)
                                                 <tr>
                                                     <td>{{ $index + $purchaseRecords->firstItem() }}</td>
-                                                    <td>{{ $purchaseRecord->date->format('d-m-Y') }}
-                                                        @if(!empty($purchaseRecord->tax_invoice_number))
-                                                            /{{ config('constants.branchInvoiceCode')[$purchaseRecord->branch_id]. $purchaseRecord->tax_invoice_number }}
-                                                        @endif
-                                                    </td>
+                                                    <td>{{ $purchaseRecord->date->format('d-m-Y') }} / {{ $purchaseRecord->id }}</td>
                                                     <td>
                                                         {{ $purchaseRecord->transaction->creditAccount->account_name }}
                                                     </td>
@@ -133,15 +129,9 @@
                                                         </a>
                                                     </td>
                                                     <td class="no-print">
-                                                        {{-- @if(!empty($purchaseRecord->tax_invoice_number) && $purchaseRecord->tax_invoice_number > 0)
-                                                            <a href="{{ route('purchase.invoice', ['id' => $purchaseRecord->id]) }}">
-                                                                <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Invoice</button>
-                                                            </a>
-                                                        @else
-                                                            <a href="{{ route('purchase.invoice', ['id' => $purchaseRecord->id]) }}">
-                                                                <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Estimate</button>
-                                                            </a>
-                                                        @endif --}}
+                                                        <a href="{{ route('purchase.invoice', ['id' => $purchaseRecord->id]) }}">
+                                                            <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Invoice</button>
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             @endforeach

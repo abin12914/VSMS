@@ -236,13 +236,13 @@
                                                 <tr>
                                                     <td></td>
                                                     <td></td>
-                                                    @if($outstandingDebit > $outstandingCredit)
+                                                    @if(($subTotalDebit + $obDebit) > ($subTotalCredit + $obCredit))
                                                         <td class="text-red"><strong> Outstanding Balance To Get</strong></td>
                                                         <td></td>
-                                                        <td class="text-red"><strong> {{ $outstandingDebit - $outstandingCredit }}</strong></td>
+                                                        <td class="text-red"><strong> {{ ($subTotalDebit + $obDebit) - ($subTotalCredit + $obCredit) }}</strong></td>
                                                     @else
                                                         <td class="text-green"><strong> Balance To Pay</strong></td>
-                                                        <td class="text-green"><strong> {{ $outstandingCredit - $outstandingDebit }}</strong></td>
+                                                        <td class="text-green"><strong> {{ ($subTotalCredit + $obCredit) - ($subTotalDebit + $obDebit) }}</strong></td>
                                                         <td></td>
                                                     @endif
                                                 </tr>

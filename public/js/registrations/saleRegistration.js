@@ -31,7 +31,10 @@ $(function () {
 
     //customer details
     $('body').on("change", "#customer_account_id", function (evt) {
+        var oldBalanceAmount    = 0;
         var customerAccountId   = $(this).val();
+        $('#ob_info').html('');
+        $('#old_balance').val(0);
 
         if(customerAccountId && customerAccountId != -1) {
             var selectedOption = $(this).find(':selected');
@@ -43,11 +46,28 @@ $(function () {
                 success: function(result) {
                     
                     if(result && result.flag) {
-                        var account = result.account;
+                        var account     = result.account;
+                        var obDebit     = result.oldBalance.oldDebit;
+                        var obCredit    = result.oldBalance.oldCredit;
+
                         if(account.type == 3) {
                             $('#customer_name').val(account.name);
                             $('#customer_phone').val(account.phone);
                         }
+
+                        if(obDebit != 'undefined' && obCredit != 'undefined') {
+                            oldBalanceAmount = obDebit - obCredit;
+                        }
+
+                        if(oldBalanceAmount < 0) {
+                            //debit < credit => company owes customer
+                            $('#ob_info').html(' (Payable To Customer)');
+                        } else {
+                            //debit > credit => customer owes company
+                            $('#ob_info').html(' (Receivable From Customer)');
+                        }
+                        $('#old_balance').val(oldBalanceAmount);
+                        calculateTotalSaleBill();
                     } else {
                         $('#customer_name').val('');
                         $('#customer_phone').val('');
@@ -62,6 +82,8 @@ $(function () {
             $('#customer_name').val('');
             $('#customer_phone').val('');
         }
+        //calculate total sale bill
+        calculateTotalSaleBill();
     });
 
     //
@@ -114,16 +136,28 @@ $(function () {
             $(this).closest('tr').find('.net_quantity').attr('disabled', false);
             $(this).closest('tr').find('.sale_rate').attr('disabled', false);
             $(this).closest('tr').find('.sub_bill').attr('disabled', false);
+            //enabling weighment fields
+            $(this).closest('tr').find('.gross_quantity').attr('disabled', false);
+            $(this).closest('tr').find('.product_number').attr('disabled', false);
+            $(this).closest('tr').find('.unit_wastage').attr('disabled', false);
+            $(this).closest('tr').find('.total_wastage').attr('disabled', false);
 
             //enabling next combo box
             $('#product__row_'+(rowId+1)).find('.products_combo').attr('disabled', false);
             //show more row
             $('#product__row_'+(rowId+3)).show();
+            //focus to same row quantity
+            $('#net_quantity_'+rowId).focus();
         } else {
             //disabling quantity & rate in same column
             $(this).closest('tr').find('.net_quantity').attr('disabled', true);
             $(this).closest('tr').find('.sale_rate').attr('disabled', true);
             $(this).closest('tr').find('.sub_bill').attr('disabled', true);
+            //enabling weighment fields
+            $(this).closest('tr').find('.gross_quantity').attr('disabled', true);
+            $(this).closest('tr').find('.product_number').attr('disabled', true);
+            $(this).closest('tr').find('.unit_wastage').attr('disabled', true);
+            $(this).closest('tr').find('.total_wastage').attr('disabled', true);
             
             //setting empty values for deselected product
             $('#sale_notes'+rowId).val('');
@@ -142,7 +176,7 @@ $(function () {
         siblingsHandling();
         initializeSelect2();
         //calculate total sale bill
-        calculateTotalSaleBill();
+        //calculateTotalSaleBill(); //wont work
 
     });
 
@@ -158,14 +192,29 @@ $(function () {
         var netQuantity   = $('#modal_net_quantity').val();
 
         if(rowId && rowId != 'undefined' && grossQuantity && productNumber && unitWastage && totalWastage && netQuantity) {
-            $('#gross_quantity_'+rowId).val(grossQuantity);
-            $('#product_number_'+rowId).val(productNumber);
-            $('#unit_wastage_'+rowId).val(unitWastage);
-            $('#total_wastage_'+rowId).val(totalWastage);
-            $('#net_quantity_'+rowId).val(netQuantity);
-            $('#notes_'+rowId).val('Deduction : '+ grossQuantity + ' - (' + productNumber + ' nos x ' + unitWastage + ') = ' + netQuantity);
-            
-            $('#weighment_modal').modal('hide');
+            if(grossQuantity <= 0) {
+                alert("Invalid value in gross quantity.");
+                $('#modal_gross_quatity').focus();
+            } else if(productNumber <= 0) {
+                alert("Invalid value in number of items.");
+                $('#modal_numbers').focus();
+            } else if(unitWastage <= 0) {
+                alert("Invalid value in unit wastage.");
+                $('#modal_unit_wastage').focus();
+            } else if(netQuantity <= 0) {
+                alert("Invalid value in net quantity.");
+                $('#modal_unit_wastage').focus();
+            } else {
+                $('#gross_quantity_'+rowId).val(grossQuantity);
+                $('#product_number_'+rowId).val(productNumber);
+                $('#unit_wastage_'+rowId).val(unitWastage);
+                $('#total_wastage_'+rowId).val(totalWastage);
+                $('#net_quantity_'+rowId).val(netQuantity);
+                $('#notes_'+rowId).val('Deduction : '+ grossQuantity + ' - (' + productNumber + ' nos x ' + unitWastage + ') = ' + netQuantity);
+                
+                $('#weighment_modal').modal('hide');
+                $('#sale_rate_'+rowId).focus();
+            }
         } else {
             alert("Fill all fields!");
         }
@@ -204,6 +253,12 @@ $(function () {
         //calculate total sale bill
         calculateTotalSaleBill();
     });
+
+    //sale rate event actions
+    $('body').on("change keyup", "#cash_received", function (evt) {
+        //calculate total sale bill
+        calculateTotalSaleBill();
+    });
 });
 
 //method for quantity calculation
@@ -225,9 +280,15 @@ function calculateQuantity() {
 
 //method for total bill calculation of sale
 function calculateTotalSaleBill() {
-    var bill        = 0;
-    var totalBill   = 0;
-    var discount    = ($('#discount').val() > 0 ? $('#discount').val() : 0 );
+    var bill              = 0;
+    var totalBill         = 0;
+    var billPlusObAmount  = 0;
+    var outstandingAmount = 0;
+    var discount          = parseFloat($('#discount').val() > 0 ? $('#discount').val() : 0 );
+    var oldBalance        = parseFloat($('#old_balance').val() != 'undefined' ? $('#old_balance').val() : 0 );
+    var cashPaid          = parseFloat($('#cash_received').val() != 'undefined' ? $('#cash_received').val() : 0 );
+    $('#bill_plus_ob_amount').val(0);
+    $('#outstanding_amount').val(0);
 
     $('.products_combo').each(function(index) {
         var productId   = $(this).val();
@@ -247,17 +308,21 @@ function calculateTotalSaleBill() {
         $('#total_amount').val(bill);
         if((bill - discount) > 0) {
             totalBill = bill - discount;
-            $('#total_bill').val(totalBill);
         } else {
             $('#discount').val(0);
-            $('#total_bill').val(bill);
+            totalBill = bill;
         }
-
+        $('#total_bill').val(totalBill);
     } else {
         $('#total_amount').val(0);
         $('#discount').val(0);
         $('#total_bill').val(0);
     }
+
+    billPlusObAmount = oldBalance + totalBill;
+    $('#bill_plus_ob_amount').val(billPlusObAmount);
+    outstandingAmount = billPlusObAmount - cashPaid;
+    $('#outstanding_amount').val(outstandingAmount);
 }
 
 function siblingsHandling() {

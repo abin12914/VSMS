@@ -29,34 +29,21 @@
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
                                     <div class="form-group">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="from_date" class="control-label">From Date : </label>
                                             <input type="text" class="form-control datepicker" name="from_date" id="from_date" value="{{ !empty(old('from_date')) ? old('from_date') : $params['from_date']['paramValue'] }}" tabindex="1">
                                             {{-- adding error_message p tag component --}}
                                             @component('components.paragraph.error_message', ['fieldName' => 'from_date'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="to_date" class="control-label">To Date : </label>
                                             <input type="text" class="form-control datepicker" name="to_date" id="to_date" value="{{ !empty(old('to_date')) ? old('to_date') : $params['to_date']['paramValue'] }}" tabindex="2">
                                             {{-- adding error_message p tag component --}}
                                             @component('components.paragraph.error_message', ['fieldName' => 'to_date'])
                                             @endcomponent
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-md-4">
-                                            <label for="customer_type" class="control-label">Customer Type : </label>
-                                            <select class="form-control select2" name="customer_type" id="customer_type" tabindex="4" style="width: 100%;">
-                                                <option value="" {{ empty(old('customer_type')) ? 'selected' : '' }}>Select customer type</option>
-                                                <option value="1" {{ (old('relation_type') == 1 || $params['customer_type']['paramValue'] == 1) ? 'selected' : '' }}>Long term credit customer</option>
-                                                <option value="2" {{ (old('relation_type') == 2 || $params['customer_type']['paramValue'] == 2) ? 'selected' : '' }}>Short term credit customer</option>
-                                            </select>
-                                            {{-- adding error_message p tag component --}}
-                                            @component('components.paragraph.error_message', ['fieldName' => 'customer_type'])
-                                            @endcomponent
-                                        </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="customer_account_id" class="control-label">Customer : </label>
                                             {{-- adding account select component --}}
                                             @component('components.selects.accounts', ['selectedAccountId' => $params['customer_account_id']['paramValue'], 'cashAccountFlag' => true, 'selectName' => 'customer_account_id', 'activeFlag' => false, 'tabindex' => 5])
@@ -65,7 +52,7 @@
                                             @component('components.paragraph.error_message', ['fieldName' => 'customer_account_id'])
                                             @endcomponent
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="no_of_records" class="control-label">No Of Records Per Page : </label>
                                             {{-- adding no of records text component --}}
                                             @component('components.texts.no-of-records-text', ['noOfRecords' => $noOfRecords, 'tabindex' => 6])
@@ -114,8 +101,7 @@
                                         <tr>
                                             <th style="width: 5%;">#</th>
                                             <th style="width: 15%;">Date & Invoice No.</th>
-                                            {{-- <th style="width: 15%;">Branch</th> --}}
-                                            <th style="width: 15%;">Account</th>
+                                            <th style="width: 15%;">Transaction Account</th>
                                             <th style="width: 15%;">Customer Name</th>
                                             <th style="width: 10%;">No Of Products</th>
                                             <th style="width: 15%;">Bill Amount</th>
@@ -128,17 +114,9 @@
                                             @foreach($saleRecords as $index => $saleRecord)
                                                 <tr>
                                                     <td>{{ $index + $saleRecords->firstItem() }}</td>
-                                                    <td>{{ $saleRecord->date->format('d-m-Y') }}
-                                                        @if(!empty($saleRecord->tax_invoice_number))
-                                                            /{{ config('constants.branchInvoiceCode')[$saleRecord->branch_id]. $saleRecord->tax_invoice_number }}
-                                                        @endif
-                                                    </td>
-                                                    {{-- <td>{{ $saleRecord->branch->name }}</td> --}}
+                                                    <td>{{ $saleRecord->date->format('d-m-Y') }} / {{ $saleRecord->id }}</td>
                                                     <td>
                                                         {{ $saleRecord->transaction->debitAccount->account_name }}
-                                                        @if($saleRecord->transaction->debitAccount->status != 1)
-                                                            &emsp;<i class="fa fa-clock-o text-orange no-print" title="Short term credit customer"></i>
-                                                        @endif
                                                     </td>
                                                     <td>
                                                         {{ $saleRecord->customer_name }}
@@ -151,15 +129,9 @@
                                                         </a>
                                                     </td>
                                                     <td class="no-print">
-                                                        @if(!empty($saleRecord->tax_invoice_number) && $saleRecord->tax_invoice_number > 0)
-                                                            <a href="{{ route('sale.invoice', ['id' => $saleRecord->id]) }}">
-                                                                <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Invoice</button>
-                                                            </a>
-                                                        @else
-                                                            <a href="{{ route('sale.invoice', ['id' => $saleRecord->id]) }}">
-                                                                <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Estimate</button>
-                                                            </a>
-                                                        @endif
+                                                        <a href="{{ route('sale.invoice', ['id' => $saleRecord->id]) }}">
+                                                            <button type="button" class="btn btn-default"><i class="fa fa-print"></i> Invoice</button>
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             @endforeach

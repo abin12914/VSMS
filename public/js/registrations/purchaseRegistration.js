@@ -61,10 +61,10 @@ $(function () {
 
                         if(oldBalanceAmount < 0) {
                             //debit < credit => company owes supplier
-                            $('#ob_info').html(' (To give supplier)');
+                            $('#ob_info').html(' (Payable To Supplier)');
                         } else {
                             //debit > credit => supplier owes company
-                            $('#ob_info').html(' (Get from supplier)');
+                            $('#ob_info').html(' (Receivable From Supplier)');
                         }
                         $('#old_balance').val(oldBalanceAmount);
                         calculateTotalPurchaseBill();
@@ -136,16 +136,28 @@ $(function () {
             $(this).closest('tr').find('.net_quantity').attr('disabled', false);
             $(this).closest('tr').find('.purchase_rate').attr('disabled', false);
             $(this).closest('tr').find('.sub_bill').attr('disabled', false);
+            //enabling weighment fields
+            $(this).closest('tr').find('.gross_quantity').attr('disabled', false);
+            $(this).closest('tr').find('.product_number').attr('disabled', false);
+            $(this).closest('tr').find('.unit_wastage').attr('disabled', false);
+            $(this).closest('tr').find('.total_wastage').attr('disabled', false);
 
             //enabling next combo box
             $('#product__row_'+(rowId+1)).find('.products_combo').attr('disabled', false);
             //show more row
             $('#product__row_'+(rowId+3)).show();
+            //focus to same row quantity
+            $('#net_quantity_'+rowId).focus();
         } else {
             //disabling quantity & rate in same column
             $(this).closest('tr').find('.net_quantity').attr('disabled', true);
             $(this).closest('tr').find('.purchase_rate').attr('disabled', true);
             $(this).closest('tr').find('.sub_bill').attr('disabled', true);
+            //enabling weighment fields
+            $(this).closest('tr').find('.gross_quantity').attr('disabled', true);
+            $(this).closest('tr').find('.product_number').attr('disabled', true);
+            $(this).closest('tr').find('.unit_wastage').attr('disabled', true);
+            $(this).closest('tr').find('.total_wastage').attr('disabled', true);
             
             //setting empty values for deselected product
             $('#purchase_notes'+rowId).val('');
@@ -180,14 +192,29 @@ $(function () {
         var netQuantity   = $('#modal_net_quantity').val();
 
         if(rowId && rowId != 'undefined' && grossQuantity && productNumber && unitWastage && totalWastage && netQuantity) {
-            $('#gross_quantity_'+rowId).val(grossQuantity);
-            $('#product_number_'+rowId).val(productNumber);
-            $('#unit_wastage_'+rowId).val(unitWastage);
-            $('#total_wastage_'+rowId).val(totalWastage);
-            $('#net_quantity_'+rowId).val(netQuantity);
-            $('#notes_'+rowId).val('Deduction : '+ grossQuantity + ' - (' + productNumber + ' nos x ' + unitWastage + ') = ' + netQuantity);
-            
-            $('#weighment_modal').modal('hide');
+            if(grossQuantity <= 0) {
+                alert("Invalid value in gross quantity.");
+                $('#modal_gross_quatity').focus();
+            } else if(productNumber <= 0) {
+                alert("Invalid value in number of items.");
+                $('#modal_numbers').focus();
+            } else if(unitWastage <= 0) {
+                alert("Invalid value in unit wastage.");
+                $('#modal_unit_wastage').focus();
+            } else if(netQuantity <= 0) {
+                alert("Invalid value in net quantity.");
+                $('#modal_unit_wastage').focus();
+            } else {
+                $('#gross_quantity_'+rowId).val(grossQuantity);
+                $('#product_number_'+rowId).val(productNumber);
+                $('#unit_wastage_'+rowId).val(unitWastage);
+                $('#total_wastage_'+rowId).val(totalWastage);
+                $('#net_quantity_'+rowId).val(netQuantity);
+                $('#notes_'+rowId).val('Deduction : '+ grossQuantity + ' - (' + productNumber + ' nos x ' + unitWastage + ') = ' + netQuantity);
+                
+                $('#weighment_modal').modal('hide');
+                $('#purchase_rate_'+rowId).focus();
+            }
         } else {
             alert("Fill all fields!");
         }

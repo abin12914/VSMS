@@ -97,45 +97,47 @@
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td><strong>Total</strong></td>
+                                            <td><strong>Total Price</strong></td>
                                             <td></td>
                                             <td>{{ ($purchase->total_amount + $purchase->discount) }}</td>
                                         </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><strong>Discount</strong></td>
-                                            <td></td>
-                                            <td>{{ $purchase->discount or 0}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><strong>Total Bill</strong></td>
-                                            <td></td>
-                                            <td>{{ $purchase->total_amount }}</td>
-                                        </tr>
+                                        @if(!empty($purchase->discount) && $purchase->discount > 0)
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><strong>Discount</strong></td>
+                                                <td></td>
+                                                <td>{{ $purchase->discount or 0}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><strong>Total Bill</strong></td>
+                                                <td></td>
+                                                <td>{{ $purchase->total_amount }}</td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                                 <h4>Payment Details</h4>
                                 <table class="table table-bordered">
                                     <tbody>
                                         <tr>
-                                            <td style="width: 5%;">=></td>
+                                            <td style="width: 5%;">#</td>
                                             <td style="width: 65%;">Total Bill</td>
                                             <td style="width: 15%;">{{ $purchase->total_amount }}</td>
                                             <td style="width: 15%;">-</td>
                                         </tr>
                                         <tr>
-                                            <td>=></td>
+                                            <td>#</td>
                                             @if($oldBalance == 0)
                                                 <td>Old Balance</td>
                                                 <td>-</td>
@@ -143,36 +145,36 @@
                                             @elseif($oldBalance < 0)
                                                 <td>
                                                     Old Balance 
-                                                    <b> (To give supplier)</b>
+                                                    <b> (Payable To {{ $purchase->transaction->creditAccount->account_name }})</b>
                                                 </td>
                                                 <td>{{ abs($oldBalance) }}</td>
                                                 <td>-</td>
                                             @else
                                                 <td>
                                                     Old Balance 
-                                                    <b> (To get from supplier)</b>
+                                                    <b> (Recievable From {{ $purchase->transaction->creditAccount->account_name }})</b>
                                                 </td>
                                                 <td></td>
                                                 <td>{{ abs($oldBalance) }}</td>
                                             @endif
                                         </tr>
                                         <tr>
-                                            <td>=></td>
+                                            <td>#</td>
                                             <td>Cash Paid To Supplier</td>
-                                            <td></td>
-                                            <td>{{ !empty($purchase->payment) ? $purchase->payment->amount : 0  }}</td>
+                                            <td>-</td>
+                                            <td>{{ (!empty($purchase->payment) && $purchase->payment->amount > 0) ? $purchase->payment->amount : '-'  }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 @if($oldBalance - $purchase->total_amount + (!empty($purchase->payment) ? $purchase->payment->amount : 0) == 0)
-                                    <h5>Outstanding Balance = {{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}
-                                    </h5>
+                                    <h4>Outstanding Balance = 0/-
+                                    </h4>
                                 @elseif($oldBalance - $purchase->total_amount + (!empty($purchase->payment) ? $purchase->payment->amount : 0) > 0)
-                                    <h5>Outstanding Balance = {{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}
-                                    </h5>
+                                    <h4>Outstanding Balance (Recievable From {{ $purchase->transaction->creditAccount->account_name }}) = {{ abs($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}/-
+                                    </h4>
                                 @else
-                                    <h5>Outstanding Balance = {{ ($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}
-                                    </h5>
+                                    <h4>Outstanding Balance (Payable To {{ $purchase->transaction->creditAccount->account_name }}) = {{ abs($oldBalance - $purchase->total_amount) + (!empty($purchase->payment) ? $purchase->payment->amount : 0) }}/-
+                                    </h4>
                                 @endif
                             </td>
                         </tr>

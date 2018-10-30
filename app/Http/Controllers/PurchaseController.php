@@ -173,15 +173,18 @@ class PurchaseController extends Controller
                     }
                     $supplierAccountId  = $accountResponse['id'];
                     $particulars        = ("Purchase from ". $supplierName. "-". $supplierPhone);
+                    $voucherParticulars = "Cash paid with the purchase bill of Rs.". $totalBill. "[ Cash Acount -> ". $supplierName . "]";
                 } else {
                     $supplierAccount    = $accounts->first();
                     $supplierAccountId  = $supplierAccount->id;
                     $particulars        = ("Purchase from ". $supplierAccount->account_name. "-". $supplierAccount->phone);
+                    $voucherParticulars = "Cash paid with the purchase bill of Rs.". $totalBill. "[ Cash Acount -> ". $supplierAccount->account_name . "]";
                 }
             } else {
                 //accessing debit account
                 $supplierAccount    = $accountRepo->getAccount($supplierAccountId, false);
                 $particulars        = ("Purchase from ". $supplierAccount->account_name);
+                $voucherParticulars = "Cash paid with the purchase bill of Rs.". $totalBill. "[ Cash Acount -> ". $supplierAccount->account_name . "]";
             }
 
             //save voucher transaction if cash paid to supplier
@@ -387,7 +390,7 @@ class PurchaseController extends Controller
         $oldBalance = 0;
 
         try {
-            $purchase       = $this->purchaseRepo->getPurchase($id);
+            $purchase = $this->purchaseRepo->getPurchase($id);
             if(!empty($purchase->payment)) {
                 $oldBal = $transactionRepo->getOldBalance($purchase->transaction->credit_account_id, null, $purchase->payment->transaction_id);
             } else {

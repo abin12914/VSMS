@@ -72,7 +72,6 @@ class ExpenseRepository
             $expense->date           = $inputArray['date'];
             $expense->service_id     = $inputArray['service_id'];
             $expense->bill_amount    = $inputArray['bill_amount'];
-            $expense->branch_id      = $inputArray['branch_id'];
             $expense->status         = 1;
             //expense save
             $expense->save();
@@ -83,7 +82,7 @@ class ExpenseRepository
                 $this->errorCode = $e->getCode();
             } else {
                 $this->errorCode = $this->repositoryCode + 2;
-            }
+            }dd($e);
             throw new AppCustomException("CustomError", $this->errorCode);
         }
 

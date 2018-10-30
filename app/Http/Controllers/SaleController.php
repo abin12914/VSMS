@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Repositories\SaleRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\AccountRepository;
+use App\Repositories\VoucherRepository;
 use App\Http\Requests\SaleRegistrationRequest;
 use App\Http\Requests\SaleFilterRequest;
 use Carbon\Carbon;
@@ -94,16 +95,21 @@ class SaleController extends Controller
         SaleRegistrationRequest $request,
         TransactionRepository $transactionRepo,
         AccountRepository $accountRepo,
+        VoucherRepository $voucherRepo,
         $id=null
     ) {
-        $saveFlag           = false;
-        $errorCode          = 0;
-        $sale               = null;
-        $saleTransaction    = null;
+        $saveFlag            = false;
+        $errorCode           = 0;
+        $sale                = null;
+        $saleTransaction     = null;
+        $voucher             = null;
+        $voucherTransaction  = null;
+        $voucherResponse     = null;
 
         //configured values
         $saleAccountId      = config('constants.accountConstants.Sale.id');
         $accountRelations   = config('constants.accountRelationTypes');
+        $cashAccountId      = config('constants.accountConstants.Cash.id');
 
         $transactionDate    = Carbon::createFromFormat('d-m-Y', $request->get('sale_date'))->format('Y-m-d');
         $customerAccountId  = $request->get('customer_account_id');
@@ -111,6 +117,7 @@ class SaleController extends Controller
         $totalBill          = $request->get('total_bill');
         $customerName       = $request->get('customer_name');
         $customerPhone      = $request->get('customer_phone');
+        $cashReceived       = $request->get('cash_received');
 
         //wrappin db transactions
         DB::beginTransaction();
@@ -135,6 +142,10 @@ class SaleController extends Controller
             if(!empty($id)) {
                 $sale               = $this->saleRepo->getSale($id);
                 $saleTransaction    = $transactionRepo->getTransaction($sale->transaction_id);
+                if(!empty($sale->voucher_id)) {
+                    $voucher            = $this->voucherRepo->getVoucher($sale->voucher_id);
+                    $voucherTransaction = $transactionRepo->getTransaction($voucher->transaction_id);
+                }
             }
 
             if($customerAccountId == -1) {
@@ -162,15 +173,37 @@ class SaleController extends Controller
                     }
                     $customerAccountId  = $accountResponse['id'];
                     $particulars        = ("Sale to ". $customerName. "-". $customerPhone);
+                    $voucherParticulars = "Cash received with the sale bill of Rs.". $totalBill. "[". $customerName . " -> Cash Acount]";
                 } else {
                     $customerAccount    = $accounts->first();
                     $customerAccountId  = $customerAccount->id;
                     $particulars        = ("Sale to ". $customerAccount->account_name. "-". $customerAccount->phone);
+                    $voucherParticulars = "Cash received with the sale bill of Rs.". $totalBill. "[". $customerAccount->account_name . " -> Cash Acount]";
                 }
             } else {
                 //accessing debit account
                 $customerAccount    = $accountRepo->getAccount($customerAccountId, false);
                 $particulars        = ("Sale to ". $customerAccount->account_name);
+                $voucherParticulars = "Cash received with the sale bill of Rs.". $totalBill. "[". $customerAccount->account_name . " -> Cash Acount]";
+            }
+
+            //save voucher transaction if cash received from customer
+            if(!empty($cashReceived) && $cashReceived >= 1) {
+                $voucherTransactionResponse = $transactionRepo->saveTransaction([
+                    'debit_account_id'  => $cashAccountId, // debit the cash account
+                    'credit_account_id' => $customerAccountId, // credit customer account
+                    'amount'            => $cashReceived ,
+                    'transaction_date'  => $transactionDate,
+                    'particulars'       => $voucherParticulars,
+                ], $voucherTransaction);
+
+                $voucherResponse = $voucherRepo->saveVoucher([
+                    'transaction_id' => $voucherTransactionResponse['id'],
+                    'date'           => $transactionDate,
+                    'voucher_type'   => 1, //cash payment
+                    'amount'         => $cashReceived,
+                ], $voucher);
+
             }
 
             //save sale transaction to table
@@ -190,6 +223,7 @@ class SaleController extends Controller
             $saleResponse = $this->saleRepo->saveSale([
                 'transaction_id'    => $transactionResponse['id'],
                 'date'              => $transactionDate,
+                'voucher_id'        => (!empty($voucherResponse['id']) ? $voucherResponse['id'] : null),
                 'customer_name'     => $customerName,
                 'customer_phone'    => $customerPhone,
                 'description'       => $request->get('description'),
@@ -258,6 +292,8 @@ class SaleController extends Controller
      */
     public function edit($id)
     {
+        return redirect()->back()->with("message","Edit disabled!")->with("alert-class", "error");
+
         $errorCode  = 0;
         $sale       = [];
 
@@ -308,6 +344,8 @@ class SaleController extends Controller
      */
     public function destroy($id)
     {
+        return redirect()->back()->with("message","Deletion disabled!")->with("alert-class", "error");
+
         $deleteFlag = false;
         $errorCode  = 0;
 
@@ -345,13 +383,21 @@ class SaleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function invoice($id)
+    public function invoice($id, TransactionRepository $transactionRepo)
     {
         $errorCode  = 0;
         $sale       = [];
+        $oldBalance = 0;
 
         try {
             $sale = $this->saleRepo->getSale($id);
+            if(!empty($sale->payment)) {
+                $oldBal = $transactionRepo->getOldBalance($sale->transaction->debit_account_id, null, $sale->payment->transaction_id);
+            } else {
+                $oldBal = $transactionRepo->getOldBalance($sale->transaction->debit_account_id, null, $sale->transaction_id);
+            }
+
+            $oldBalance = $oldBal['debit'] - $oldBal['credit'];
         } catch (\Exception $e) {
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
@@ -362,15 +408,9 @@ class SaleController extends Controller
             throw new ModelNotFoundException("Sale", $errorCode);
         }
 
-        if(empty($sale->tax_invoice_number)) {
-            return view('sales.estimate', [
-                'sale' => $sale,
-            ]);
-            
-        }
-
         return view('sales.invoice', [
             'sale' => $sale,
+            'oldBalance'    => $oldBalance
         ]);
     }
 }

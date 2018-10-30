@@ -48,7 +48,7 @@ class Purchase extends Model
     }
 
     /**
-     * Get the branch details associated with the purchase
+     * Get the voucher details associated with the purchase
      */
     public function payment()
     {
