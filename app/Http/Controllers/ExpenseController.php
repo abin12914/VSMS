@@ -155,7 +155,7 @@ class ExpenseController extends Controller
         } catch (Exception $e) {
             //roll back in case of exceptions
             DB::rollback();
-dd($e);
+
             if($e->getMessage() == "CustomError") {
                 $errorCode = $e->getCode();
             } else {

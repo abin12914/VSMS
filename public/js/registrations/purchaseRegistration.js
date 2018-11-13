@@ -32,7 +32,7 @@ $(function () {
         var productName = selectBox.find(':selected').text();
 
         if(fieldValue && fieldValue != '' && fieldValue != 'undefined') {
-            var defaultWeighmentWastage = $(this).find(':selected').data('weighment_wastage');
+            var defaultWeighmentWastage = selectBox.find(':selected').data('weighment_wastage');
             if(!defaultWeighmentWastage) {
                 defaultWeighmentWastage = 0;
             }
@@ -44,6 +44,7 @@ $(function () {
             $('#modal_total_wastage').val('');
             $('#modal_net_quantity').val('');
             $('#weighment_modal').modal('show');
+            $('#modal_gross_quatity').focus();
         }
     });
 
@@ -138,18 +139,6 @@ $(function () {
         var rowId       = $(this).data('index-no');
 
         if(fieldValue && fieldValue != '' && fieldValue != 'undefined') {
-            var defaultWeighmentWastage = $(this).find(':selected').data('weighment_wastage');
-            if(defaultWeighmentWastage) {
-                $('#modal_row_id').val(rowId);
-                $('#modal_product').val($(this).find(':selected').text());
-                $('#modal_gross_quatity').val('');
-                $('#modal_numbers').val('');
-                $('#modal_unit_wastage').val(defaultWeighmentWastage);
-                $('#modal_total_wastage').val('');
-                $('#modal_net_quantity').val('');
-                $('#weighment_modal').modal('show');
-            }
-
             //enabling quantity & rate in same column
             $(this).closest('tr').find('.net_quantity').attr('disabled', false);
             $(this).closest('tr').find('.purchase_rate').attr('disabled', false);
@@ -303,8 +292,8 @@ function calculateTotalPurchaseBill() {
     var billPlusObAmount  = 0;
     var outstandingAmount = 0;
     var discount          = parseFloat($('#discount').val() > 0 ? $('#discount').val() : 0 );
-    var oldBalance        = parseFloat($('#old_balance').val() != 'undefined' ? $('#old_balance').val() : 0 );
-    var cashPaid          = parseFloat($('#cash_paid').val() != 'undefined' ? $('#cash_paid').val() : 0 );
+    var oldBalance        = parseFloat((($('#old_balance').val() != 'undefined') && ($('#old_balance').val() != '')) ? $('#old_balance').val() : 0 );
+    var cashPaid          = parseFloat((($('#cash_paid').val() != 'undefined') && ($('#cash_paid').val() != '')) ? $('#cash_paid').val() : 0 );
     $('#bill_plus_ob_amount').val(0);
     $('#outstanding_amount').val(0);
 
@@ -341,6 +330,7 @@ function calculateTotalPurchaseBill() {
     $('#bill_plus_ob_amount').val(billPlusObAmount);
     outstandingAmount = billPlusObAmount + cashPaid;
     $('#outstanding_amount').val(outstandingAmount);
+    $('#cash_paid').val(cashPaid);
 }
 
 function siblingsHandling() {

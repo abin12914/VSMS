@@ -86,7 +86,7 @@ class TransportationRepository
                 $this->errorCode = $e->getCode();
             } else {
                 $this->errorCode = $this->repositoryCode + 2;
-            }dd($e);
+            }
             throw new AppCustomException("CustomError", $this->errorCode);
         }
 

@@ -219,7 +219,7 @@ class TransactionRepository
         }
 
         //old balance values
-        $transactions = $this->getTransactions($params, $orParams, null, null);
+        $transactions = $this->getTransactions($params, $orParams, [], null, null);
         $debit        = $transactions->where('debit_account_id', $accountId)->sum('amount');
         $credit       = $transactions->where('credit_account_id', $accountId)->sum('amount');
 

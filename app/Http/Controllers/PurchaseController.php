@@ -156,7 +156,7 @@ class PurchaseController extends Controller
                 {
                     //save quick supplier account to table
                     $accountResponse = $accountRepo->saveAccount([
-                        'account_name'      => $supplierName. "-". $customerPhone,
+                        'account_name'      => $supplierName. "-". $supplierPhone,
                         'description'       => ("New account of". $supplierName),
                         'relation'          => array_search('Supplier', $accountRelations), //supplier key=2
                         'financial_status'  => 0,

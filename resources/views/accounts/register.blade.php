@@ -123,7 +123,7 @@
                                             <label for="financial_status" class="col-md-3 control-label"><b style="color: red;">* </b> Financial Status : </label>
                                             <div class="col-md-9">
                                                 {{-- adding financial_status select component --}}
-                                                @component('components.selects.financial_status', ['tabindex' => 9])
+                                                @component('components.selects.financial_status', ['tabindex' => 8])
                                                 @endcomponent
                                                 {{-- adding error_message p tag component --}}
                                                 @component('components.paragraph.error_message', ['fieldName' => 'financial_status'])
@@ -134,7 +134,7 @@
                                             <label for="opening_balance" class="col-md-3 control-label"><b style="color: red;">* </b> Opening Balance : </label>
                                             <div class="col-md-9">
                                                 {{-- adding opening_balance text component --}}
-                                                @component('components.texts.opening_balance', ['tabindex' => 10])
+                                                @component('components.texts.opening_balance', ['tabindex' => 9])
                                                 @endcomponent
                                                 {{-- adding error_message p tag component --}}
                                                 @component('components.paragraph.error_message', ['fieldName' => 'opening_balance'])
@@ -147,10 +147,10 @@
                                 <div class="row">
                                     <div class="col-md-3"></div>
                                     <div class="col-md-3">
-                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="12">Clear</button>
+                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="11">Clear</button>
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="11">Submit</button>
+                                        <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="10">Submit</button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>

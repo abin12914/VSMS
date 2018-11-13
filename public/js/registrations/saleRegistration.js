@@ -32,8 +32,8 @@ $(function () {
         var productName = selectBox.find(':selected').text();
 
         if(fieldValue && fieldValue != '' && fieldValue != 'undefined') {
-            var defaultWeighmentWastage = $(this).find(':selected').data('weighment_wastage');
-            if(!defaultWeighmentWastage) {
+            var defaultWeighmentWastage = selectBox.find(':selected').data('weighment_wastage');
+            if(defaultWeighmentWastage == '' || defaultWeighmentWastage == 'undefined') {
                 defaultWeighmentWastage = 0;
             }
             $('#modal_row_id').val(rowId);
@@ -44,6 +44,7 @@ $(function () {
             $('#modal_total_wastage').val('');
             $('#modal_net_quantity').val('');
             $('#weighment_modal').modal('show');
+            $('#modal_gross_quatity').focus();
         }
     });
 
@@ -138,7 +139,7 @@ $(function () {
         var rowId       = $(this).data('index-no');
 
         if(fieldValue && fieldValue != '' && fieldValue != 'undefined') {
-            var defaultWeighmentWastage = $(this).find(':selected').data('weighment_wastage');
+            /*var defaultWeighmentWastage = $(this).find(':selected').data('weighment_wastage');
             if(defaultWeighmentWastage) {
                 $('#modal_row_id').val(rowId);
                 $('#modal_product').val($(this).find(':selected').text());
@@ -148,7 +149,7 @@ $(function () {
                 $('#modal_total_wastage').val('');
                 $('#modal_net_quantity').val('');
                 $('#weighment_modal').modal('show');
-            }
+            }*/
 
             //enabling quantity & rate in same column
             $(this).closest('tr').find('.net_quantity').attr('disabled', false);
@@ -303,8 +304,8 @@ function calculateTotalSaleBill() {
     var billPlusObAmount  = 0;
     var outstandingAmount = 0;
     var discount          = parseFloat($('#discount').val() > 0 ? $('#discount').val() : 0 );
-    var oldBalance        = parseFloat($('#old_balance').val() != 'undefined' ? $('#old_balance').val() : 0 );
-    var cashPaid          = parseFloat($('#cash_received').val() != 'undefined' ? $('#cash_received').val() : 0 );
+    var oldBalance        = parseFloat((($('#old_balance').val() != 'undefined') && ($('#old_balance').val() != '')) ? $('#old_balance').val() : 0 );
+    var cashReceived      = parseFloat((($('#cash_received').val() != 'undefined') && ($('#cash_received').val() != '')) ? $('#cash_received').val() : 0 );
     $('#bill_plus_ob_amount').val(0);
     $('#outstanding_amount').val(0);
 
@@ -339,8 +340,10 @@ function calculateTotalSaleBill() {
 
     billPlusObAmount = oldBalance + totalBill;
     $('#bill_plus_ob_amount').val(billPlusObAmount);
-    outstandingAmount = billPlusObAmount - cashPaid;
+    outstandingAmount = billPlusObAmount - cashReceived;
     $('#outstanding_amount').val(outstandingAmount);
+
+    $('#cash_received').val(cashReceived);
 }
 
 function siblingsHandling() {

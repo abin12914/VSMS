@@ -63,7 +63,7 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <label for="voucher_type_debit" class="control-label"><b style="color: red;">* </b> <b id="account_label">{{ (empty(old('voucher_type')) || old('voucher_type') == 1) ? "Giver " : "Reciever " }}</b>- Account : </label>
+                                                    <label for="voucher_type_debit" class="control-label"><b style="color: red;">* </b> <b id="account_label">{{ (empty(old('voucher_type')) || old('voucher_type') == 1) ? "Giver " : "Reciever " }}</b> Account : </label>
                                                     {{-- adding account select component --}}
                                                     @component('components.selects.accounts', ['selectedAccountId' => old('voucher_account_id'), 'cashAccountFlag' => false, 'selectName' => 'voucher_account_id', 'activeFlag' => false, 'tabindex' => 3])
                                                     @endcomponent
