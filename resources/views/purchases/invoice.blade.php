@@ -189,9 +189,21 @@
                         <i class="fa fa-print"></i> Print Receipt
                     </button>
                 </a>
+                <a href="{{ route('purchase.create') }}">
+                    <button type="button" class="btn btn-lg btn-default">
+                        <i class="fa fa-line-chart"></i> New Purchase
+                    </button>
+                </a>
             </div>
         </div>
     </section>
     <!-- /.content -->
 </div>
+@endsection
+@section('scripts')
+    <script type="text/javascript">
+        $(function () {
+            window.print();
+        });
+    </script>
 @endsection

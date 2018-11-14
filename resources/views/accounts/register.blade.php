@@ -88,7 +88,7 @@
                                                 @endcomponent
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group" style="display: none;">
                                             <label for="image_file" class="col-md-3 control-label">Image : </label>
                                             <div class="col-md-9">
                                                 <input type="file" name="image_file" class="form-control" id="image_file" value="{{ old('image_file') }}" tabindex="6" accept="image/*">

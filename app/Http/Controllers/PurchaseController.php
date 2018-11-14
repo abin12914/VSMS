@@ -250,7 +250,7 @@ class PurchaseController extends Controller
         }
 
         if($saveFlag) {
-            return redirect(route('purchase.show', $purchaseResponse['id']))->with("message","Purchase details saved successfully. Reference Number : ". $transactionResponse['id'])->with("alert-class", "success");
+            return redirect(route('purchase.invoice', $purchaseResponse['id']))->with("message","Purchase details saved successfully. Reference Number : ". $transactionResponse['id'])->with("alert-class", "success");
         }
         
         return redirect()->back()->with("message","Failed to save the purchase details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
@@ -292,7 +292,7 @@ class PurchaseController extends Controller
      */
     public function edit($id)
     {
-        return redirect()->back()->with("message","Edit disabled!")->with("alert-class", "error");
+        //return redirect()->back()->with("message","Edit disabled!")->with("alert-class", "error");
 
         $errorCode  = 0;
         $purchase   = [];

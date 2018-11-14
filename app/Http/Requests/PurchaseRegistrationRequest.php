@@ -49,9 +49,9 @@ class PurchaseRegistrationRequest extends FormRequest
                                                 'max:13',
                                             ],
             'description'               =>  [
-                                                'required',
+                                                'nullable',
                                                 'string',
-                                                'min:5',
+                                                'min:3',
                                                 'max:200',
                                             ],
             'product_id'                =>  [

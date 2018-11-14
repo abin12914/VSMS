@@ -73,7 +73,7 @@ class ProductController extends Controller
             ], $product);
 
             if(!$response['flag']) {
-                throw new AppCustomException("CustomError", $accountResponse['errorCode']);
+                throw new AppCustomException("CustomError", $response['errorCode']);
             }
 
             DB::commit();
@@ -96,7 +96,7 @@ class ProductController extends Controller
                     'id'    => $response['id']
                 ];
             }
-            return redirect(route('account.show', $response['id']))->with("message","Account details saved successfully. Reference Number : ". $response['id'])->with("alert-class", "success");
+            return redirect(route('product.index', $response['id']))->with("message","Account details saved successfully. Reference Number : ". $response['id'])->with("alert-class", "success");
         }
 
         if(!empty($id)) {

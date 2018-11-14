@@ -31,13 +31,13 @@ class ExpenseRegistrationRequest extends FormRequest
                                             'required',
                                             'date_format:d-m-Y',
                                         ],
-            'service_id'            =>  [
-                                            'required',
-                                            Rule::in(Service::pluck('id')->toArray()),
-                                        ],
             'supplier_account_id'   =>  [
                                             'required',
                                             Rule::in(Account::pluck('id')->toArray()),
+                                        ],
+            'service_id'            =>  [
+                                            'required',
+                                            Rule::in(Service::pluck('id')->toArray()),
                                         ],
             'description'           =>  [
                                             'required',
@@ -47,7 +47,7 @@ class ExpenseRegistrationRequest extends FormRequest
             'bill_amount'           =>  [
                                             'required',
                                             'numeric',
-                                            'min:10',
+                                            'min:1',
                                             'max:999999',
                                         ],
         ];

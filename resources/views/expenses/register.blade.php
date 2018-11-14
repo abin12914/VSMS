@@ -37,7 +37,7 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label for="date" class="control-label"><b style="color: red;">* </b> Date : </label>
-                                                    <input type="text" class="form-control decimal_number_only datepicker_reg" name="date" id="date" placeholder="Transaction date" value="{{ old('date') }}" tabindex="2">
+                                                    <input type="text" class="form-control decimal_number_only datepicker_reg" name="date" id="date" placeholder="Transaction date" value="{{ old('date') }}" tabindex="1">
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'date'])
                                                     @endcomponent
@@ -45,7 +45,7 @@
                                                 <div class="col-md-6">
                                                     <label for="supplier_account_id" class="control-label"><b style="color: red;">* </b> Supplier : </label>
                                                     {{-- adding account select component --}}
-                                                    @component('components.selects.accounts', ['selectedAccountId' => old('supplier_account_id'), 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'tabindex' => 4])
+                                                    @component('components.selects.accounts', ['selectedAccountId' => old('supplier_account_id'), 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'tabindex' => 2])
                                                     @endcomponent
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'supplier_account_id'])
@@ -66,7 +66,7 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label for="bill_amount" class="control-label"><b style="color: red;">* </b> Bill Amount: </label>
-                                                    <input type="text" class="form-control decimal_number_only" name="bill_amount" id="bill_amount" placeholder="Bill amount" value="{{ old('bill_amount') }}" maxlength="8" tabindex="6">
+                                                    <input type="text" class="form-control decimal_number_only" name="bill_amount" id="bill_amount" placeholder="Bill amount" value="{{ old('bill_amount') }}" maxlength="8" tabindex="4">
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'bill_amount'])
                                                     @endcomponent
@@ -94,10 +94,10 @@
                                 <div class="row">
                                     <div class="col-md-3"></div>
                                     <div class="col-md-3">
-                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="8">Clear</button>
+                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="7">Clear</button>
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="7">Submit</button>
+                                        <button type="submit" class="btn btn-primary btn-block btn-flat submit-button" tabindex="6">Submit</button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>

@@ -124,8 +124,8 @@
                                                 <tr>
                                                     <td>{{ $index + $expenses->firstItem() }}</td>
                                                     <td>{{ $expense->date->format('d-m-Y') }}</td>
-                                                    <td>{{ $expense->transaction->creditAccount->account_name }}</td>
                                                     <td>{{ $expense->service->name }}</td>
+                                                    <td>{{ $expense->transaction->creditAccount->account_name }}</td>
                                                     <td>{{ str_replace("[Purchase & Expense]", "", $expense->transaction->particulars) }}</td>
                                                     <td>{{ $expense->bill_amount }}</td>
                                                     <td class="no-print">

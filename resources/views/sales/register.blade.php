@@ -39,7 +39,7 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <label for="sale_date" class="control-label"><b style="color: red;">* </b> Sale Date : </label>
-                                                            <input type="text" class="form-control decimal_number_only datepicker_reg" name="sale_date" id="sale_date" placeholder="Sale date" value="{{ old('sale_date') }}" tabindex="2">
+                                                            <input type="text" class="form-control decimal_number_only datepicker_reg" name="sale_date" id="sale_date" placeholder="Sale date" value="{{ old('sale_date') }}" tabindex="1">
                                                             {{-- adding error_message p tag component --}}
                                                             @component('components.paragraph.error_message', ['fieldName' => 'sale_date'])
                                                             @endcomponent
@@ -47,7 +47,7 @@
                                                         <div class="col-md-6" id="customer_parent_div">
                                                             <label for="customer_account_id" class="control-label"><b style="color: red;">* </b> Sale To : </label>
                                                             {{-- adding account select component --}}
-                                                            @component('components.selects.accounts', ['selectedAccountId' => old('customer_account_id'), 'cashAccountFlag' => true, 'selectName' => 'customer_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
+                                                            @component('components.selects.accounts', ['selectedAccountId' => old('customer_account_id'), 'cashAccountFlag' => true, 'selectName' => 'customer_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 2])
                                                             @endcomponent
                                                             {{-- adding error_message p tag component --}}
                                                             @component('components.paragraph.error_message', ['fieldName' => 'customer_account_id'])
@@ -64,7 +64,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label for="customer_phone" class="control-label"><b style="color: red;">* </b> Customer Phone : </label>
-                                                            <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Customer phone" value="{{ old('customer_phone') }}" tabindex="3">
+                                                            <input type="text" class="form-control" name="customer_phone" id="customer_phone" placeholder="Customer phone" value="{{ old('customer_phone') }}" tabindex="4">
                                                             {{-- adding error_message p tag component --}}
                                                             @component('components.paragraph.error_message', ['fieldName' => 'customer_phone'])
                                                             @endcomponent
@@ -74,9 +74,9 @@
                                                 <div class="col-md-4">
                                                     <label for="description" class="control-label"><b style="color: red;">* </b> Notes : </label>
                                                     @if(empty(old('description')))
-                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description"></textarea>
+                                                        <textarea class="form-control" name="description" id="description" tabindex="5" rows="4" style="resize: none;" placeholder="description"></textarea>
                                                     @else
-                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description">{{ old('description') }}</textarea>
+                                                        <textarea class="form-control" name="description" id="description" tabindex="5" rows="4" style="resize: none;" placeholder="description">{{ old('description') }}</textarea>
                                                     @endif
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'description'])
@@ -108,7 +108,7 @@
                                                                     @endif
                                                                 </td>
                                                                 <td>
-                                                                    @component('components.selects.products_custom', ['selectedProductId' => old('product_id.'. $i), 'selectName' => 'product_id[]', 'selectId' => 'product_id_'.$i, 'customClassName' => 'products_combo', 'indexNo' => $i, 'tabindex' => (8 + $i), 'disabledOption' => (empty(old('product_id.'. ($i-1))) && $i > 0 ? true : false )])
+                                                                    @component('components.selects.products_custom', ['selectedProductId' => old('product_id.'. $i), 'selectName' => 'product_id[]', 'selectId' => 'product_id_'.$i, 'customClassName' => 'products_combo', 'indexNo' => $i, 'tabindex' => (6 + $i), 'disabledOption' => (empty(old('product_id.'. ($i-1))) && $i > 0 ? true : false )])
                                                                     @endcomponent
                                                                 </td>
                                                                 <td>
@@ -126,10 +126,10 @@
                                                                     <input type="hidden" class="form-control total_wastage" name="total_wastage[]" id="total_wastage_{{ $i }}" value="{{ old('total_wastage.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only net_quantity" name="net_quantity[]" id="net_quantity_{{ $i }}" placeholder="Net Quantity" value="{{ old('net_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control decimal_number_only net_quantity" name="net_quantity[]" id="net_quantity_{{ $i }}" placeholder="Net Quantity" value="{{ old('net_quantity.'. $i) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 6 + $i }}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only sale_rate" name="sale_rate[]" id="sale_rate_{{ $i }}" placeholder="Sale rate" value="{{ old('sale_rate.'. $i) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control decimal_number_only sale_rate" name="sale_rate[]" id="sale_rate_{{ $i }}" placeholder="Sale rate" value="{{ old('sale_rate.'. $i) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 6 + $i }}">
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" class="form-control decimal_number_only sub_bill" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
@@ -161,7 +161,7 @@
                                                                 @endif
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control decimal_number_only" name="discount" id="discount" placeholder="Discount" value="{{ !empty(old('discount')) ? old('discount') : 0 }}" maxlength="6" tabindex="13">
+                                                                <input type="text" class="form-control decimal_number_only" name="discount" id="discount" placeholder="Discount" value="{{ !empty(old('discount')) ? old('discount') : 0 }}" maxlength="6" tabindex="57">
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -205,7 +205,7 @@
                                                             <td>Cash Received From Customer</td>
                                                             <td></td>
                                                             <td>
-                                                                <input type="text" class="form-control decimal_number_only" name="cash_received" id="cash_received" placeholder="Cash Received" value="{{ old('cash_received') ?: 0 }}" maxlength="6">
+                                                                <input type="text" class="form-control decimal_number_only" name="cash_received" id="cash_received" placeholder="Cash Received" value="{{ old('cash_received') ?: 0 }}" maxlength="6" tabindex="58">
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -232,10 +232,10 @@
                                 <div class="row">
                                     <div class="col-md-4"></div>
                                     <div class="col-md-2">
-                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="15">Clear</button>
+                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="60">Clear</button>
                                     </div>
                                     <div class="col-md-2">
-                                        <button type="button" id="sale_submit_button" class="btn btn-primary btn-block btn-flat" tabindex="14">Submit</button>
+                                        <button type="button" id="sale_submit_button" class="btn btn-primary btn-block btn-flat" tabindex="59">Submit</button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>

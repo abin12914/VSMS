@@ -1,16 +1,16 @@
 @extends('layouts.app')
-@section('title', 'Purchase Registration')
+@section('title', 'Purchase Update')
 @section('content')
 <div class="content-wrapper">
      <section class="content-header">
         <h1>
-            Register
+            Update
             <small>Purchase</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ route('dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
             <li><a href="{{ route('purchase.index') }}"> Purchase</a></li>
-            <li class="active"> Registration</li>
+            <li class="active"> Update</li>
         </ol>
     </section>
     <!-- Main content -->
@@ -39,7 +39,7 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <label for="purchase_date" class="control-label"><b style="color: red;">* </b> Purchase Date : </label>
-                                                            <input type="text" class="form-control decimal_number_only datepicker_reg" name="purchase_date" id="purchase_date" placeholder="Purchase date" value="{{ old('purchase_date', $purchase->date->format('d-m-Y')) }}" tabindex="2">
+                                                            <input type="text" class="form-control decimal_number_only datepicker" name="purchase_date" id="purchase_date" placeholder="Purchase date" value="{{ old('purchase_date', $purchase->date->format('d-m-Y')) }}" tabindex="1">
                                                             {{-- adding error_message p tag component --}}
                                                             @component('components.paragraph.error_message', ['fieldName' => 'purchase_date'])
                                                             @endcomponent
@@ -47,7 +47,7 @@
                                                         <div class="col-md-6" id="supplier_parent_div">
                                                             <label for="supplier_account_id" class="control-label"><b style="color: red;">* </b> Purchase From : </label>
                                                             {{-- adding account select component --}}
-                                                            @component('components.selects.accounts', ['selectedAccountId' => old('supplier_account_id', $purchase->transaction->credit_account_id), 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 5])
+                                                            @component('components.selects.accounts', ['selectedAccountId' => old('supplier_account_id', $purchase->transaction->credit_account_id), 'cashAccountFlag' => true, 'selectName' => 'supplier_account_id', 'activeFlag' => false, 'nonAccountFlag' => true, 'tabindex' => 2])
                                                             @endcomponent
                                                             {{-- adding error_message p tag component --}}
                                                             @component('components.paragraph.error_message', ['fieldName' => 'supplier_account_id'])
@@ -64,7 +64,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label for="supplier_phone" class="control-label"><b style="color: red;">* </b> Supplier Phone : </label>
-                                                            <input type="text" class="form-control" name="supplier_phone" id="supplier_phone" placeholder="Supplier phone" value="{{ old('supplier_phone', $purchase->supplier_phone) }}" tabindex="3">
+                                                            <input type="text" class="form-control" name="supplier_phone" id="supplier_phone" placeholder="Supplier phone" value="{{ old('supplier_phone', $purchase->supplier_phone) }}" tabindex="4">
                                                             {{-- adding error_message p tag component --}}
                                                             @component('components.paragraph.error_message', ['fieldName' => 'supplier_phone'])
                                                             @endcomponent
@@ -74,9 +74,9 @@
                                                 <div class="col-md-4">
                                                     <label for="description" class="control-label"><b style="color: red;">* </b> Notes : </label>
                                                     @if(empty(old('description')))
-                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description">{{ $purchase->description }}</textarea>
+                                                        <textarea class="form-control" name="description" id="description" tabindex="5" rows="4" style="resize: none;" placeholder="description">{{ $purchase->description }}</textarea>
                                                     @else
-                                                        <textarea class="form-control" name="description" id="description" tabindex="4" rows="4" style="resize: none;" placeholder="description">{{ old('description') }}</textarea>
+                                                        <textarea class="form-control" name="description" id="description" tabindex="5" rows="4" style="resize: none;" placeholder="description">{{ old('description') }}</textarea>
                                                     @endif
                                                     {{-- adding error_message p tag component --}}
                                                     @component('components.paragraph.error_message', ['fieldName' => 'description'])
@@ -91,12 +91,13 @@
                                                     <thead>
                                                         <th style="width: 5%;">#</th>
                                                         <th style="width: 35%;">Product</th>
-                                                        <th style="width: 20%;">Notes</th>
+                                                        <th style="width: 20%;">Weighment Note</th>
                                                         <th style="width: 15%;">Net Quantity</th>
                                                         <th style="width: 10%;">Rate</th>
                                                         <th style="width: 15%;">Amount</th>
                                                     </thead>
                                                     <tbody>
+                                                        {{-- @for($i = 0; $i < 50; $i++) --}}
                                                         @foreach($purchase->products as $i => $product)
                                                             <tr id="product__row_{{ $i }}">
                                                                 <td>
@@ -108,29 +109,26 @@
                                                                     @endif
                                                                 </td>
                                                                 <td>
-                                                                    @component('components.selects.products_custom', ['selectedProductId' => old('product_id.'. $i, $product->id), 'selectName' => 'product_id[]', 'selectId' => 'product_id_'.$i, 'customClassName' => 'products_combo', 'indexNo' => $i, 'tabindex' => (8 + $i), 'disabledOption' => (empty(old('product_id.'. ($i-1))) && $i > 0 ? true : false )])
+                                                                    @component('components.selects.products_custom', ['selectedProductId' => old('product_id.'. $i, $product->id), 'selectName' => 'product_id[]', 'selectId' => 'product_id_'.$i, 'customClassName' => 'products_combo', 'indexNo' => $i, 'tabindex' => (6 + $i), 'disabledOption' => true])
                                                                     @endcomponent
                                                                 </td>
                                                                 <td>
-                                                                    {{-- <div class="col-md-10"> --}}
-                                                                    <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" value="{{ old('notes.'. $i, (!empty($product->purchaseDetail->gross_quantity) ? ('[Deduction : '. $product->purchaseDetail->gross_quantity. ' - ('. $product->purchaseDetail->product_number. ' nos X '. $product->purchaseDetail->unit_wastage. ') = '. ($product->purchaseDetail->gross_quantity - $product->purchaseDetail->total_wastage). ']') : null )) }}" disabled>
-                                                                    {{-- </div> --}}
-                                                                    {{-- <div class="col-md-2">
-                                                                        <i class="fa fa-plus add_note" style="float: left;"></i>
-                                                                    </div> --}}
-                                                                    <input type="hidden" class="form-control gross_quantity" name="gross_quantity[]" id="gross_quantity_{{ $i }}" value="{{ old('gross_quantity.'. $i, $product->purchaseDetail->gross_quantity) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
-                                                                    <input type="hidden" class="form-control product_number" name="product_number[]" id="product_number_{{ $i }}" value="{{ old('product_number.'. $i, $product->purchaseDetail->product_number) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
-                                                                    <input type="hidden" class="form-control unit_wastage " name="unit_wastage[]" id="unit_wastage_{{ $i }}" value="{{ old('unit_wastage.'. $i, $product->purchaseDetail->unit_wastage) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
-                                                                    <input type="hidden" class="form-control total_wastage" name="total_wastage[]" id="total_wastage_{{ $i }}" value="{{ old('total_wastage.'. $i, $product->purchaseDetail->total_wastage) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <div class="col-md-12">
+                                                                        <input type="text" class="form-control notes" name="notes[]" id="notes_{{ $i }}" readonly value="{{ !empty($product->purchaseDetail->gross_quantity) ? ($product->purchaseDetail->gross_quantity. ' - ('. $product->purchaseDetail->product_number.  ' nos x '. $product->purchaseDetail->unit_wastage. ') = '. $product->purchaseDetail->net_quantity) : '-' }}">
+                                                                    </div>
+                                                                    <input type="hidden" class="form-control gross_quantity" name="gross_quantity[]" id="gross_quantity_{{ $i }}" value="{{ old('gross_quantity.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <input type="hidden" class="form-control product_number" name="product_number[]" id="product_number_{{ $i }}" value="{{ old('product_number.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <input type="hidden" class="form-control unit_wastage " name="unit_wastage[]" id="unit_wastage_{{ $i }}" value="{{ old('unit_wastage.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <input type="hidden" class="form-control total_wastage" name="total_wastage[]" id="total_wastage_{{ $i }}" value="{{ old('total_wastage.'. $i) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only net_quantity" name="net_quantity[]" id="net_quantity_{{ $i }}" placeholder="Net Quantity" value="{{ old('net_quantity.'. $i, $product->purchaseDetail->net_quantity) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control decimal_number_only net_quantity" name="net_quantity[]" id="net_quantity_{{ $i }}" placeholder="Net Quantity" value="{{ old('net_quantity.'. $i, $product->purchaseDetail->net_quantity) }}" maxlength="4" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 6 + $i }}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only purchase_rate" name="purchase_rate[]" id="purchase_rate_{{ $i }}" placeholder="Purchase rate" value="{{ old('purchase_rate.'. $i, $product->purchaseDetail->rate) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 8 + $i }}">
+                                                                    <input type="text" class="form-control decimal_number_only purchase_rate" name="purchase_rate[]" id="purchase_rate_{{ $i }}" placeholder="Purchase rate" value="{{ old('purchase_rate.'. $i, $product->purchaseDetail->rate) }}" maxlength="6" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} tabindex="{{ 6 + $i }}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control decimal_number_only sub_bill" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i, ($product->purchaseDetail->net_quantity *  $product->purchaseDetail->rate)) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
+                                                                    <input type="text" class="form-control decimal_number_only sub_bill" name="sub_bill[]" id="sub_bill_{{ $i }}" placeholder="Bill value" value="{{ old('sub_bill.'.$i, ($product->purchaseDetail->net_quantity * $product->purchaseDetail->rate)) }}" {{ empty(old('product_id.'. $i )) ? 'disabled' : '' }} readonly>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -145,7 +143,7 @@
                                                                 @endif
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control decimal_number_only" name="total_amount" id="total_amount" placeholder="Total Amount" value="{{ old('total_amount', $purchase->total_amount + $purchase->discount) }}" readonly>
+                                                                <input type="text" class="form-control decimal_number_only" name="total_amount" id="total_amount" placeholder="Total Amount" value="{{ old('total_amount', ($purchase->total_amount + $purchase->discount)) }}" readonly>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -159,7 +157,7 @@
                                                                 @endif
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control decimal_number_only" name="discount" id="discount" placeholder="Discount" value="{{ !empty(old('discount')) ? old('discount') : $purchase->discount }}" maxlength="6" tabindex="13">
+                                                                <input type="text" class="form-control decimal_number_only" name="discount" id="discount" placeholder="Discount" value="{{ !empty(old('discount')) ? old('discount') : $purchase->discount }}" maxlength="6" tabindex="57">
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -186,10 +184,10 @@
                                 <div class="row">
                                     <div class="col-md-4"></div>
                                     <div class="col-md-2">
-                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="15">Clear</button>
+                                        <button type="reset" class="btn btn-default btn-block btn-flat" tabindex="60">Clear</button>
                                     </div>
                                     <div class="col-md-2">
-                                        <button type="button" id="purchase_submit_button" class="btn btn-primary btn-block btn-flat" tabindex="14">Submit</button>
+                                        <button type="button" id="purchase_submit_button" class="btn btn-primary btn-block btn-flat" tabindex="59">Submit</button>
                                     </div>
                                     <!-- /.col -->
                                 </div><br>
@@ -231,19 +229,19 @@
                 <div class="form-group">
                     <label class="col-sm-5 control-label">Gross Quantity : <p class="pull-right">:</p></label>
                     <div class="col-sm-7">
-                        <input type="text" id="modal_gross_quatity" name="modal_gross_quatity" class="form-control" style="width: 100%;">
+                        <input type="text" id="modal_gross_quatity" name="modal_gross_quatity" class="form-control decimal_number_only" style="width: 100%;">
                     </div>
                 </div><br><br>
                 <div class="form-group">
                     <label class="col-sm-5 control-label">Numbers : <p class="pull-right">:</p></label>
                     <div class="col-sm-7">
-                        <input type="text" id="modal_numbers" name="modal_numbers" class="form-control" style="width: 100%;">
+                        <input type="text" id="modal_numbers" name="modal_numbers" class="form-control decimal_number_only" style="width: 100%;">
                     </div>
                 </div><br><br>
                 <div class="form-group">
                     <label class="col-sm-5 control-label">Unit Wastage : <p class="pull-right">:</p></label>
                     <div class="col-sm-7">
-                        <input type="text" id="modal_unit_wastage" name="modal_unit_wastage" class="form-control" style="width: 100%;">
+                        <input type="text" id="modal_unit_wastage" name="modal_unit_wastage" class="form-control decimal_number_only" style="width: 100%;">
                     </div>
                 </div><br><br>
                 <div class="form-group">
@@ -258,14 +256,6 @@
                         <input type="text" id="modal_net_quantity" name="modal_net_quantity" class="form-control" style="width: 100%;" readonly>
                     </div>
                 </div><br><br>
-                {{-- <div id="modal_warning">
-                    <div class="row">
-                        <div class="col-md-1"></div>
-                        <div class="col-sm-11">
-                            <h4>Are You Sure to delete existing timetable and generate new one?</h4>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning pull-left modal_close_button" data-dismiss="modal">Cancel & Proceed W/o Quantity Deduction</button>

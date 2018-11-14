@@ -36,10 +36,6 @@ class ExpenseFilterRequest extends FormRequest
                                             'nullable',
                                             'date_format:d-m-Y',
                                         ],
-            'branch_id'             =>  [
-                                            'nullable',
-                                            Rule::in(Branch::pluck('id')->toArray()),
-                                        ],
             'supplier_account_id'   =>  [
                                             'nullable',
                                             Rule::in(Account::pluck('id')->toArray()),

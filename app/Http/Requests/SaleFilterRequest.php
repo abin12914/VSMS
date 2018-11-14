@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\Branch;
 use App\Models\Account;
 
 class SaleFilterRequest extends FormRequest
@@ -34,14 +33,6 @@ class SaleFilterRequest extends FormRequest
             'to_date'               =>  [
                                             'nullable',
                                             'date_format:d-m-Y',
-                                        ],
-            'branch_id'             =>  [
-                                            'nullable',
-                                            Rule::in(Branch::pluck('id')->toArray()),
-                                        ],
-            'customer_type'         =>  [
-                                            'nullable',
-                                            Rule::in([1,2]),
                                         ],
             'customer_account_id'   =>  [
                                             'nullable',
