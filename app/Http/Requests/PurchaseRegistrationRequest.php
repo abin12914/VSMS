@@ -93,7 +93,7 @@ class PurchaseRegistrationRequest extends FormRequest
                                             ],
             'net_quantity.*'       =>  [    
                                                 'required',
-                                                'integer',
+                                                'numeric',
                                                 'min:1',
                                                 'max:99999'
                                             ],
