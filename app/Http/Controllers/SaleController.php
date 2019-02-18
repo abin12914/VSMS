@@ -409,7 +409,7 @@ class SaleController extends Controller
         }
 
         return view('sales.invoice', [
-            'sale' => $sale,
+            'sale'          => $sale,
             'oldBalance'    => $oldBalance
         ]);
     }
