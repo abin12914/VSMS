@@ -37,15 +37,15 @@ border-left: none ! important;
     }
 
     .invoice-table-content > thead > tr > th {
-        font-size: 5px;
+        font-size: 10px;
     }
 
     .invoice-table-content > tbody > tr > td {
-        font-size: 4px;
+        font-size: 10px;
     }
 
     .invoice-table-content-payment > tbody > tr > td {
-        font-size: 4px;
+        font-size: 10px;
     }
 
     .invoice-table-content-pull-right {
