@@ -31,20 +31,25 @@ border-left: none ! important;
     }
 
     .invoice-table-content {
-        margin-left: 15px;
-        width: 480px !important;
+        margin-left: 30px;
+        max-width: 498px !important;
+        width: 497px !important;
     }
 
     .invoice-table-content > thead > tr > th {
-        font-size: 7px;
+        font-size: 5px;
     }
 
-    .invoice-table-content > tbody > tr > th {
+    .invoice-table-content > tbody > tr > td {
         font-size: 4px;
     }
 
-    .invoice-table-content-payment > tbody > tr > th {
+    .invoice-table-content-payment > tbody > tr > td {
         font-size: 4px;
+    }
+
+    .invoice-table-content-pull-right {
+        margin-right: 30px; 
     }
 
     .borderless-table > tbody > tr > td {

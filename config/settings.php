@@ -41,7 +41,11 @@ return [
     'print_head_flag'       => env('PRINT_HEAD_FLAG', true),
     'display_phone_flag'    => env('DISPLAY_PHONE_FLAG', false),
     'company_name'          => env('COMPANY_NAME', 'VSMS'),
+    'company_title'         => env('COMPANY_TITLE', 'Vegetable Store'),
+    'company_title_sub'     => env('COMPANY_TITLE_SUB', 'Wholesale & Retail'),
     'company_address'       => env('COMPANY_ADDRESS', 'ADDRESS'),
     'company_phones'        => env('COMPANY_PHONE', 'PHONE'),
+    'owner_name'            => env('OWNER_NAME', 'name'),
+    'owner_phone'           => env('OWNER_PHONE', 'xxx'),
     'company_GSTIN'         => env('COMPANY_GSTIN', 'GSTIN'),
 ];
