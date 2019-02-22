@@ -175,13 +175,13 @@
                 </i>
                 <hr style="margin-top: 5px; margin-bottom: 5px;">
                 <h6 class="invoice-table-content">Sale Details</h6>
-                <table class="table table-bordered invoice-table-content">
+                <table class="table-sm table-bordered invoice-table-content invoice-table-content-payment">
                     <thead>
                         <tr>
                             <th style="width: 5%;">#</th>
                             <th style="width: 25%;">Product</th>
-                            <th style="width: 8%;">Gross Qty</th>
-                            <th style="width: 8%;">Nos</th>
+                            <th style="width: 10%;">Gross Qty</th>
+                            <th style="width: 6%;">Nos</th>
                             <th style="width: 8%;">Unit Wastage</th>
                             <th style="width: 8%;">Total Wastage</th>
                             <th style="width: 13%;">Net Qty</th>

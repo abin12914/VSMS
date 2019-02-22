@@ -36,6 +36,14 @@ border-left: none ! important;
         width: 497px !important;
     }
 
+    .invoice-table-content-product {
+        margin-bottom: 1px !important;
+    }
+
+    .invoice-table-content-payment {
+        margin-top: 5px !important;
+    }
+
     .invoice-table-content > thead > tr > th {
         font-size: 10px;
     }
@@ -44,8 +52,19 @@ border-left: none ! important;
         font-size: 10px;
     }
 
+    .invoice-table-content-product > tbody > tr > td, .invoice-table-content-product > thead > tr > th {
+        font-size: 10px;
+        padding: 4px!important
+    }
+
     .invoice-table-content-payment > tbody > tr > td {
         font-size: 10px;
+        padding: 4px!important
+    }
+
+    .invoice-table-content-payment > thead > tr > th {
+        font-size: 10px;
+        padding: 4px!important
     }
 
     .invoice-table-content-pull-right {
@@ -65,7 +84,7 @@ border-left: none ! important;
         border-bottom: none !important;
     }
 
-    .table-bordered td,.table-bordered th{
+    .table-bordered td, .table-bordered th {
         border:1px solid #333!important
     }
 }
