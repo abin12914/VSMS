@@ -162,16 +162,15 @@
         <div class="row visible-print-block">
             <div class="col-md-12">
                 @include('sections.print-head')
-                <h6 class="text-center">Receipt of sale</h6>
                 <i class="invoice-table-content">
-                    Invoice No : #{{ ($sale->id < 100 ? '0' : ''). $sale->id }}
-                </i>
-                <i class="pull-right invoice-table-content-pull-right">
-                    Date: {{ $sale->date->format('d-m-Y') }}
-                </i><br>
-                <i class="invoice-table-content">
-                    Customer : {{ $sale->transaction->debitAccount->account_name }}<br>
+                    Customer : {{ $sale->transaction->debitAccount->account_name }}
+                    <i class="pull-right invoice-table-content-pull-right">
+                        Sale Invoice No : #{{ ($sale->id < 100 ? '0' : ''). $sale->id }}
+                    </i><br>
                     <i class="invoice-table-content">{{ $sale->customer_name }}, {{ $sale->customer_phone }}</i>
+                    <i class="pull-right invoice-table-content-pull-right">
+                        Date: {{ $sale->date->format('d-m-Y') }}
+                    </i>
                 </i>
                 <hr style="margin-top: 5px; margin-bottom: 5px;">
                 <h6 class="invoice-table-content">Sale Details</h6>
@@ -206,7 +205,7 @@
                                 <td>{{ ($product->saleDetail->net_quantity * $product->saleDetail->rate) }}</td>
                             </tr>
                         @endforeach
-                        <tr>
+                        {{-- <tr>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -240,58 +239,69 @@
                                 <td></td>
                                 <td>{{ $sale->total_amount }}</td>
                             </tr>
-                        @endif
+                        @endif --}}
                     </tbody>
                 </table>
-                <h6 class="invoice-table-content">Payment Details</h6>
-                <table class="table table-bordered  invoice-table-content">
+                {{-- <h6 class="invoice-table-content">Payment Details</h6> --}}
+                <table class="table-sm table-bordered  invoice-table-content invoice-table-content-payment">
                     <tbody>
                         <tr>
-                            <td style="width: 5%;">#</td>
-                            <td style="width: 65%;">Total Bill</td>
-                            <td style="width: 15%;">-</td>
+                            <td style="width: 85%;">
+                                <strong>Total Bill</strong>
+                                @if(!empty($sale->discount) && $sale->discount > 0)
+                                    [Bill : {{ ($sale->total_amount + $sale->discount) }} - Discount : {{ $sale->discount }}]
+                                @endif
+                            </td>
                             <td style="width: 15%;">{{ $sale->total_amount }}</td>
                         </tr>
                         <tr>
-                            <td>#</td>
                             @if($oldBalance == 0)
                                 <td>Old Balance</td>
-                                <td>-</td>
                                 <td>-</td>
                             @elseif($oldBalance < 0)
                                 <td>
                                     Old Balance 
                                     <b> (Payable To {{ $sale->transaction->debitAccount->account_name }})</b>
                                 </td>
-                                <td>{{ abs($oldBalance) }}</td>
-                                <td>-</td>
+                                <td> - {{ abs($oldBalance) }}</td>
                             @else
                                 <td>
                                     Old Balance 
                                     <b> (Recievable From {{ $sale->transaction->debitAccount->account_name }})</b>
                                 </td>
-                                <td></td>
-                                <td>{{ abs($oldBalance) }}</td>
+                                <td> + {{ abs($oldBalance) }}</td>
                             @endif
                         </tr>
                         <tr>
-                            <td>#</td>
                             <td>Cash Received From Customer</td>
-                            <td>{{ (!empty($sale->payment) && $sale->payment->amount > 0) ? $sale->payment->amount : '-'  }}</td>
-                            <td>-</td>
+                            <td> - {{ (!empty($sale->payment) && $sale->payment->amount > 0) ? $sale->payment->amount : 0  }}</td>
+                        </tr>
+                        <tr>
+                            @if($oldBalance + $sale->total_amount - (!empty($sale->payment) ? $sale->payment->amount : 0) == 0)
+                                <td>
+                                    Outstanding Balance
+                                </td>
+                                <td>
+                                    0
+                                </td>
+                            @elseif($oldBalance + $sale->total_amount - (!empty($sale->payment) ? $sale->payment->amount : 0) > 0)
+                                <td>
+                                    <strong>Outstanding Balance (Recievable From {{ $sale->transaction->debitAccount->account_name }})</strong>
+                                </td>
+                                <td>
+                                    {{ abs($oldBalance + $sale->total_amount) - (!empty($sale->payment) ? $sale->payment->amount : 0) }}/-
+                                </td>
+                            @else
+                                <td>
+                                    <strong>Outstanding Balance (Payable To {{ $sale->transaction->debitAccount->account_name }})</strong>
+                                </td>
+                                <td>
+                                    {{ abs($oldBalance + $sale->total_amount) - (!empty($sale->payment) ? $sale->payment->amount : 0) }}/-
+                                </td>
+                            @endif
                         </tr>
                     </tbody>
                 </table>
-                @if($oldBalance + $sale->total_amount - (!empty($sale->payment) ? $sale->payment->amount : 0) == 0)
-                    <h5 class="invoice-table-content">Outstanding Balance = 0/-
-                    </h5>
-                @elseif($oldBalance + $sale->total_amount - (!empty($sale->payment) ? $sale->payment->amount : 0) > 0)
-                    <h5 class="invoice-table-content">Outstanding Balance (Recievable From {{ $sale->transaction->debitAccount->account_name }}) = {{ abs($oldBalance + $sale->total_amount) - (!empty($sale->payment) ? $sale->payment->amount : 0) }}/-
-                    </h5>
-                @else
-                    <h5 class="invoice-table-content">Outstanding Balance (Payable To {{ $sale->transaction->debitAccount->account_name }}) = {{ abs($oldBalance + $sale->total_amount) - (!empty($sale->payment) ? $sale->payment->amount : 0) }}/-
-                    </h5>
-                @endif
             </div>
         </div>
         <div class="row no-print">
@@ -315,7 +325,7 @@
 @section('scripts')
     <script type="text/javascript">
         $(function () {
-            /*window.print();*/
+            window.print();
         });
     </script>
 @endsection

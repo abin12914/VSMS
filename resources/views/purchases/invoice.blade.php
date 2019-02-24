@@ -260,18 +260,13 @@
                 <table class="table-sm table-bordered invoice-table-content invoice-table-content-payment">
                     <tbody>
                         <tr>
-                            <td style="width: 86%;"><strong>Total Price</strong></td>
-                            <td style="width: 14%;">{{ ($purchase->total_amount + $purchase->discount) }}</td>
-                        </tr>
-                        @if(!empty($purchase->discount) && $purchase->discount > 0)
-                            <tr>
-                                <td><strong>Discount</strong></td>
-                                <td> - {{ $purchase->discount or 0}}</td>
-                            </tr>
-                        @endif
-                        <tr>
-                            <td>Total Bill</td>
-                            <td>{{ $purchase->total_amount }}</td>
+                            <td style="width: 86%;">
+                                <strong>Total Bill</strong>
+                                @if(!empty($purchase->discount) && $purchase->discount > 0)
+                                    [Bill : {{ ($purchase->total_amount + $purchase->discount) }} - Discount : {{ $purchase->discount }}]
+                                @endif
+                            </td>
+                            <td style="width: 14%;">{{ $purchase->total_amount }}</td>
                         </tr>
                         <tr>
                             @if($oldBalance == 0)

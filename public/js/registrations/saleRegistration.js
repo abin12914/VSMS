@@ -237,6 +237,7 @@ $(function () {
         } else {
             alert("Fill all fields!");
         }
+        calculateTotalSaleBill();
     });
 
     //modal weighment calc event

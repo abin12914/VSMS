@@ -225,6 +225,7 @@ $(function () {
         } else {
             alert("Fill all fields!");
         }
+        calculateTotalPurchaseBill();
     });
 
     //modal weighment calc event
