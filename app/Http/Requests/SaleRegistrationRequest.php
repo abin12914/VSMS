@@ -49,7 +49,7 @@ class SaleRegistrationRequest extends FormRequest
                                                 'max:13',
                                             ],
             'description'               =>  [
-                                                'required',
+                                                'nullable',
                                                 'string',
                                                 'min:5',
                                                 'max:200',

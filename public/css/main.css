@@ -45,25 +45,25 @@ border-left: none ! important;
     }
 
     .invoice-table-content > thead > tr > th {
-        font-size: 10px;
+        font-size: 15px;
     }
 
     .invoice-table-content > tbody > tr > td {
-        font-size: 10px;
+        font-size: 15px;
     }
 
     .invoice-table-content-product > tbody > tr > td, .invoice-table-content-product > thead > tr > th {
-        font-size: 10px;
+        font-size: 15px;
         padding: 4px!important
     }
 
     .invoice-table-content-payment > tbody > tr > td {
-        font-size: 10px;
+        font-size: 15px;
         padding: 4px!important
     }
 
     .invoice-table-content-payment > thead > tr > th {
-        font-size: 10px;
+        font-size: 15px;
         padding: 4px!important
     }
 

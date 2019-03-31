@@ -38,6 +38,11 @@ class SaleController extends Controller
         $toDate         = !empty($request->get('to_date')) ? Carbon::createFromFormat('d-m-Y', $request->get('to_date'))->format('Y-m-d') : "";
         $noOfRecords    = !empty($request->get('no_of_records')) ? $request->get('no_of_records') : $this->noOfRecordsPerPage;
 
+        //to display only current day sale if no date filter is applied
+        if(empty($fromDate) && empty($toDate)) {
+            $fromDate = Carbon::now()->format('Y-m-d');
+        }
+
         $params = [
             'from_date'    =>  [
                 'paramName'     => 'date',

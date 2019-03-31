@@ -66,7 +66,7 @@
                                 <td>{{ $product->saleDetail->product_number ?: '-' }}</td>
                                 <td>{{ $product->saleDetail->unit_wastage ?: '-' }}</td>
                                 <td>{{ $product->saleDetail->total_wastage ?: 0 }}</td>
-                                <td>{{ $product->saleDetail->net_quantity }} {{ $product->uom_code }}</td>
+                                <td>{{ $product->saleDetail->net_quantity }}</td>
                                 <td>{{ $product->saleDetail->rate }}/-</td>
                                 <td>{{ ($product->saleDetail->net_quantity * $product->saleDetail->rate) }}</td>
                             </tr>
@@ -178,12 +178,12 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">#</th>
-                            <th style="width: 25%;">Product</th>
+                            <th style="width: 28%;">Product</th>
                             <th style="width: 10%;">Gross Qty</th>
                             <th style="width: 6%;">Nos</th>
-                            <th style="width: 8%;">Unit Wastage</th>
-                            <th style="width: 8%;">Total Wastage</th>
-                            <th style="width: 13%;">Net Qty</th>
+                            <th style="width: 8%;">Unit Wstg</th>
+                            <th style="width: 8%;">Total Wstg</th>
+                            <th style="width: 10%;">Net Qty</th>
                             <th style="width: 10%;">Rate</th>
                             <th style="width: 15%;">Amount</th>
                         </tr>
@@ -192,7 +192,7 @@
                         @foreach($sale->products as $index => $product)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $product->name }}</td>
+                                <td>{{ !empty($product->malayalam_name) ? $product->malayalam_name : $product->name }}</td>
                                 <td>
                                     {{ $product->saleDetail->gross_quantity ?: $product->saleDetail->net_quantity }}
                                     {{ $product->uom_code }}
@@ -200,7 +200,7 @@
                                 <td>{{ $product->saleDetail->product_number ?: '-' }}</td>
                                 <td>{{ $product->saleDetail->unit_wastage ?: '-' }}</td>
                                 <td>{{ $product->saleDetail->total_wastage ?: 0 }}</td>
-                                <td>{{ $product->saleDetail->net_quantity }} {{ $product->uom_code }}</td>
+                                <td>{{ $product->saleDetail->net_quantity }}</td>
                                 <td>{{ $product->saleDetail->rate }}/-</td>
                                 <td>{{ ($product->saleDetail->net_quantity * $product->saleDetail->rate) }}</td>
                             </tr>
