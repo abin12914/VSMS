@@ -255,7 +255,7 @@ class SaleController extends Controller
         }
 
         if($saveFlag) {
-            return redirect(route('sale.invoice', $saleResponse['id']))->with("message","Sale details saved successfully. Reference Number : ". $transactionResponse['id'])->with("alert-class", "success");
+            return redirect(route('sale.invoice', $saleResponse['id']));
         }
         
         return redirect()->back()->with("message","Failed to save the sale details. Error Code : ". $this->errorHead. "/". $errorCode)->with("alert-class", "error");
